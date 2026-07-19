@@ -8,12 +8,17 @@ const toast=(m)=>{
   setTimeout(()=>t.classList.remove("show"),1700);
 };
 
-$("#close").onclick=()=>modal.classList.remove("show");
-modal.onclick=e=>{if(e.target===modal)modal.classList.remove("show")};
+function closeModal(){
+  modal.classList.remove("animate-in");
+  setTimeout(()=>modal.classList.remove("show"),180);
+}
+$("#close").onclick=closeModal;
+modal.onclick=e=>{if(e.target===modal)closeModal()};
 
 function open(html){
   body.innerHTML=html;
   modal.classList.add("show");
+  requestAnimationFrame(()=>modal.classList.add("animate-in"));
 }
 
 function esc(value=""){
@@ -179,9 +184,186 @@ function renderChat(){
   }
   box.innerHTML=chatMessages.map(m=>`
     <div class="chat-row ${m.role}">
-      <div class="bubble">${esc(m.text)}</div>
+      <div class="bubble">
+        <div class="bubble-text">${esc(m.text)}</div>
+        <div class="bubble-meta">
+          <span>${esc(m.time || "")}</span>
+          ${m.role==="user" ? '<span class="ticks">✓✓</span>' : ""}
+        </div>
+      </div>
     </div>`).join("");
   box.scrollTop=box.scrollHeight;
+}
+
+
+function humanLabel(key=""){
+  const map={
+    uniqueId:"Username",nickname:"Nama",signature:"Bio",avatarLarger:"Foto profil",
+    avatarMedium:"Foto profil",avatarThumb:"Foto profil",followerCount:"Pengikut",
+    followingCount:"Mengikuti",heartCount:"Total suka",videoCount:"Jumlah video",
+    friendCount:"Teman",diggCount:"Disukai",verified:"Terverifikasi",
+    temperature:"Suhu",temp:"Suhu",humidity:"Kelembapan",wind:"Angin",
+    weather:"Kondisi",condition:"Kondisi",location:"Lokasi",city:"Kota",
+    country:"Negara",forecast:"Prakiraan",date:"Tanggal",time:"Waktu",
+    result:"Hasil",meaning:"Arti",arti:"Arti",name:"Nama",nama:"Nama",
+    love:"Asmara",career:"Karier",finance:"Keuangan",health:"Kesehatan",
+    lucky_number:"Angka keberuntungan",lucky_color:"Warna keberuntungan",
+    description:"Deskripsi",message:"Pesan",response:"Jawaban",text:"Teks"
+  };
+  if(map[key]) return map[key];
+  return String(key)
+    .replace(/([a-z])([A-Z])/g,"$1 $2")
+    .replace(/[_-]+/g," ")
+    .replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+function prettyNumber(value){
+  const n=Number(value);
+  if(!Number.isFinite(n)) return String(value);
+  return new Intl.NumberFormat("id-ID",{
+    notation:Math.abs(n)>=1000?"compact":"standard",
+    maximumFractionDigits:1
+  }).format(n);
+}
+
+function formatValue(value){
+  if(typeof value==="boolean") return value ? "Ya" : "Tidak";
+  if(typeof value==="number") return prettyNumber(value);
+  return String(value ?? "-");
+}
+
+function isImageUrl(value){
+  return typeof value==="string" &&
+    /^https?:\/\//i.test(value) &&
+    (/\.(jpg|jpeg|png|webp|gif)(\?|$)/i.test(value) ||
+     /avatar|image|photo|thumb|cover|cdn/i.test(value));
+}
+
+function renderFriendlyObject(data,title="Hasil"){
+  const payload=getPayload(data);
+  if(payload===null || payload===undefined){
+    $("#result").innerHTML='<div class="friendly-empty">Data tidak ditemukan.</div>';
+    return;
+  }
+
+  if(typeof payload!=="object"){
+    $("#result").innerHTML=`<div class="friendly-card"><h3>${esc(title)}</h3><p class="friendly-main">${esc(formatValue(payload))}</p></div>`;
+    return;
+  }
+
+  const rows=[];
+  const images=[];
+
+  function walk(obj,prefix="",depth=0){
+    if(depth>4 || obj===null || obj===undefined) return;
+
+    if(Array.isArray(obj)){
+      if(obj.every(v=>["string","number","boolean"].includes(typeof v))){
+        rows.push({label:prefix || "Data",value:obj.map(formatValue).join(", ")});
+      }else{
+        obj.slice(0,20).forEach((item,i)=>walk(item,`${prefix} ${i+1}`.trim(),depth+1));
+      }
+      return;
+    }
+
+    for(const [key,value] of Object.entries(obj)){
+      if(["status","timestamp","success"].includes(key)) continue;
+      const label=prefix ? `${prefix} · ${humanLabel(key)}` : humanLabel(key);
+
+      if(isImageUrl(value)){
+        images.push({label,url:value});
+      }else if(value && typeof value==="object"){
+        walk(value,label,depth+1);
+      }else if(value!=="" && value!==null && value!==undefined){
+        rows.push({label,value:formatValue(value)});
+      }
+    }
+  }
+
+  walk(payload);
+
+  let html='<div class="friendly-wrap">';
+
+  if(images.length){
+    const best=images.find(x=>/avatar|foto profil/i.test(x.label)) || images[0];
+    html+=`<div class="friendly-profile-image">
+      <img src="${esc(best.url)}" alt="${esc(best.label)}" referrerpolicy="no-referrer">
+    </div>`;
+  }
+
+  html+=`<div class="friendly-card"><h3>${esc(title)}</h3>`;
+
+  if(!rows.length){
+    html+='<p class="friendly-empty">Tidak ada informasi teks yang dapat ditampilkan.</p>';
+  }else{
+    html+='<div class="friendly-list">';
+    rows.slice(0,80).forEach(row=>{
+      const long=String(row.value).length>90;
+      html+=`<div class="friendly-row${long?" friendly-row-long":""}">
+        <span class="friendly-label">${esc(row.label)}</span>
+        <span class="friendly-value">${esc(row.value)}</span>
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  html+='</div></div>';
+  $("#result").innerHTML=html;
+}
+
+function renderTikTokProfile(data){
+  const payload=getPayload(data) || {};
+  const user=payload.user || payload.author || payload.profile || payload;
+  const stats=payload.stats || payload.statistics || user.stats || {};
+
+  const avatar=findFirst(user,["avatarLarger","avatarMedium","avatarThumb","avatar","profilePicture"]);
+  const username=findFirst(user,["uniqueId","username","userName"]);
+  const nickname=findFirst(user,["nickname","name","displayName"]);
+  const bio=findFirst(user,["signature","bio","description"]);
+  const verified=findFirst(user,["verified","isVerified"]);
+
+  const followers=findFirst(stats,["followerCount","followers","follower"]);
+  const following=findFirst(stats,["followingCount","following"]);
+  const likes=findFirst(stats,["heartCount","likes","diggCount"]);
+  const videos=findFirst(stats,["videoCount","videos"]);
+
+  let html='<div class="profile-card">';
+  if(avatar){
+    html+=`<img class="profile-avatar" src="${esc(avatar)}" alt="Foto profil" referrerpolicy="no-referrer">`;
+  }
+  html+=`<div class="profile-main">
+    <h3>${esc(nickname || username || "Profil TikTok")}${verified===true ? ' <span class="verified-badge">✓</span>' : ""}</h3>
+    ${username?`<p class="profile-username">@${esc(username)}</p>`:""}
+    ${bio?`<p class="profile-bio">${esc(bio)}</p>`:""}
+  </div>`;
+
+  const items=[
+    ["Pengikut",followers],["Mengikuti",following],["Total suka",likes],["Video",videos]
+  ].filter(x=>x[1]!=="" && x[1]!==undefined && x[1]!==null);
+
+  if(items.length){
+    html+='<div class="profile-stats">';
+    items.forEach(([label,value])=>{
+      html+=`<div><strong>${esc(prettyNumber(value))}</strong><span>${esc(label)}</span></div>`;
+    });
+    html+='</div>';
+  }
+
+  if(username){
+    html+=`<button type="button" class="copy-profile-btn" id="copyProfile">Salin username</button>`;
+  }
+
+  html+='</div>';
+  $("#result").innerHTML=html;
+
+  const copy=$("#copyProfile");
+  if(copy){
+    copy.onclick=()=>navigator.clipboard.writeText("@"+username).then(()=>toast("Username tersalin"));
+  }
+}
+
+function showFriendlyError(error){
+  $("#result").innerHTML=`<div class="error-card"><strong>Permintaan gagal</strong><p>${esc(error.message || error)}</p></div>`;
 }
 
 const forms={
@@ -192,8 +374,8 @@ const forms={
     </div>
     <div id="chatMessages" class="chat-messages"></div>
     <div class="chat-compose">
-      <textarea id="prompt" rows="2" placeholder="Tulis pesan..."></textarea>
-      <button class="run send-btn" id="go">Kirim</button>
+      <textarea id="prompt" rows="1" placeholder="Tulis pesan..."></textarea>
+      <button class="run send-btn" id="go" aria-label="Kirim pesan" title="Kirim">➤</button>
     </div>`),
 
   translate:()=>open(`<h2>Penerjemah</h2><p class="desc">Terjemahkan teks menggunakan endpoint Siputzx.</p>
@@ -274,11 +456,12 @@ function bind(key){
       const prompt=input.value.trim();
       if(!prompt) return;
 
-      chatMessages.push({role:"user",text:prompt});
+      chatMessages.push({role:"user",text:prompt,time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})});
       input.value="";
+      input.style.height="auto";
       renderChat();
 
-      chatMessages.push({role:"assistant",text:"Mengetik..."});
+      chatMessages.push({role:"assistant",text:"Mengetik...",time:""});
       renderChat();
 
       try{
@@ -294,16 +477,32 @@ function bind(key){
           temperature:"0.7"
         });
 
-        chatMessages[chatMessages.length-1]={role:"assistant",text:String(extractAIText(data))};
+        chatMessages[chatMessages.length-1]={
+          role:"assistant",
+          text:String(extractAIText(data)),
+          time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
+        };
         saveChat();
         renderChat();
       }catch(e){
-        chatMessages[chatMessages.length-1]={role:"assistant",text:`Maaf, terjadi error: ${e.message}`};
+        chatMessages[chatMessages.length-1]={
+          role:"assistant",
+          text:`Maaf, terjadi error: ${e.message}`,
+          time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
+        };
         renderChat();
       }
     };
 
     $("#go").onclick=send;
+
+    const promptBox=$("#prompt");
+    const grow=()=>{
+      promptBox.style.height="auto";
+      promptBox.style.height=Math.min(promptBox.scrollHeight,140)+"px";
+    };
+    promptBox.addEventListener("input",grow);
+
     $("#prompt").addEventListener("keydown",e=>{
       if(e.key==="Enter" && !e.shiftKey){
         e.preventDefault();
@@ -319,8 +518,12 @@ function bind(key){
         const data=await api("translate",{text:$("#text").value,source:$("#source").value,target:$("#target").value});
         const payload=getPayload(data);
         const text=typeof payload==="string" ? payload : findFirst(payload,["translatedText","translation","result","text"]);
-        $("#result").textContent=text || JSON.stringify(data,null,2);
-      }catch(e){$("#result").textContent=e.message}
+        if(text){
+          $("#result").innerHTML=`<div class="translation-card"><span>Hasil terjemahan</span><p>${esc(text)}</p></div>`;
+        }else{
+          renderFriendlyObject(data,"Hasil Terjemahan");
+        }
+      }catch(e){showFriendlyError(e)}
     };
   }
 
@@ -334,11 +537,37 @@ function bind(key){
     };
   }
 
-  if(key==="tiktokstalk")$("#go").onclick=async()=>{loading();try{$("#result").textContent=JSON.stringify(await api("tiktokstalk",{username:$("#username").value}),null,2)}catch(e){$("#result").textContent=e.message}};
-  if(key==="weather")$("#go").onclick=async()=>{loading();try{$("#result").textContent=JSON.stringify(await api("weather",{q:$("#q").value}),null,2)}catch(e){$("#result").textContent=e.message}};
-  if(key==="zodiac")$("#go").onclick=async()=>{loading();try{$("#result").textContent=JSON.stringify(await api("zodiac",{zodiac:$("#zodiac").value}),null,2)}catch(e){$("#result").textContent=e.message}};
-  if(key==="name")$("#go").onclick=async()=>{loading();try{$("#result").textContent=JSON.stringify(await api("name",{name:$("#name").value}),null,2)}catch(e){$("#result").textContent=e.message}};
-  if(key==="health")$("#go").onclick=async()=>{loading();try{$("#result").textContent=JSON.stringify(await api("health",{tgl:$("#tgl").value,bln:$("#bln").value,thn:$("#thn").value}),null,2)}catch(e){$("#result").textContent=e.message}};
+  if(key==="tiktokstalk")$("#go").onclick=async()=>{
+    loading();
+    try{renderTikTokProfile(await api("tiktokstalk",{username:$("#username").value.trim()}))}
+    catch(e){showFriendlyError(e)}
+  };
+
+  if(key==="weather")$("#go").onclick=async()=>{
+    loading();
+    try{renderFriendlyObject(await api("weather",{q:$("#q").value.trim()}),"Informasi Cuaca")}
+    catch(e){showFriendlyError(e)}
+  };
+
+  if(key==="zodiac")$("#go").onclick=async()=>{
+    loading();
+    try{renderFriendlyObject(await api("zodiac",{zodiac:$("#zodiac").value}),"Ramalan Zodiak")}
+    catch(e){showFriendlyError(e)}
+  };
+
+  if(key==="name")$("#go").onclick=async()=>{
+    loading();
+    try{renderFriendlyObject(await api("name",{name:$("#name").value.trim()}),"Arti Nama")}
+    catch(e){showFriendlyError(e)}
+  };
+
+  if(key==="health")$("#go").onclick=async()=>{
+    loading();
+    try{renderFriendlyObject(await api("health",{
+      tgl:$("#tgl").value,bln:$("#bln").value,thn:$("#thn").value
+    }),"Potensi Kesehatan")}
+    catch(e){showFriendlyError(e)}
+  };
 
   if(key==="password"){
     let pass="";
@@ -401,3 +630,31 @@ function filterCards(){
     c.classList.toggle("hidden",!(c.dataset.key.includes(q)&&(cat==="all"||c.dataset.cat===cat)));
   });
 }
+
+
+// Kivo Tools v6 animations
+const revealObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add("is-visible");
+      revealObserver.unobserve(entry.target);
+    }
+  });
+},{threshold:.12});
+
+document.querySelectorAll(".reveal,.reveal-card").forEach((el,index)=>{
+  el.style.setProperty("--delay",`${Math.min(index%8,7)*70}ms`);
+  revealObserver.observe(el);
+});
+
+document.querySelectorAll(".card").forEach(card=>{
+  card.addEventListener("pointermove",e=>{
+    if(window.matchMedia("(hover:hover)").matches){
+      const r=card.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5;
+      const y=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=`perspective(700px) rotateX(${-y*4}deg) rotateY(${x*5}deg) translateY(-5px)`;
+    }
+  });
+  card.addEventListener("pointerleave",()=>card.style.transform="");
+});

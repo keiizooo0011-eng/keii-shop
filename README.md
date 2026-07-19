@@ -36,3 +36,27 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Riwayat chat tersimpan di browser.
 - Downloader menampilkan preview video/gambar/audio dan tombol download.
 - Data mentah tetap tersedia dalam bagian detail.
+
+
+## Perubahan v4
+- Input AI dan tombol kirim sejajar seperti WhatsApp/Telegram.
+- Tombol kirim bulat.
+- Textarea otomatis membesar saat mengetik.
+- Bubble pesan memiliki jam dan centang ganda untuk pesan pengguna.
+- Tampilan modal, hasil downloader, dan respons mobile dirapikan.
+
+## Perubahan v5
+- TikTok Profile tidak lagi menampilkan JSON mentah.
+- Cuaca, zodiak, arti nama, dan potensi kesehatan tampil sebagai kartu teks.
+- Translate menampilkan hasil terjemahan secara langsung.
+- Angka statistik dibuat ringkas dan mudah dibaca.
+- Foto profil, statistik, bio, dan tombol salin username ditambahkan.
+- Pesan kesalahan kini tampil sebagai kartu yang jelas.
+
+
+## Perubahan v6
+- Memperbaiki parameter Zodiak (`zodiac` diteruskan sebagai `zodiak`).
+- Animasi muncul saat scroll, glow bergerak, partikel halus, judul berkilau, dan modal lebih lembut.
+- Efek hover kartu dan tombol ditingkatkan.
+- Footer profesional dengan identitas pembuat Hetacase.
+- Menghormati pengaturan reduced motion pengguna.

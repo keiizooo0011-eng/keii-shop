@@ -49,3 +49,488 @@ footer{width:min(1180px,90vw);margin:auto;border-top:1px solid var(--line);paddi
   .send-btn{width:100%}
   .image-grid{grid-template-columns:1fr}
 }
+
+
+/* Fix kolom input AI di mobile */
+.chat-compose{
+  width:100%;
+}
+
+.chat-compose textarea{
+  width:100%;
+  display:block;
+  flex:1 1 auto;
+  min-width:0;
+  min-height:54px;
+  max-height:150px;
+  resize:none;
+  overflow-y:auto;
+  background:var(--surface2);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  outline:none;
+  font:inherit;
+  line-height:1.45;
+}
+
+.chat-compose textarea::placeholder{
+  color:var(--muted);
+}
+
+.chat-compose textarea:focus{
+  border-color:var(--purple);
+  box-shadow:0 0 0 3px rgba(139,92,246,.12);
+}
+
+@media(max-width:640px){
+  .chat-compose{
+    display:grid;
+    grid-template-columns:1fr;
+    width:100%;
+  }
+
+  .chat-compose textarea,
+  .chat-compose .send-btn{
+    width:100%;
+    max-width:none;
+  }
+}
+
+
+/* ===== Kivo Tools v4 ===== */
+.chat-head{
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+}
+
+.chat-head h2{
+  margin-bottom:2px;
+}
+
+.chat-head .desc{
+  margin:0;
+}
+
+.chat-messages{
+  background:
+    radial-gradient(circle at 20% 20%,rgba(139,92,246,.08),transparent 28%),
+    radial-gradient(circle at 85% 80%,rgba(99,102,241,.06),transparent 25%),
+    var(--surface);
+  border-radius:16px;
+  padding:16px 10px;
+  margin-top:12px;
+  scroll-behavior:smooth;
+}
+
+.bubble{
+  position:relative;
+  min-width:74px;
+  padding:10px 12px 6px;
+  box-shadow:0 5px 18px rgba(0,0,0,.18);
+}
+
+.bubble-text{
+  white-space:pre-wrap;
+  word-break:break-word;
+  padding-right:6px;
+}
+
+.bubble-meta{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px;
+  margin-top:3px;
+  font-size:10px;
+  opacity:.72;
+  min-height:12px;
+}
+
+.ticks{
+  font-weight:800;
+  letter-spacing:-2px;
+}
+
+.chat-row.user .bubble{
+  background:linear-gradient(135deg,#7c3aed,#5b21b6);
+  border-bottom-right-radius:4px;
+}
+
+.chat-row.assistant .bubble{
+  background:#19151f;
+  border:1px solid rgba(255,255,255,.07);
+  border-bottom-left-radius:4px;
+}
+
+.chat-compose{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:flex-end;
+  gap:10px;
+  width:100%;
+  padding-top:12px;
+}
+
+.chat-compose textarea{
+  flex:1 1 auto;
+  width:auto !important;
+  min-width:0;
+  min-height:48px;
+  max-height:140px;
+  padding:13px 15px;
+  border-radius:24px;
+  resize:none;
+  overflow-y:auto;
+}
+
+.send-btn{
+  flex:0 0 48px;
+  width:48px !important;
+  min-width:48px;
+  height:48px;
+  padding:0;
+  border-radius:50%;
+  font-size:20px;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  box-shadow:0 8px 24px rgba(124,58,237,.32);
+}
+
+.send-btn:active{
+  transform:scale(.96);
+}
+
+.result{
+  overflow-wrap:anywhere;
+}
+
+.result-video,
+.result-cover{
+  border:1px solid var(--line);
+  box-shadow:0 10px 28px rgba(0,0,0,.25);
+}
+
+.download-btn{
+  transition:.2s ease;
+}
+
+.download-btn:active{
+  transform:scale(.985);
+}
+
+.modal-panel{
+  max-height:92vh;
+  overflow:auto;
+}
+
+@media(max-width:640px){
+  .chat-messages{
+    height:min(58vh,520px);
+  }
+
+  .chat-compose{
+    display:flex !important;
+    flex-direction:row !important;
+  }
+
+  .chat-compose textarea{
+    width:auto !important;
+  }
+
+  .chat-compose .send-btn{
+    width:48px !important;
+  }
+
+  .bubble{
+    max-width:88%;
+  }
+}
+
+
+/* ===== Kivo Tools v5 — hasil ramah dibaca ===== */
+.friendly-wrap{
+  font-family:Inter,sans-serif;
+  display:grid;
+  gap:14px;
+}
+
+.friendly-card,
+.profile-card,
+.translation-card,
+.error-card{
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015));
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  font-family:Inter,sans-serif;
+}
+
+.friendly-card h3{
+  margin:0 0 14px;
+  font-size:19px;
+}
+
+.friendly-profile-image{
+  display:flex;
+  justify-content:center;
+}
+
+.friendly-profile-image img{
+  width:110px;
+  height:110px;
+  object-fit:cover;
+  border-radius:50%;
+  border:3px solid rgba(139,92,246,.55);
+  box-shadow:0 10px 30px rgba(124,58,237,.25);
+}
+
+.friendly-list{
+  display:grid;
+  gap:0;
+}
+
+.friendly-row{
+  display:grid;
+  grid-template-columns:minmax(110px, .8fr) minmax(0,1.4fr);
+  gap:14px;
+  padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.friendly-row:last-child{
+  border-bottom:0;
+}
+
+.friendly-row-long{
+  grid-template-columns:1fr;
+  gap:5px;
+}
+
+.friendly-label{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+
+.friendly-value{
+  color:var(--text);
+  text-align:right;
+  overflow-wrap:anywhere;
+  line-height:1.55;
+}
+
+.friendly-row-long .friendly-value{
+  text-align:left;
+}
+
+.friendly-main{
+  margin:0;
+  line-height:1.65;
+  white-space:pre-wrap;
+}
+
+.friendly-empty{
+  color:var(--muted);
+  text-align:center;
+  padding:12px;
+}
+
+.profile-card{
+  text-align:center;
+}
+
+.profile-avatar{
+  width:108px;
+  height:108px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #8b5cf6;
+  box-shadow:0 10px 32px rgba(124,58,237,.28);
+}
+
+.profile-main h3{
+  margin:12px 0 4px;
+  font-size:21px;
+}
+
+.profile-username{
+  margin:0;
+  color:#bdaaff;
+  font-weight:700;
+}
+
+.profile-bio{
+  margin:12px auto 0;
+  max-width:440px;
+  color:var(--muted);
+  line-height:1.55;
+  white-space:pre-wrap;
+}
+
+.verified-badge{
+  display:inline-grid;
+  place-items:center;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:#8b5cf6;
+  color:white;
+  font-size:12px;
+  vertical-align:2px;
+}
+
+.profile-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:16px;
+}
+
+.profile-stats div{
+  padding:11px 6px;
+  border-radius:13px;
+  background:var(--surface2);
+  border:1px solid var(--line);
+}
+
+.profile-stats strong,
+.profile-stats span{
+  display:block;
+}
+
+.profile-stats strong{
+  font-size:17px;
+}
+
+.profile-stats span{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.copy-profile-btn{
+  width:100%;
+  margin-top:14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 14px;
+  background:var(--surface2);
+  color:var(--text);
+  font-weight:800;
+  cursor:pointer;
+}
+
+.translation-card span{
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+
+.translation-card p{
+  margin:9px 0 0;
+  font-size:18px;
+  line-height:1.65;
+  white-space:pre-wrap;
+}
+
+.error-card{
+  border-color:rgba(239,68,68,.35);
+  background:rgba(239,68,68,.07);
+}
+
+.error-card strong{
+  color:#fca5a5;
+}
+
+.error-card p{
+  margin:7px 0 0;
+  color:#fecaca;
+  line-height:1.5;
+}
+
+@media(max-width:640px){
+  .friendly-row{
+    grid-template-columns:1fr;
+    gap:4px;
+  }
+
+  .friendly-value{
+    text-align:left;
+  }
+
+  .profile-stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+
+/* ===== Kivo Tools v6 — motion & premium footer ===== */
+body{overflow-x:hidden}
+
+.glow-a{animation:glowFloatA 11s ease-in-out infinite alternate}
+.glow-b{animation:glowFloatB 13s ease-in-out infinite alternate}
+@keyframes glowFloatA{to{transform:translate(-70px,85px) scale(1.16)}}
+@keyframes glowFloatB{to{transform:translate(90px,-65px) scale(.88)}}
+
+.particles{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
+.particles i{position:absolute;width:4px;height:4px;border-radius:50%;background:#b794f6;box-shadow:0 0 14px #8b5cf6;opacity:.35;animation:particleFloat 12s linear infinite}
+.particles i:nth-child(1){left:8%;top:85%;animation-duration:14s}
+.particles i:nth-child(2){left:24%;top:65%;animation-delay:-4s;animation-duration:17s}
+.particles i:nth-child(3){left:48%;top:92%;animation-delay:-8s}
+.particles i:nth-child(4){left:69%;top:74%;animation-delay:-2s;animation-duration:15s}
+.particles i:nth-child(5){left:84%;top:88%;animation-delay:-7s;animation-duration:19s}
+.particles i:nth-child(6){left:94%;top:55%;animation-delay:-10s}
+@keyframes particleFloat{0%{transform:translateY(30px) scale(.7);opacity:0}15%{opacity:.45}85%{opacity:.25}100%{transform:translateY(-110vh) translateX(45px) scale(1.35);opacity:0}}
+
+.brand .mark,.footer-mark{animation:logoPulse 3.6s ease-in-out infinite}
+@keyframes logoPulse{50%{box-shadow:0 0 0 8px rgba(139,92,246,.08),0 0 30px rgba(139,92,246,.42);transform:translateY(-2px)}}
+
+.hero h1{background:linear-gradient(110deg,#fff 15%,#c4b5fd 45%,#fff 70%);background-size:220% auto;color:transparent;background-clip:text;-webkit-background-clip:text;animation:titleShine 7s linear infinite}
+@keyframes titleShine{to{background-position:220% center}}
+
+.status i{animation:statusPulse 1.8s ease-out infinite}
+@keyframes statusPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+
+.reveal,.reveal-card{opacity:0;transform:translateY(24px);transition:opacity .65s ease var(--delay,0ms),transform .65s cubic-bezier(.2,.8,.2,1) var(--delay,0ms)}
+.reveal.is-visible,.reveal-card.is-visible{opacity:1;transform:translateY(0)}
+
+.card{position:relative;overflow:hidden;will-change:transform;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.card::before{content:"";position:absolute;inset:-60%;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.08) 50%,transparent 58%);transform:translateX(-60%) rotate(8deg);transition:transform .7s ease;pointer-events:none}
+.card:hover::before{transform:translateX(60%) rotate(8deg)}
+.card:hover{box-shadow:0 18px 45px rgba(72,35,130,.25)}
+.card button{transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+.card button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(124,58,237,.28)}
+
+.modal{opacity:0;transition:opacity .18s ease}
+.modal.show{opacity:1}
+.modal .panel{transform:translateY(22px) scale(.97);opacity:0;transition:transform .25s cubic-bezier(.2,.85,.25,1),opacity .2s ease}
+.modal.animate-in .panel{transform:translateY(0) scale(1);opacity:1}
+.loader-line{box-shadow:0 0 18px rgba(139,92,246,.35)}
+
+.site-footer{width:min(1180px,90vw);margin:0 auto 34px;padding:28px;border:1px solid rgba(139,92,246,.28);border-radius:24px;background:linear-gradient(135deg,rgba(24,18,36,.95),rgba(12,9,18,.95));box-shadow:0 18px 55px rgba(60,30,110,.2);display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:28px;align-items:center;color:var(--text)}
+.footer-brand{display:flex;align-items:center;gap:14px}
+.footer-mark{display:grid;place-items:center;width:58px;height:58px;border-radius:17px;background:linear-gradient(135deg,var(--purple),var(--purple2));font-family:"Space Grotesk",sans-serif;font-weight:800;font-size:28px}
+.footer-brand strong{font-size:18px}
+.footer-brand p{margin:5px 0 0;color:var(--muted);line-height:1.45}
+.footer-creator{display:flex;flex-direction:column;padding-left:28px;border-left:1px solid var(--line)}
+.footer-creator span{color:var(--muted);font-size:12px}
+.footer-creator strong{font-family:"Space Grotesk",sans-serif;font-size:25px;color:#c4b5fd;margin:4px 0}
+.footer-creator small{color:var(--muted)}
+.footer-meta{display:flex;flex-direction:column;gap:5px;padding-left:28px;border-left:1px solid var(--line)}
+.footer-meta span{color:var(--muted);font-size:11px;line-height:1.4}
+
+@media(max-width:780px){
+  .site-footer{grid-template-columns:1fr;text-align:center;padding:24px 18px}
+  .footer-brand{justify-content:center}
+  .footer-creator,.footer-meta{padding-left:0;padding-top:20px;border-left:0;border-top:1px solid var(--line)}
+  .card:hover{transform:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+  .reveal,.reveal-card{opacity:1;transform:none}
+}

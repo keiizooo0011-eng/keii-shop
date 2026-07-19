@@ -3,7 +3,7 @@ const BASE = "https://api.siputzx.my.id";
 const routes = {
   translate: { path: "/api/tools/translate", params: ["text","source","target"] },
   tiktokstalk: { path: "/api/stalk/tiktok", params: ["username"] },
-  zodiac: { path: "/api/primbon/zodiak", params: ["zodiac"] },
+  zodiac: { path: "/api/primbon/zodiak", params: ["zodiac"], rename: { zodiac: "zodiak" } },
   name: { path: "/api/primbon/artinama", params: ["name"], rename: {name:"nama"} },
   health: { path: "/api/primbon/cek_potensi_penyakit", params: ["tgl","bln","thn"] },
   weather: { path: "/api/info/cuaca", params: ["q"] },
