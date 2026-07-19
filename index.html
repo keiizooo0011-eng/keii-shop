@@ -1,17 +1,123 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09090f"><title>Kivo Tools</title><meta name="description" content="Kumpulan tools gratis untuk teks, QR, password, JSON, Base64, dan prompt AI."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><link rel="stylesheet" href="style.css"></head><body><div class="orb o1"></div><div class="orb o2"></div><header><a class="brand" href="#home"><b>K</b><span>Kivo Tools</span></a><nav><a href="#tools">Tools</a><a href="#about">Tentang</a><button id="theme">☾</button></nav></header><main><section id="home" class="hero"><span class="badge">⚡ Gratis • Ringan • Tanpa Login</span><h1>Semua tools favoritmu,<br><em>dalam satu tempat.</em></h1><p>Kumpulan alat digital buat teks, developer, desain, dan kebutuhan harian. Langsung bisa dipakai dari HP.</p><div class="actions"><a class="primary" href="#tools">Coba Sekarang</a><button id="randomTool" class="ghost">Pilihkan Tool</button></div><div class="stats"><div><strong>8+</strong><small>Tools aktif</small></div><div><strong>100%</strong><small>Gratis</small></div><div><strong>0</strong><small>Login dibutuhkan</small></div></div></section><section id="tools"><div class="section-head"><div><span class="eyebrow">KIVO TOOLBOX</span><h2>Pilih tool yang kamu butuhkan</h2></div><input id="search" placeholder="Cari tool..."></div><div class="grid">
-<article data-key="quotes kata motivasi galau cinta lucu"><i>💬</i><h3>Quotes Generator</h3><p>Buat kata motivasi, galau, cinta, dan lucu secara acak.</p><button data-open="quotes">Buka Tool</button></article>
-<article data-key="password keamanan generator"><i>🔐</i><h3>Password Generator</h3><p>Buat password kuat dengan panjang dan karakter pilihanmu.</p><button data-open="password">Buka Tool</button></article>
-<article data-key="qr code generator link"><i>◫</i><h3>QR Generator</h3><p>Ubah teks, link, atau nomor WhatsApp menjadi QR.</p><button data-open="qr">Buka Tool</button></article>
-<article data-key="text styler font nickname"><i>✦</i><h3>Text Styler</h3><p>Ubah tulisan biasa menjadi gaya unik untuk bio atau nickname.</p><button data-open="styler">Buka Tool</button></article>
-<article data-key="base64 encode decode developer"><i>⌘</i><h3>Base64 Tools</h3><p>Encode atau decode teks Base64 langsung dari browser.</p><button data-open="base64">Buka Tool</button></article>
-<article data-key="json formatter developer"><i>{ }</i><h3>JSON Formatter</h3><p>Rapikan dan validasi data JSON dengan satu klik.</p><button data-open="json">Buka Tool</button></article>
-<article data-key="prompt ai chatgpt gemini generator"><i>🤖</i><h3>AI Prompt Maker</h3><p>Buat prompt AI lebih jelas untuk belajar, coding, atau konten.</p><button data-open="prompt">Buka Tool</button></article>
-<article data-key="case uppercase lowercase title reverse"><i>Aa</i><h3>Case Converter</h3><p>Ubah teks ke huruf besar, kecil, kapital, atau kebalik.</p><button data-open="case">Buka Tool</button></article></div><div id="empty" class="empty hidden">Tool tidak ditemukan 😭</div></section><section id="about" class="about"><div><span class="eyebrow">TENTANG</span><h2>Dibuat buat kamu yang mau serba cepat.</h2></div><p>Kivo Tools berjalan langsung di browser. Sebagian besar fitur tidak mengirim data ke server, jadi ringan dan praktis.</p></section></main><footer><span>© 2026 Kivo Tools</span><span>Built with 💜</span></footer>
-<div class="modal" id="quotes"><div class="box"><button class="close">×</button><h3>💬 Quotes Generator</h3><label>Kategori</label><select id="quoteCat"><option value="motivasi">Motivasi</option><option value="galau">Galau</option><option value="cinta">Cinta</option><option value="lucu">Lucu</option></select><div id="quoteOut" class="out">Klik generate buat mulai ✨</div><div class="row"><button id="quoteGo" class="primary">Generate</button><button class="ghost copy" data-copy="quoteOut">Copy</button></div></div></div>
-<div class="modal" id="password"><div class="box"><button class="close">×</button><h3>🔐 Password Generator</h3><label>Panjang: <span id="lenVal">16</span></label><input id="len" type="range" min="8" max="40" value="16"><div class="checks"><label><input id="upper" type="checkbox" checked> Huruf besar</label><label><input id="number" type="checkbox" checked> Angka</label><label><input id="symbol" type="checkbox" checked> Simbol</label></div><div id="passOut" class="out mono">Klik generate</div><div class="row"><button id="passGo" class="primary">Generate</button><button class="ghost copy" data-copy="passOut">Copy</button></div></div></div>
-<div class="modal" id="qr"><div class="box"><button class="close">×</button><h3>◫ QR Generator</h3><label>Teks atau link</label><textarea id="qrIn" placeholder="https://kivopay.shop"></textarea><div id="qrcode" class="qr"></div><button id="qrGo" class="primary full">Buat QR</button></div></div>
-<div class="modal" id="styler"><div class="box"><button class="close">×</button><h3>✦ Text Styler</h3><input id="styleIn" placeholder="Kivo Tools"><div id="styleOut" class="styles"></div></div></div>
-<div class="modal" id="base64"><div class="box"><button class="close">×</button><h3>⌘ Base64 Tools</h3><textarea id="b64In" placeholder="Masukkan teks..."></textarea><div class="row"><button id="enc" class="primary">Encode</button><button id="dec" class="ghost">Decode</button></div><div id="b64Out" class="out mono">Hasil muncul di sini</div><button class="ghost full copy" data-copy="b64Out">Copy hasil</button></div></div>
-<div class="modal" id="json"><div class="box"><button class="close">×</button><h3>{ } JSON Formatter</h3><textarea id="jsonIn" class="mono" placeholder='{"nama":"Kivo","status":"aktif"}'></textarea><div class="row"><button id="fmt" class="primary">Format</button><button id="min" class="ghost">Minify</button></div><pre id="jsonOut" class="out mono">Hasil muncul di sini</pre><button class="ghost full copy" data-copy="jsonOut">Copy hasil</button></div></div>
-<div class="modal" id="prompt"><div class="box"><button class="close">×</button><h3>🤖 AI Prompt Maker</h3><label>Tujuan</label><select id="promptType"><option value="belajar">Belajar</option><option value="coding">Coding</option><option value="konten">Konten</option><option value="bisnis">Bisnis</option></select><label>Topik</label><input id="promptTopic" placeholder="Contoh: belajar JavaScript"><label>Gaya jawaban</label><select id="promptStyle"><option value="santai dan mudah dipahami">Santai</option><option value="profesional dan terstruktur">Profesional</option><option value="singkat tetapi jelas">Singkat</option><option value="sangat detail dengan contoh">Detail</option></select><div id="promptOut" class="out">Isi topik lalu generate</div><div class="row"><button id="promptGo" class="primary">Generate</button><button class="ghost copy" data-copy="promptOut">Copy</button></div></div></div>
-<div class="modal" id="case"><div class="box"><button class="close">×</button><h3>Aa Case Converter</h3><textarea id="caseIn" placeholder="Masukkan teks..."></textarea><div class="twocol"><button data-case="upper">UPPERCASE</button><button data-case="lower">lowercase</button><button data-case="title">Title Case</button><button data-case="reverse">esreveR</button></div><div id="caseOut" class="out">Hasil muncul di sini</div><button class="ghost full copy" data-copy="caseOut">Copy hasil</button></div></div><div id="toast">Tersalin!</div><script src="script.js"></script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a0710">
+  <title>Kivo Tools</title>
+  <meta name="description" content="AI, downloader, info, primbon, dan utilitas dalam satu tempat.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glow glow-a"></div><div class="glow glow-b"></div>
+  <header class="topbar">
+    <a href="#" class="brand"><span class="mark">K</span><span>Kivo Tools</span></a>
+    <nav>
+      <button class="nav-btn active" data-filter="all">Semua</button>
+      <button class="nav-btn" data-filter="ai">AI</button>
+      <button class="nav-btn" data-filter="download">Downloader</button>
+      <button class="nav-btn" data-filter="info">Info</button>
+      <button class="nav-btn" data-filter="local">Utilitas</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <span class="badge">KIVO DIGITAL TOOLBOX</span>
+      <h1>Satu tempat untuk semua kebutuhan digital.</h1>
+      <p>AI chat, penerjemah, downloader, cuaca, primbon, dan utilitas harian dengan tampilan bersih tanpa emoji.</p>
+      <div class="hero-row">
+        <a href="#tools" class="btn primary">Jelajahi Tools</a>
+        <span class="status"><i></i> Sistem aktif</span>
+      </div>
+    </section>
+
+    <section id="tools" class="section">
+      <div class="section-head">
+        <div><span class="eyebrow">TOOLS</span><h2>Pilih fitur</h2></div>
+        <input id="search" class="search" placeholder="Cari tool...">
+      </div>
+      <div id="grid" class="grid">
+        <article class="card" data-cat="ai" data-key="ai chat gpt">
+          <span class="icon">AI</span><h3>AI Chat</h3><p>Chat dengan model GPT OSS 120B.</p>
+          <button data-open="ai">Buka</button>
+        </article>
+        <article class="card" data-cat="ai" data-key="translate bahasa">
+          <span class="icon">TR</span><h3>Penerjemah</h3><p>Terjemahkan teks antarbahasa.</p>
+          <button data-open="translate">Buka</button>
+        </article>
+        <article class="card" data-cat="download" data-key="tiktok downloader video">
+          <span class="icon">TT</span><h3>TikTok Downloader</h3><p>Ambil info dan media dari URL TikTok.</p>
+          <button data-open="tiktokdl">Buka</button>
+        </article>
+        <article class="card" data-cat="download" data-key="capcut downloader">
+          <span class="icon">CC</span><h3>CapCut Downloader</h3><p>Ambil metadata dan tautan dari URL CapCut.</p>
+          <button data-open="capcut">Buka</button>
+        </article>
+        <article class="card" data-cat="download" data-key="snackvideo downloader">
+          <span class="icon">SV</span><h3>SnackVideo Downloader</h3><p>Ambil data dan tautan video SnackVideo.</p>
+          <button data-open="snack">Buka</button>
+        </article>
+        <article class="card" data-cat="info" data-key="tiktok stalk profil">
+          <span class="icon">ST</span><h3>TikTok Profile</h3><p>Lihat informasi profil publik TikTok.</p>
+          <button data-open="tiktokstalk">Buka</button>
+        </article>
+        <article class="card" data-cat="info" data-key="cuaca bmkg">
+          <span class="icon">WX</span><h3>Cuaca</h3><p>Cari informasi cuaca berdasarkan lokasi.</p>
+          <button data-open="weather">Buka</button>
+        </article>
+        <article class="card" data-cat="info" data-key="zodiak primbon">
+          <span class="icon">ZD</span><h3>Zodiak</h3><p>Lihat informasi zodiak versi primbon.</p>
+          <button data-open="zodiac">Buka</button>
+        </article>
+        <article class="card" data-cat="info" data-key="arti nama primbon">
+          <span class="icon">NM</span><h3>Arti Nama</h3><p>Cari arti sebuah nama versi primbon.</p>
+          <button data-open="name">Buka</button>
+        </article>
+        <article class="card" data-cat="info" data-key="potensi penyakit primbon">
+          <span class="icon">PR</span><h3>Potensi Kesehatan</h3><p>Hiburan primbon berdasarkan tanggal lahir.</p>
+          <button data-open="health">Buka</button>
+        </article>
+        <article class="card" data-cat="local" data-key="password generator">
+          <span class="icon">PW</span><h3>Password Generator</h3><p>Buat password acak yang kuat.</p>
+          <button data-open="password">Buka</button>
+        </article>
+        <article class="card" data-cat="local" data-key="json formatter">
+          <span class="icon">{ }</span><h3>JSON Formatter</h3><p>Format dan minify JSON.</p>
+          <button data-open="json">Buka</button>
+        </article>
+        <article class="card" data-cat="local" data-key="base64 encode decode">
+          <span class="icon">64</span><h3>Base64</h3><p>Encode dan decode teks Base64.</p>
+          <button data-open="base64">Buka</button>
+        </article>
+        <article class="card" data-cat="local" data-key="case converter text">
+          <span class="icon">Aa</span><h3>Case Converter</h3><p>Ubah format huruf dengan cepat.</p>
+          <button data-open="case">Buka</button>
+        </article>
+        <article class="card" data-cat="local" data-key="uuid generator">
+          <span class="icon">ID</span><h3>UUID Generator</h3><p>Buat UUID v4 langsung di browser.</p>
+          <button data-open="uuid">Buka</button>
+        </article>
+        <article class="card" data-cat="local" data-key="word counter kata karakter">
+          <span class="icon">WC</span><h3>Word Counter</h3><p>Hitung kata, karakter, dan baris.</p>
+          <button data-open="counter">Buka</button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>© 2026 Kivo Tools</span><span>Gunakan downloader hanya untuk konten yang berhak kamu simpan.</span></footer>
+
+  <div id="modal" class="modal">
+    <div class="panel">
+      <button id="close" class="close">×</button>
+      <div id="panelBody"></div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>

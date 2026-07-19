@@ -1,5 +1,31 @@
-# Kivo Tools
+# Kivo Tools v2
 
-Website tools statis siap deploy ke Vercel.
+Versi tanpa emoji, siap deploy ke Vercel.
 
-Upload semua file ini ke repository GitHub, lalu import repository tersebut di Vercel. Framework Preset pilih `Other`, kemudian Deploy.
+## Isi
+- AI Chat
+- Translate
+- TikTok downloader
+- CapCut downloader
+- SnackVideo downloader
+- TikTok profile
+- Cuaca
+- Zodiak
+- Arti nama
+- Potensi kesehatan berbasis primbon
+- Password, JSON, Base64, Case Converter, UUID, Word Counter
+
+## Deploy
+Upload semua file dan folder ini ke repository GitHub:
+- index.html
+- style.css
+- script.js
+- api/siputzx.js
+- README.md
+
+Vercel akan otomatis memakai folder `api` sebagai Serverless Function.
+
+## Catatan
+Endpoint pihak ketiga dapat berubah atau berhenti sewaktu-waktu.
+Downloader hanya untuk konten yang berhak disimpan.
+Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
