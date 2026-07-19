@@ -634,11 +634,7 @@ function bind(key){
         .filter(m=>m.text!=="__typing__")
         .map(m=>`${m.role==="user"?"Kamu":"Kivo AI"} [${m.time||"-"}]
 ${m.text}`)
-        .join("
-
---------------------
-
-");
+        .join("\n\n--------------------\n\n");
       downloadTextFile("kivo-ai-chat.txt",content || "Belum ada percakapan.");
     };
 
@@ -654,8 +650,7 @@ ${m.text}`)
         .filter(m=>m.text!=="Mengetik..." && m.text!=="__typing__")
         .slice(-12)
         .map(m=>`${m.role==="user"?"Pengguna":"Asisten"}: ${m.text}`)
-        .join("
-");
+        .join("\n");
 
       return api("ai",{
         prompt:`${history}

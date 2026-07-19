@@ -85,3 +85,9 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Pengaturan AI tersimpan di browser masing-masing pengguna.
 - Chat dapat diekspor menjadi file teks.
 - Identitas default AI diperbarui menjadi Kivo AI buatan keii official.
+
+
+## Perbaikan v8.1
+- Memperbaiki syntax error JavaScript yang membuat hero dan seluruh kartu tools tidak tampil.
+- Menambahkan cache busting untuk style.css dan script.js agar browser langsung memakai versi terbaru.
+- Semua fitur v8 tetap dipertahankan.
