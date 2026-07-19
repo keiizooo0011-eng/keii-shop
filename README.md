@@ -29,3 +29,10 @@ Vercel akan otomatis memakai folder `api` sebagai Serverless Function.
 Endpoint pihak ketiga dapat berubah atau berhenti sewaktu-waktu.
 Downloader hanya untuk konten yang berhak disimpan.
 Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
+
+
+## Perubahan v3
+- AI tampil seperti chat biasa, bukan JSON.
+- Riwayat chat tersimpan di browser.
+- Downloader menampilkan preview video/gambar/audio dan tombol download.
+- Data mentah tetap tersedia dalam bagian detail.
