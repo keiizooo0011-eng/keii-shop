@@ -852,3 +852,231 @@ body{overflow-x:hidden}
     bottom:-45px;
   }
 }
+
+
+/* ===== Kivo Tools v8 — AI chat upgrade ===== */
+.chat-head{
+  gap:12px;
+}
+
+.chat-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.clear-chat.active{
+  color:#fff;
+  border-color:rgba(139,92,246,.65);
+  background:rgba(124,58,237,.18);
+}
+
+.ai-settings-panel{
+  margin-top:12px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.025);
+  animation:settingsOpen .25s ease;
+}
+
+.ai-settings-panel[hidden]{
+  display:none !important;
+}
+
+.ai-settings-panel textarea{
+  min-height:100px;
+}
+
+.ai-settings-panel input[type="range"]{
+  padding:0;
+  accent-color:#8b5cf6;
+}
+
+.ai-settings-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.ai-settings-actions button{
+  flex:1 1 120px;
+}
+
+.chat-messages{
+  overflow-x:hidden !important;
+}
+
+.chat-row{
+  width:100%;
+  min-width:0;
+}
+
+.bubble{
+  width:fit-content !important;
+  min-width:0 !important;
+  max-width:min(88%,680px) !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+
+.chat-row.user .bubble{
+  max-width:min(82%,560px) !important;
+}
+
+.bubble-text{
+  display:block;
+  width:auto;
+  min-width:0;
+  overflow-wrap:anywhere !important;
+  word-break:break-word !important;
+  white-space:normal !important;
+  hyphens:auto;
+}
+
+.bubble-text p{
+  margin:0 0 9px;
+  line-height:1.58;
+}
+
+.bubble-text p:last-child{
+  margin-bottom:0;
+}
+
+.bubble-text ul,
+.bubble-text ol{
+  margin:7px 0 9px;
+  padding-left:22px;
+}
+
+.bubble-text li{
+  margin:4px 0;
+  line-height:1.5;
+}
+
+.bubble-text code{
+  padding:2px 5px;
+  border-radius:5px;
+  background:rgba(255,255,255,.08);
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:.9em;
+  overflow-wrap:anywhere;
+}
+
+.bubble-text pre{
+  max-width:100%;
+  margin:9px 0;
+  padding:11px;
+  overflow-x:auto;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  background:#09070e;
+}
+
+.bubble-text pre code{
+  padding:0;
+  background:none;
+  white-space:pre;
+  word-break:normal;
+}
+
+.md-space{
+  height:7px;
+}
+
+.bubble-footer{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:5px;
+}
+
+.message-actions{
+  display:flex;
+  gap:4px;
+  opacity:0;
+  transform:translateY(2px);
+  transition:.18s ease;
+}
+
+.bubble:hover .message-actions,
+.bubble:focus-within .message-actions{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.message-actions button{
+  padding:3px 6px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:inherit;
+  opacity:.66;
+  font-size:10px;
+  cursor:pointer;
+}
+
+.message-actions button:hover{
+  opacity:1;
+  background:rgba(255,255,255,.08);
+}
+
+.chat-empty{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:180px;
+  text-align:center;
+}
+
+.chat-empty strong{
+  color:var(--text);
+  font-size:17px;
+}
+
+.chat-empty span{
+  color:var(--muted);
+  font-size:13px;
+}
+
+@keyframes settingsOpen{
+  from{opacity:0;transform:translateY(-7px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@media(max-width:640px){
+  .chat-head{
+    align-items:flex-start;
+  }
+
+  .chat-head-actions{
+    max-width:150px;
+  }
+
+  .clear-chat{
+    padding:8px 9px;
+    font-size:12px;
+  }
+
+  .bubble{
+    max-width:92% !important;
+  }
+
+  .chat-row.user .bubble{
+    max-width:86% !important;
+  }
+
+  .message-actions{
+    opacity:.75;
+  }
+
+  .bubble-text{
+    font-size:15px;
+  }
+}

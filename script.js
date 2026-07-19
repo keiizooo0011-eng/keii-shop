@@ -165,6 +165,94 @@ function extractAIText(data){
   );
 }
 
+const DEFAULT_AI_SETTINGS={
+  system:"Kamu adalah Kivo AI, asisten milik website Kivo Tools yang dikembangkan oleh keii official. Jawab dengan ramah, jelas, natural, dan gunakan Bahasa Indonesia kecuali pengguna meminta bahasa lain.",
+  temperature:0.7
+};
+
+function loadAISettings(){
+  try{
+    const saved=JSON.parse(localStorage.getItem("kivo_ai_settings")||"{}");
+    return {
+      system:typeof saved.system==="string" && saved.system.trim() ? saved.system : DEFAULT_AI_SETTINGS.system,
+      temperature:Number.isFinite(Number(saved.temperature))
+        ? Math.max(0,Math.min(2,Number(saved.temperature)))
+        : DEFAULT_AI_SETTINGS.temperature
+    };
+  }catch{
+    return {...DEFAULT_AI_SETTINGS};
+  }
+}
+
+function saveAISettings(settings){
+  localStorage.setItem("kivo_ai_settings",JSON.stringify(settings));
+}
+
+function inlineMarkdown(text){
+  return esc(text)
+    .replace(/`([^`\n]+)`/g,"<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+    .replace(/\*([^*\n]+)\*/g,"<em>$1</em>");
+}
+
+function renderMarkdown(text=""){
+  const codeBlocks=[];
+  let value=String(text).replace(/```([\s\S]*?)```/g,(_,code)=>{
+    const token=`%%CODE_${codeBlocks.length}%%`;
+    codeBlocks.push(`<pre><code>${esc(code.trim())}</code></pre>`);
+    return token;
+  });
+
+  const lines=value.split(/\r?\n/);
+  let html="";
+  let listType="";
+
+  const closeList=()=>{
+    if(listType){
+      html+=`</${listType}>`;
+      listType="";
+    }
+  };
+
+  for(const rawLine of lines){
+    const line=rawLine.trimEnd();
+    const codeToken=line.trim().match(/^%%CODE_(\d+)%%$/);
+    if(codeToken){
+      closeList();
+      html+=codeBlocks[Number(codeToken[1])] || "";
+      continue;
+    }
+
+    const ul=line.match(/^\s*[-*]\s+(.+)/);
+    const ol=line.match(/^\s*\d+\.\s+(.+)/);
+
+    if(ul){
+      if(listType!=="ul"){closeList();listType="ul";html+="<ul>";}
+      html+=`<li>${inlineMarkdown(ul[1])}</li>`;
+    }else if(ol){
+      if(listType!=="ol"){closeList();listType="ol";html+="<ol>";}
+      html+=`<li>${inlineMarkdown(ol[1])}</li>`;
+    }else{
+      closeList();
+      if(!line.trim()) html+='<div class="md-space"></div>';
+      else html+=`<p>${inlineMarkdown(line)}</p>`;
+    }
+  }
+
+  closeList();
+  return html;
+}
+
+function downloadTextFile(filename,text){
+  const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+
 let chatMessages=[];
 function saveChat(){
   localStorage.setItem("kivo_ai_chat",JSON.stringify(chatMessages.slice(-30)));
@@ -185,23 +273,51 @@ function loadChat(){
 function renderChat(){
   const box=$("#chatMessages");
   if(!box) return;
+
   if(!chatMessages.length){
-    box.innerHTML='<div class="chat-empty">Mulai percakapan baru.</div>';
+    box.innerHTML=`
+      <div class="chat-empty">
+        <strong>Mulai ngobrol dengan Kivo AI</strong>
+        <span>Tulis pertanyaan atau ceritakan apa saja.</span>
+      </div>`;
     return;
   }
-  box.innerHTML=chatMessages.map(m=>`
+
+  box.innerHTML=chatMessages.map((m,index)=>`
     <div class="chat-row ${m.role}">
       <div class="bubble">
-        <div class="bubble-text">${m.text==="__typing__" ? '<span class="typing-dots"><i></i><i></i><i></i></span>' : esc(m.text)}</div>
-        <div class="bubble-meta">
-          <span>${esc(m.time || "")}</span>
-          ${m.role==="user" ? '<span class="ticks">✓✓</span>' : ""}
-        </div>
+        <div class="bubble-text">${
+          m.text==="__typing__"
+            ? '<span class="typing-dots"><i></i><i></i><i></i></span>'
+            : renderMarkdown(m.text)
+        }</div>
+        ${m.text!=="__typing__" ? `
+          <div class="bubble-footer">
+            <div class="bubble-meta">
+              <span>${esc(m.time || "")}</span>
+              ${m.role==="user" ? '<span class="ticks">✓✓</span>' : ""}
+            </div>
+            <div class="message-actions">
+              <button type="button" data-copy-message="${index}" aria-label="Salin pesan">Salin</button>
+              ${m.role==="assistant" ? `<button type="button" data-regenerate="${index}" aria-label="Buat ulang jawaban">Ulangi</button>` : ""}
+            </div>
+          </div>` : ""}
       </div>
     </div>`).join("");
+
+  $$("[data-copy-message]").forEach(button=>{
+    button.onclick=()=>{
+      const message=chatMessages[Number(button.dataset.copyMessage)];
+      if(message) navigator.clipboard.writeText(message.text).then(()=>toast("Pesan tersalin"));
+    };
+  });
+
+  $$("[data-regenerate]").forEach(button=>{
+    button.onclick=()=>regenerateAnswer(Number(button.dataset.regenerate));
+  });
+
   box.scrollTop=box.scrollHeight;
 }
-
 
 function humanLabel(key=""){
   const map={
@@ -376,9 +492,32 @@ function showFriendlyError(error){
 const forms={
   ai:()=>open(`
     <div class="chat-head">
-      <div><h2>AI Chat</h2><p class="desc">Percakapan tersimpan di perangkat ini.</p></div>
-      <button id="clearChat" class="clear-chat">Hapus chat</button>
+      <div>
+        <h2>Kivo AI</h2>
+        <p class="desc">Riwayat tersimpan khusus di perangkat ini.</p>
+      </div>
+      <div class="chat-head-actions">
+        <button id="aiSettingsButton" class="clear-chat" aria-label="Pengaturan AI">Pengaturan</button>
+        <button id="clearChat" class="clear-chat">Hapus chat</button>
+      </div>
     </div>
+
+    <div id="aiSettingsPanel" class="ai-settings-panel" hidden>
+      <div class="field">
+        <label>System prompt</label>
+        <textarea id="aiSystemPrompt" rows="4"></textarea>
+      </div>
+      <div class="field">
+        <label>Temperature: <span id="temperatureValue">0.7</span></label>
+        <input id="aiTemperature" type="range" min="0" max="2" step="0.1">
+      </div>
+      <div class="ai-settings-actions">
+        <button id="saveAISettings" class="run">Simpan</button>
+        <button id="resetAISettings" class="secondary">Reset</button>
+        <button id="exportChat" class="secondary">Export chat</button>
+      </div>
+    </div>
+
     <div id="chatMessages" class="chat-messages"></div>
     <div class="chat-compose">
       <textarea id="prompt" rows="1" placeholder="Tulis pesan..."></textarea>
@@ -452,38 +591,88 @@ function bind(key){
     loadChat();
     renderChat();
 
+    let aiSettings=loadAISettings();
+    const settingsPanel=$("#aiSettingsPanel");
+    const systemInput=$("#aiSystemPrompt");
+    const temperatureInput=$("#aiTemperature");
+    const temperatureValue=$("#temperatureValue");
+
+    systemInput.value=aiSettings.system;
+    temperatureInput.value=String(aiSettings.temperature);
+    temperatureValue.textContent=String(aiSettings.temperature);
+
+    $("#aiSettingsButton").onclick=()=>{
+      settingsPanel.hidden=!settingsPanel.hidden;
+      $("#aiSettingsButton").classList.toggle("active",!settingsPanel.hidden);
+    };
+
+    temperatureInput.oninput=()=>{
+      temperatureValue.textContent=temperatureInput.value;
+    };
+
+    $("#saveAISettings").onclick=()=>{
+      aiSettings={
+        system:systemInput.value.trim() || DEFAULT_AI_SETTINGS.system,
+        temperature:Number(temperatureInput.value)
+      };
+      saveAISettings(aiSettings);
+      toast("Pengaturan AI disimpan");
+      settingsPanel.hidden=true;
+    };
+
+    $("#resetAISettings").onclick=()=>{
+      aiSettings={...DEFAULT_AI_SETTINGS};
+      systemInput.value=aiSettings.system;
+      temperatureInput.value=String(aiSettings.temperature);
+      temperatureValue.textContent=String(aiSettings.temperature);
+      saveAISettings(aiSettings);
+      toast("Pengaturan AI direset");
+    };
+
+    $("#exportChat").onclick=()=>{
+      const content=chatMessages
+        .filter(m=>m.text!=="__typing__")
+        .map(m=>`${m.role==="user"?"Kamu":"Kivo AI"} [${m.time||"-"}]
+${m.text}`)
+        .join("
+
+--------------------
+
+");
+      downloadTextFile("kivo-ai-chat.txt",content || "Belum ada percakapan.");
+    };
+
     $("#clearChat").onclick=()=>{
       chatMessages=[];
       saveChat();
       renderChat();
     };
 
-    const send=async()=>{
-      const input=$("#prompt");
-      const prompt=input.value.trim();
-      if(!prompt) return;
+    const requestAnswer=async()=>{
+      aiSettings=loadAISettings();
+      const history=chatMessages
+        .filter(m=>m.text!=="Mengetik..." && m.text!=="__typing__")
+        .slice(-12)
+        .map(m=>`${m.role==="user"?"Pengguna":"Asisten"}: ${m.text}`)
+        .join("
+");
 
-      chatMessages.push({role:"user",text:prompt,time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})});
-      input.value="";
-      input.style.height="auto";
-      renderChat();
+      return api("ai",{
+        prompt:`${history}
+Asisten:`,
+        system:aiSettings.system,
+        temperature:String(aiSettings.temperature)
+      });
+    };
 
+    window.regenerateAnswer=async(index)=>{
+      if(!Number.isInteger(index) || chatMessages[index]?.role!=="assistant") return;
+      chatMessages=chatMessages.slice(0,index);
       chatMessages.push({role:"assistant",text:"__typing__",time:""});
       renderChat();
 
       try{
-        const history=chatMessages
-          .filter(m=>m.text!=="Mengetik..." && m.text!=="__typing__")
-          .slice(-10)
-          .map(m=>`${m.role==="user"?"Pengguna":"Asisten"}: ${m.text}`)
-          .join("\n");
-
-        const data=await api("ai",{
-          prompt:`${history}\nAsisten:`,
-          system:"Kamu adalah asisten yang tegas kalo ada yang toxic kasih kata-kata yang menyinggung dan agak tengil dan jangan terlalu menggunakan emoji setiap membalas pesan, bahasa mu gaul menggunakan lu gua atau kalo orang memakai aku kamu, kamu harus ikut juga aku kamu, gaya mu agak mengejek tapi jangan terlalu berlebihan, dan kalo ada orang yang minta tutorial atau bertanya kamu balas singkat gak terlalu panjang seadanya aja.",
-          temperature:"0.7"
-        });
-
+        const data=await requestAnswer();
         chatMessages[chatMessages.length-1]={
           role:"assistant",
           text:String(extractAIText(data)),
@@ -497,6 +686,44 @@ function bind(key){
           text:`Maaf, terjadi error: ${e.message}`,
           time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
         };
+        saveChat();
+        renderChat();
+      }
+    };
+
+    const send=async()=>{
+      const input=$("#prompt");
+      const prompt=input.value.trim();
+      if(!prompt || chatMessages.some(m=>m.text==="__typing__")) return;
+
+      chatMessages.push({
+        role:"user",
+        text:prompt,
+        time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
+      });
+      input.value="";
+      input.style.height="auto";
+      renderChat();
+
+      chatMessages.push({role:"assistant",text:"__typing__",time:""});
+      renderChat();
+
+      try{
+        const data=await requestAnswer();
+        chatMessages[chatMessages.length-1]={
+          role:"assistant",
+          text:String(extractAIText(data)),
+          time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
+        };
+        saveChat();
+        renderChat();
+      }catch(e){
+        chatMessages[chatMessages.length-1]={
+          role:"assistant",
+          text:`Maaf, terjadi error: ${e.message}`,
+          time:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
+        };
+        saveChat();
         renderChat();
       }
     };
@@ -510,7 +737,7 @@ function bind(key){
     };
     promptBox.addEventListener("input",grow);
 
-    $("#prompt").addEventListener("keydown",e=>{
+    promptBox.addEventListener("keydown",e=>{
       if(e.key==="Enter" && !e.shiftKey){
         e.preventDefault();
         send();

@@ -75,3 +75,13 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Tombol utama, status website, judul bagian tools, dan deskripsi fitur diperbarui.
 - Footer dibuat lebih profesional dan tetap mencantumkan keii official.
 - Sambutan pembuka hanya muncul sekali dalam satu sesi browser agar tidak mengganggu.
+
+## Perubahan v8
+- Bug jawaban AI yang terpotong telah diperbaiki.
+- Bubble chat mengikuti panjang dan tinggi konten secara otomatis.
+- Jawaban AI mendukung tampilan bold, italic, daftar, inline code, dan code block.
+- Ditambahkan tombol salin pada setiap pesan dan tombol ulangi pada jawaban AI.
+- Ditambahkan menu pengaturan untuk system prompt dan temperature.
+- Pengaturan AI tersimpan di browser masing-masing pengguna.
+- Chat dapat diekspor menjadi file teks.
+- Identitas default AI diperbarui menjadi Kivo AI buatan keii official.
