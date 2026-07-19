@@ -173,6 +173,13 @@ function loadChat(){
   try{
     chatMessages=JSON.parse(localStorage.getItem("kivo_ai_chat")||"[]");
     if(!Array.isArray(chatMessages)) chatMessages=[];
+    chatMessages=chatMessages.filter(m=>
+      m &&
+      typeof m.text==="string" &&
+      m.text.trim() &&
+      m.text.trim()!=="Mengetik..." && m.text.trim()!=="__typing__"
+    );
+    saveChat();
   }catch{chatMessages=[]}
 }
 function renderChat(){
@@ -185,7 +192,7 @@ function renderChat(){
   box.innerHTML=chatMessages.map(m=>`
     <div class="chat-row ${m.role}">
       <div class="bubble">
-        <div class="bubble-text">${esc(m.text)}</div>
+        <div class="bubble-text">${m.text==="__typing__" ? '<span class="typing-dots"><i></i><i></i><i></i></span>' : esc(m.text)}</div>
         <div class="bubble-meta">
           <span>${esc(m.time || "")}</span>
           ${m.role==="user" ? '<span class="ticks">✓✓</span>' : ""}
@@ -461,12 +468,12 @@ function bind(key){
       input.style.height="auto";
       renderChat();
 
-      chatMessages.push({role:"assistant",text:"Mengetik...",time:""});
+      chatMessages.push({role:"assistant",text:"__typing__",time:""});
       renderChat();
 
       try{
         const history=chatMessages
-          .filter(m=>m.text!=="Mengetik...")
+          .filter(m=>m.text!=="Mengetik..." && m.text!=="__typing__")
           .slice(-10)
           .map(m=>`${m.role==="user"?"Pengguna":"Asisten"}: ${m.text}`)
           .join("\n");
@@ -615,6 +622,77 @@ function bind(key){
     };
   }
 }
+
+
+function initWelcome(){
+  const overlay=$("#welcomeOverlay");
+  const textEl=$("#welcomeText");
+  const closeBtn=$("#welcomeClose");
+  if(!overlay || !textEl || !closeBtn) return;
+
+  const message="Haloo, selamat datang di Kivo Tools! Semoga semua fitur di sini bermanfaat dan membantu kalian. Salam hangat dari keii official.";
+
+  const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
+  if(hasSeenWelcome){ overlay.remove(); return; }
+  let timer;
+  let index=0;
+
+  const closeWelcome=()=>{
+    clearInterval(timer);
+    sessionStorage.setItem("kivo_welcome_seen","1");
+    overlay.classList.add("welcome-hide");
+    setTimeout(()=>overlay.remove(),450);
+  };
+
+  overlay.classList.add("welcome-show");
+  overlay.setAttribute("aria-hidden","false");
+
+  timer=setInterval(()=>{
+    textEl.textContent=message.slice(0,index++);
+    if(index>message.length){
+      clearInterval(timer);
+      closeBtn.classList.add("welcome-button-show");
+    }
+  },28);
+
+  closeBtn.onclick=closeWelcome;
+  overlay.onclick=e=>{
+    if(e.target===overlay && index>message.length) closeWelcome();
+  };
+}
+
+document.addEventListener("DOMContentLoaded",initWelcome);
+
+
+function initRotatingHeroText(){
+  const target=$("#rotatingText");
+  if(!target) return;
+
+  const messages=[
+    "Cepat, ringan, dan mudah digunakan.",
+    "AI Chat, downloader, translate, dan fitur lainnya.",
+    "Tidak perlu berpindah-pindah website.",
+    "Dibuat supaya kebutuhan digital terasa lebih praktis.",
+    "Terima kasih sudah menggunakan Kivo Tools."
+  ];
+
+  let current=0;
+  setInterval(()=>{
+    target.classList.add("rotating-out");
+    setTimeout(()=>{
+      current=(current+1)%messages.length;
+      target.textContent=messages[current];
+      target.classList.remove("rotating-out");
+      target.classList.add("rotating-in");
+      setTimeout(()=>target.classList.remove("rotating-in"),450);
+    },300);
+  },4000);
+}
+
+document.addEventListener("DOMContentLoaded",initRotatingHeroText);
+
+
+
 
 $("#search").oninput=filterCards;
 $$(".nav-btn").forEach(b=>b.onclick=()=>{

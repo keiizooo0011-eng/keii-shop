@@ -534,3 +534,321 @@ body{overflow-x:hidden}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
   .reveal,.reveal-card{opacity:1;transform:none}
 }
+
+
+/* ===== Kivo Tools v6.1 ===== */
+
+/* Chat dibuat lebih rapat dan proporsional */
+.chat-messages{
+  gap:9px !important;
+  padding:13px 8px !important;
+}
+
+.chat-row{
+  align-items:flex-end;
+}
+
+.bubble{
+  width:auto !important;
+  min-width:0 !important;
+  max-width:74% !important;
+  min-height:0 !important;
+  height:auto !important;
+  padding:9px 11px 5px !important;
+  line-height:1.42 !important;
+  border-radius:15px !important;
+  flex:0 0 auto !important;
+}
+
+.chat-row.user .bubble{
+  border-bottom-right-radius:4px !important;
+}
+
+.chat-row.assistant .bubble{
+  border-bottom-left-radius:4px !important;
+}
+
+.bubble-text{
+  padding-right:0 !important;
+  min-height:0 !important;
+}
+
+.bubble-meta{
+  margin-top:2px !important;
+  min-height:10px !important;
+  font-size:9px !important;
+}
+
+.send-btn{
+  flex-basis:44px !important;
+  width:44px !important;
+  min-width:44px !important;
+  height:44px !important;
+  font-size:18px !important;
+}
+
+.chat-compose textarea{
+  min-height:44px !important;
+  padding:11px 14px !important;
+}
+
+.typing-dots{
+  display:inline-flex;
+  gap:4px;
+  align-items:center;
+  min-width:36px;
+  padding:3px 1px;
+}
+
+.typing-dots i{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#c4b5fd;
+  animation:typingBounce 1s infinite ease-in-out;
+}
+
+.typing-dots i:nth-child(2){animation-delay:.14s}
+.typing-dots i:nth-child(3){animation-delay:.28s}
+
+@keyframes typingBounce{
+  0%,60%,100%{transform:translateY(0);opacity:.45}
+  30%{transform:translateY(-5px);opacity:1}
+}
+
+/* Sambutan pembuka */
+.welcome-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:grid;
+  place-items:center;
+  padding:22px;
+  background:rgba(4,3,9,.82);
+  backdrop-filter:blur(13px);
+  opacity:0;
+  visibility:hidden;
+  transition:.4s ease;
+}
+
+.welcome-overlay.welcome-show{
+  opacity:1;
+  visibility:visible;
+}
+
+.welcome-overlay.welcome-hide{
+  opacity:0;
+  transform:scale(1.03);
+}
+
+.welcome-box{
+  width:min(520px,100%);
+  padding:30px 24px;
+  text-align:center;
+  border:1px solid rgba(139,92,246,.42);
+  border-radius:25px;
+  background:
+    radial-gradient(circle at top,rgba(139,92,246,.19),transparent 48%),
+    linear-gradient(145deg,rgba(25,19,38,.98),rgba(10,8,17,.98));
+  box-shadow:0 25px 80px rgba(78,35,145,.34);
+  animation:welcomeFloat .7s cubic-bezier(.2,.8,.2,1);
+}
+
+.welcome-logo{
+  display:grid;
+  place-items:center;
+  width:68px;
+  height:68px;
+  margin:0 auto 20px;
+  border-radius:21px;
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+  color:#fff;
+  font-family:"Space Grotesk",sans-serif;
+  font-size:34px;
+  font-weight:800;
+  box-shadow:0 0 32px rgba(139,92,246,.48);
+  animation:welcomeLogo 2.2s ease-in-out infinite;
+}
+
+.welcome-box p{
+  min-height:88px;
+  margin:0;
+  color:#eee9f7;
+  font-size:17px;
+  line-height:1.7;
+}
+
+.welcome-box p::after{
+  content:"";
+  display:inline-block;
+  width:2px;
+  height:1em;
+  margin-left:3px;
+  vertical-align:-2px;
+  background:#a78bfa;
+  animation:cursorBlink .75s steps(1) infinite;
+}
+
+#welcomeClose{
+  opacity:0;
+  transform:translateY(10px);
+  pointer-events:none;
+  margin-top:18px;
+  padding:12px 20px;
+  border:0;
+  border-radius:13px;
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  transition:.35s ease;
+}
+
+#welcomeClose.welcome-button-show{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+@keyframes welcomeFloat{
+  from{opacity:0;transform:translateY(25px) scale(.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@keyframes welcomeLogo{
+  0%,100%{transform:translateY(0) rotate(0)}
+  50%{transform:translateY(-6px) rotate(3deg)}
+}
+
+@keyframes cursorBlink{
+  50%{opacity:0}
+}
+
+@media(max-width:640px){
+  .bubble{
+    max-width:78% !important;
+  }
+
+  .welcome-box{
+    padding:26px 19px;
+  }
+
+  .welcome-box p{
+    font-size:15px;
+    min-height:104px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .welcome-box,.welcome-logo,.typing-dots i{
+    animation:none !important;
+  }
+}
+
+
+/* ===== Kivo Tools v7 — identitas & copy baru ===== */
+.hero{
+  position:relative;
+  overflow:hidden;
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  width:190px;
+  height:190px;
+  right:-70px;
+  bottom:-80px;
+  border-radius:50%;
+  border:1px solid rgba(167,139,250,.14);
+  box-shadow:
+    0 0 0 25px rgba(139,92,246,.035),
+    0 0 0 55px rgba(139,92,246,.02);
+  animation:heroOrbit 9s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.hero-description{
+  max-width:720px;
+}
+
+.hero-highlight{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:28px;
+  margin-top:18px;
+  color:#d9cff0;
+  font-size:14px;
+  font-weight:600;
+}
+
+.hero-highlight-dot{
+  flex:0 0 8px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#a78bfa;
+  box-shadow:0 0 15px rgba(167,139,250,.9);
+  animation:highlightPulse 1.8s ease-in-out infinite;
+}
+
+#rotatingText{
+  display:inline-block;
+  transition:opacity .3s ease,transform .3s ease,filter .3s ease;
+}
+
+#rotatingText.rotating-out{
+  opacity:0;
+  transform:translateY(-8px);
+  filter:blur(3px);
+}
+
+#rotatingText.rotating-in{
+  animation:rotatingTextIn .45s ease;
+}
+
+.section-subtitle{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.card p{
+  line-height:1.6;
+}
+
+.footer-creator strong{
+  text-transform:none;
+  letter-spacing:.01em;
+}
+
+@keyframes rotatingTextIn{
+  from{opacity:0;transform:translateY(9px);filter:blur(3px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+
+@keyframes highlightPulse{
+  0%,100%{transform:scale(.82);opacity:.6}
+  50%{transform:scale(1.15);opacity:1}
+}
+
+@keyframes heroOrbit{
+  0%,100%{transform:translate(0,0) rotate(0)}
+  50%{transform:translate(-14px,-10px) rotate(12deg)}
+}
+
+@media(max-width:640px){
+  .hero-highlight{
+    align-items:flex-start;
+    font-size:13px;
+    line-height:1.5;
+  }
+
+  .hero::after{
+    width:130px;
+    height:130px;
+    right:-58px;
+    bottom:-45px;
+  }
+}

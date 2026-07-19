@@ -60,3 +60,18 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Efek hover kartu dan tombol ditingkatkan.
 - Footer profesional dengan identitas pembuat Hetacase.
 - Menghormati pengaturan reduced motion pengguna.
+
+## Perubahan v6.1
+- Bubble AI dibuat lebih kecil dan mengikuti panjang isi pesan.
+- Indikator mengetik menjadi tiga titik bergerak.
+- Pesan kosong atau indikator mengetik yang tersangkut dibersihkan otomatis.
+- Nama pembuat diganti menjadi `keii official`.
+- Ditambahkan layar sambutan dengan efek mengetik saat website dibuka.
+
+## Perubahan v7
+- Seluruh tulisan utama dibuat lebih natural dan memiliki identitas Kivo Tools.
+- Hero memakai kalimat baru dari keii official.
+- Ditambahkan pesan singkat yang berganti otomatis setiap empat detik.
+- Tombol utama, status website, judul bagian tools, dan deskripsi fitur diperbarui.
+- Footer dibuat lebih profesional dan tetap mencantumkan keii official.
+- Sambutan pembuka hanya muncul sekali dalam satu sesi browser agar tidak mengganggu.
