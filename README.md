@@ -91,3 +91,18 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Memperbaiki syntax error JavaScript yang membuat hero dan seluruh kartu tools tidak tampil.
 - Menambahkan cache busting untuk style.css dan script.js agar browser langsung memakai versi terbaru.
 - Semua fitur v8 tetap dipertahankan.
+
+## Perubahan v8.2
+- Bubble pesan dipaksa mengikuti tinggi isi teks.
+- Ukuran teks chat diperkecil dan dibuat lebih proporsional.
+- Padding, jarak waktu, dan tombol aksi dipadatkan.
+- Bubble pengguna dibatasi agar tidak terlalu lebar atau tinggi.
+- Cache versi dinaikkan ke v8.2.
+
+## Perubahan v9
+- Menambahkan fitur Anime Quote dari endpoint Siputzx `/api/r/quotesanime`.
+- Menambahkan Kartu Profil Demo yang berjalan langsung di browser.
+- Foto Kartu Profil Demo dapat dipilih melalui link atau upload langsung dari perangkat.
+- Hasil kartu dapat diunduh sebagai PNG.
+- Semua kartu demo memiliki watermark permanen `SIMULASI — TIDAK BERLAKU`.
+- Menambahkan kategori Kreatif di navigasi.

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=8.2">
+  <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -24,6 +24,7 @@
       <button class="nav-btn" data-filter="download">Downloader</button>
       <button class="nav-btn" data-filter="info">Info</button>
       <button class="nav-btn" data-filter="local">Utilitas</button>
+      <button class="nav-btn" data-filter="creative">Kreatif</button>
     </nav>
   </header>
 
@@ -39,6 +40,15 @@
       <div class="hero-row">
         <a href="#tools" class="btn primary">Mulai Sekarang</a>
         <span class="status"><i></i> Online • Kivo AI aktif</span>
+
+        <article class="card reveal-card" data-cat="creative" data-key="anime quote quotes kutipan">
+          <span class="icon">AQ</span><h3>Anime Quote</h3><p>Tampilkan kutipan anime acak lengkap dengan karakter dan judul animenya.</p>
+          <button data-open="animequote">Buka</button>
+        </article>
+        <article class="card reveal-card" data-cat="creative" data-key="kartu identitas demo profil foto">
+          <span class="icon">KD</span><h3>Kartu Profil Demo</h3><p>Buat kartu profil bergaya modern dengan watermark SIMULASI.</p>
+          <button data-open="democard">Buka</button>
+        </article>
       </div>
     </section>
 
@@ -152,6 +162,6 @@
     </div>
   </div>
   <div id="toast" class="toast"></div>
-  <script src="script.js?v=8.2"></script>
+  <script src="script.js?v=9"></script>
 </body>
 </html>

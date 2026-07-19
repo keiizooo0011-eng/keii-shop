@@ -489,6 +489,156 @@ function showFriendlyError(error){
   $("#result").innerHTML=`<div class="error-card"><strong>Permintaan gagal</strong><p>${esc(error.message || error)}</p></div>`;
 }
 
+
+function readFileAsDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result));
+    reader.onerror=()=>reject(new Error("Foto gagal dibaca."));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.crossOrigin="anonymous";
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error("Foto tidak dapat dimuat. Coba gunakan foto lain atau upload langsung."));
+    img.src=src;
+  });
+}
+
+function roundedRect(ctx,x,y,w,h,r){
+  const radius=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+radius,y);
+  ctx.arcTo(x+w,y,x+w,y+h,radius);
+  ctx.arcTo(x+w,y+h,x,y+h,radius);
+  ctx.arcTo(x,y+h,x,y,radius);
+  ctx.arcTo(x,y,x+w,y,radius);
+  ctx.closePath();
+}
+
+async function renderDemoCard(){
+  const canvas=$("#demoCanvas");
+  const ctx=canvas.getContext("2d");
+  const w=1000,h=620;
+  canvas.width=w;
+  canvas.height=h;
+
+  const name=$("#demoName").value.trim() || "Nama Pengguna";
+  const username=$("#demoUsername").value.trim() || "@username";
+  const city=$("#demoCity").value.trim() || "Indonesia";
+  const bio=$("#demoBio").value.trim() || "Kartu profil digital buatan Kivo Tools.";
+  const theme=$("#demoTheme").value;
+
+  const themes={
+    purple:["#130d20","#7c3aed","#a78bfa"],
+    blue:["#071426","#2563eb","#60a5fa"],
+    emerald:["#071b18","#059669","#6ee7b7"]
+  };
+  const [bg,accent,light]=themes[theme] || themes.purple;
+
+  const gradient=ctx.createLinearGradient(0,0,w,h);
+  gradient.addColorStop(0,bg);
+  gradient.addColorStop(1,"#05050a");
+  ctx.fillStyle=gradient;
+  roundedRect(ctx,0,0,w,h,42);
+  ctx.fill();
+
+  ctx.globalAlpha=.24;
+  ctx.fillStyle=accent;
+  ctx.beginPath();ctx.arc(840,80,230,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(100,610,260,0,Math.PI*2);ctx.fill();
+  ctx.globalAlpha=1;
+
+  ctx.strokeStyle=light;
+  ctx.globalAlpha=.35;
+  ctx.lineWidth=3;
+  roundedRect(ctx,18,18,w-36,h-36,34);
+  ctx.stroke();
+  ctx.globalAlpha=1;
+
+  let photoSrc="";
+  const file=$("#demoPhotoFile").files?.[0];
+  if(file) photoSrc=await readFileAsDataURL(file);
+  else photoSrc=$("#demoPhotoUrl").value.trim();
+
+  ctx.save();
+  roundedRect(ctx,65,110,260,330,28);
+  ctx.clip();
+  if(photoSrc){
+    try{
+      const img=await loadImage(photoSrc);
+      const scale=Math.max(260/img.width,330/img.height);
+      const iw=img.width*scale, ih=img.height*scale;
+      ctx.drawImage(img,65+(260-iw)/2,110+(330-ih)/2,iw,ih);
+    }catch{
+      ctx.fillStyle="#201a2a";
+      ctx.fillRect(65,110,260,330);
+    }
+  }else{
+    ctx.fillStyle="#201a2a";
+    ctx.fillRect(65,110,260,330);
+    ctx.fillStyle=light;
+    ctx.font="700 90px Inter, sans-serif";
+    ctx.textAlign="center";
+    ctx.fillText(name.slice(0,1).toUpperCase(),195,305);
+  }
+  ctx.restore();
+
+  ctx.fillStyle="#ffffff";
+  ctx.textAlign="left";
+  ctx.font="800 52px Space Grotesk, sans-serif";
+  ctx.fillText(name,380,165);
+
+  ctx.fillStyle=light;
+  ctx.font="700 26px Inter, sans-serif";
+  ctx.fillText(username,382,210);
+
+  ctx.fillStyle="#c9c3d5";
+  ctx.font="600 22px Inter, sans-serif";
+  ctx.fillText(city,382,252);
+
+  ctx.fillStyle="#eeeaf5";
+  ctx.font="500 24px Inter, sans-serif";
+  const words=bio.split(/\s+/);
+  let line="",y=315;
+  for(const word of words){
+    const test=line ? line+" "+word : word;
+    if(ctx.measureText(test).width>520){
+      ctx.fillText(line,382,y);
+      line=word;
+      y+=36;
+      if(y>420) break;
+    }else line=test;
+  }
+  if(line && y<=420) ctx.fillText(line,382,y);
+
+  ctx.fillStyle=accent;
+  roundedRect(ctx,380,470,360,58,18);
+  ctx.fill();
+  ctx.fillStyle="#fff";
+  ctx.font="800 22px Inter, sans-serif";
+  ctx.textAlign="center";
+  ctx.fillText("KIVO TOOLS • KEII OFFICIAL",560,507);
+
+  ctx.save();
+  ctx.translate(700,360);
+  ctx.rotate(-Math.PI/9);
+  ctx.globalAlpha=.20;
+  ctx.fillStyle="#ffffff";
+  ctx.font="900 64px Space Grotesk, sans-serif";
+  ctx.textAlign="center";
+  ctx.fillText("SIMULASI",0,0);
+  ctx.font="800 28px Inter, sans-serif";
+  ctx.fillText("TIDAK BERLAKU",0,42);
+  ctx.restore();
+
+  $("#demoResult").classList.add("demo-ready");
+}
+
 const forms={
   ai:()=>open(`
     <div class="chat-head">
@@ -562,6 +712,31 @@ const forms={
     <div class="actions"><button class="run" id="go">Cek</button></div>
     <div class="note">Jangan gunakan hasil ini untuk mengambil keputusan kesehatan.</div>
     <div id="result" class="result">Hasil akan muncul di sini.</div>`),
+
+  animequote:()=>open(`<h2>Anime Quote</h2><p class="desc">Ambil kutipan anime secara acak.</p>
+    <div class="actions"><button class="run" id="go">Tampilkan Kutipan</button></div>
+    <div id="result" class="result readable">Kutipan akan muncul di sini.</div>`),
+
+  democard:()=>open(`<h2>Kartu Profil Demo</h2>
+    <p class="desc">Buat kartu profil digital dengan watermark SIMULASI — bukan dokumen resmi.</p>
+    <div class="demo-grid">
+      <div class="field"><label>Nama</label><input id="demoName" placeholder="Keii Official"></div>
+      <div class="field"><label>Username</label><input id="demoUsername" placeholder="@keiiofficial"></div>
+      <div class="field"><label>Kota / lokasi</label><input id="demoCity" placeholder="Indonesia"></div>
+      <div class="field"><label>Tema</label><select id="demoTheme"><option value="purple">Ungu</option><option value="blue">Biru</option><option value="emerald">Emerald</option></select></div>
+    </div>
+    <div class="field"><label>Bio singkat</label><textarea id="demoBio" rows="3" placeholder="Tulis bio singkat..."></textarea></div>
+
+    <div class="photo-source-tabs">
+      <button type="button" class="photo-tab active" data-photo-tab="url">Gunakan Link</button>
+      <button type="button" class="photo-tab" data-photo-tab="file">Upload Foto</button>
+    </div>
+    <div id="photoUrlPanel" class="field"><label>Link foto</label><input id="demoPhotoUrl" type="url" placeholder="https://..."></div>
+    <div id="photoFilePanel" class="field" hidden><label>Pilih foto</label><input id="demoPhotoFile" type="file" accept="image/*"></div>
+
+    <div class="actions"><button class="run" id="go">Buat Kartu</button><button class="secondary" id="downloadDemo" disabled>Download PNG</button></div>
+    <div class="note">Kartu selalu diberi watermark “SIMULASI — TIDAK BERLAKU”.</div>
+    <div id="demoResult" class="demo-result"><canvas id="demoCanvas"></canvas></div>`),
 
   password:()=>open(`<h2>Password Generator</h2><div class="field"><label>Panjang</label><input id="len" type="number" min="8" max="64" value="18"></div><div class="actions"><button class="run" id="go">Buat</button><button class="secondary" id="copy">Salin</button></div><div id="result" class="result">Password akan muncul di sini.</div>`),
   json:()=>open(`<h2>JSON Formatter</h2><div class="field"><label>JSON</label><textarea id="input"></textarea></div><div class="actions"><button class="run" id="format">Format</button><button class="secondary" id="minify">Minify</button></div><div id="result" class="result">Hasil akan muncul di sini.</div>`),
@@ -797,6 +972,64 @@ Asisten:`,
     }),"Potensi Kesehatan")}
     catch(e){showFriendlyError(e)}
   };
+
+
+  if(key==="animequote"){
+    $("#go").onclick=async()=>{
+      loading();
+      try{
+        const data=await api("animequote");
+        const payload=getPayload(data) || {};
+        const quote=findFirst(payload,["quote","quotes","text","content","message"]);
+        const character=findFirst(payload,["character","char","name"]);
+        const anime=findFirst(payload,["anime","title","series"]);
+        $("#result").innerHTML=`<div class="anime-quote-card">
+          <span class="quote-mark">“</span>
+          <p>${esc(quote || "Kutipan tidak ditemukan.")}</p>
+          <div>
+            ${character?`<strong>${esc(character)}</strong>`:""}
+            ${anime?`<span>${esc(anime)}</span>`:""}
+          </div>
+        </div>`;
+      }catch(e){showFriendlyError(e)}
+    };
+  }
+
+  if(key==="democard"){
+    const tabs=$$("[data-photo-tab]");
+    const urlPanel=$("#photoUrlPanel");
+    const filePanel=$("#photoFilePanel");
+    tabs.forEach(tab=>tab.onclick=()=>{
+      tabs.forEach(x=>x.classList.toggle("active",x===tab));
+      const useFile=tab.dataset.photoTab==="file";
+      urlPanel.hidden=useFile;
+      filePanel.hidden=!useFile;
+      if(useFile) $("#demoPhotoUrl").value="";
+      else $("#demoPhotoFile").value="";
+    });
+
+    $("#go").onclick=async()=>{
+      $("#go").disabled=true;
+      $("#go").textContent="Membuat...";
+      try{
+        await renderDemoCard();
+        $("#downloadDemo").disabled=false;
+      }catch(e){
+        toast(e.message || "Gagal membuat kartu");
+      }finally{
+        $("#go").disabled=false;
+        $("#go").textContent="Buat Kartu";
+      }
+    };
+
+    $("#downloadDemo").onclick=()=>{
+      const canvas=$("#demoCanvas");
+      const a=document.createElement("a");
+      a.download="kivo-kartu-profil-demo.png";
+      a.href=canvas.toDataURL("image/png");
+      a.click();
+    };
+  }
 
   if(key==="password"){
     let pass="";
