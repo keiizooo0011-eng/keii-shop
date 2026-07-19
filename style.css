@@ -1080,3 +1080,93 @@ body{overflow-x:hidden}
     font-size:15px;
   }
 }
+
+
+/* ===== Kivo Tools v8.2 — bubble chat compact fix ===== */
+.chat-row{
+  flex:0 0 auto !important;
+  min-height:0 !important;
+  height:auto !important;
+  align-items:flex-end !important;
+}
+
+.chat-row.user{
+  justify-content:flex-end !important;
+}
+
+.chat-row.assistant{
+  justify-content:flex-start !important;
+}
+
+.bubble{
+  display:inline-flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+  align-items:stretch !important;
+  flex:0 0 auto !important;
+  width:auto !important;
+  height:auto !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:78% !important;
+  padding:9px 11px 6px !important;
+}
+
+.chat-row.user .bubble{
+  max-width:72% !important;
+}
+
+.bubble-text{
+  flex:0 0 auto !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  font-size:14px !important;
+  line-height:1.45 !important;
+}
+
+.bubble-text p{
+  margin:0 0 7px !important;
+  padding:0 !important;
+  min-height:0 !important;
+}
+
+.bubble-text p:last-child{
+  margin-bottom:0 !important;
+}
+
+.bubble-footer{
+  flex:0 0 auto !important;
+  min-height:0 !important;
+  margin-top:4px !important;
+}
+
+.bubble-meta{
+  min-height:0 !important;
+  line-height:1 !important;
+}
+
+.message-actions{
+  line-height:1 !important;
+}
+
+.message-actions button{
+  padding:2px 4px !important;
+  font-size:9px !important;
+}
+
+@media(max-width:640px){
+  .bubble{
+    max-width:82% !important;
+  }
+
+  .chat-row.user .bubble{
+    max-width:76% !important;
+  }
+
+  .bubble-text{
+    font-size:14px !important;
+  }
+}
