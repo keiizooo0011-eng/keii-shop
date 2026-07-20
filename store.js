@@ -37,63 +37,63 @@
     const raw = String(content || "").replace(/\r\n?/g, "\n").trim();
     if (!raw) return [];
 
-    const fields = [];
-    const addField = (label, value, type = "data") => {
-      const cleanValue = String(value ?? "").trim();
-      if (!cleanValue) return;
-      fields.push({
-        label: String(label || `Data ${fields.length + 1}`).trim(),
-        value: cleanValue,
-        type
-      });
+    const values = [];
+    raw.split("\n").forEach(line => {
+      const cleanLine = line.trim();
+      if (!cleanLine || cleanLine === "---") return;
+      const parts = cleanLine.includes("|") ? cleanLine.split("|") : [cleanLine];
+      parts.map(part => part.trim()).filter(Boolean).forEach(part => values.push(part));
+    });
+
+    const normalizeValue = value => {
+      let text = String(value || "").trim();
+      // Memperbaiki hasil parser versi lama yang pernah membuang "https:".
+      if (/^\/\/(?:www\.)?[a-z0-9.-]+\//i.test(text)) text = `https:${text}`;
+      if (/^www\./i.test(text)) text = `https://${text}`;
+      return text;
     };
 
     const detectType = value => {
-      const text = String(value || "").trim();
-      // URL wajib diperiksa sebelum email karena URL generator dapat mengandung alamat email.
-      if (/^(?:https?:\/\/|www\.)\S+$/i.test(text)) return "url";
+      const text = normalizeValue(value);
+      if (/^(?:https?:\/\/|ftp:\/\/)[^\s]+$/i.test(text)) return "url";
       if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) return "email";
       if (/^\+?[0-9][0-9 .()-]{7,}$/.test(text)) return "phone";
       if (/^(?:[A-Z0-9]{3,}[-_]){1,}[A-Z0-9_-]+$/i.test(text)) return "license";
       return "data";
     };
 
-    const guessLabel = (value, position = 0) => {
+    const friendlyLabel = (value, index, explicitLabel = "") => {
+      if (explicitLabel) return explicitLabel;
       const type = detectType(value);
-      if (type === "url") return "Link / URL";
+      if (type === "url") {
+        if (/generator\.email/i.test(value)) return "Link Email Generator";
+        return "Link / URL";
+      }
       if (type === "email") return "Email";
       if (type === "phone") return "Nomor / Kontak";
       if (type === "license") return "Kode / Lisensi";
-      if (position === 1 && !/\s/.test(String(value)) && String(value).length <= 100) return "Password / Data 2";
-      return `Data ${position + 1}`;
+      if (index === 0) return "Data Login / Username";
+      if (index === 1) return "Password / Data 2";
+      return `Data ${index + 1}`;
     };
 
-    // Stok mendukung dua gaya sekaligus:
-    // 1) data1|data2|data3
-    // 2) data1 [Enter] data2 [Enter] data3
-    // Pemisah antar stok tetap dikelola admin dengan baris ---.
-    raw.split("\n").map(line => line.trim()).filter(Boolean).forEach(line => {
-      const values = line.includes("|")
-        ? line.split("|").map(part => part.trim()).filter(Boolean)
-        : [line];
+    return values.map((rawValue, index) => {
+      let value = normalizeValue(rawValue);
+      let explicitLabel = "";
 
-      values.forEach((value, position) => {
-        // Label bebas seperti "Email: ..." atau "Link: ..." tetap didukung,
-        // tetapi protokol http:// dan https:// tidak pernah dipotong.
-        const labeled = value.match(/^([^:]{2,40})\s*:\s*(.+)$/);
-        if (labeled && !/^(?:https?|ftp)$/i.test(labeled[1].trim())) {
-          const actualValue = labeled[2].trim();
-          addField(labeled[1], actualValue, detectType(actualValue));
-          return;
-        }
+      // Mendukung "Label: nilai", tetapi protokol URL tidak pernah dipisahkan.
+      const labeled = value.match(/^([^:\n]{2,40})\s*:\s*(.+)$/);
+      if (labeled && !/^(?:https?|ftp)$/i.test(labeled[1].trim())) {
+        explicitLabel = labeled[1].trim();
+        value = normalizeValue(labeled[2]);
+      }
 
-        let normalized = value;
-        if (/^www\./i.test(normalized)) normalized = `https://${normalized}`;
-        addField(guessLabel(normalized, position), normalized, detectType(normalized));
-      });
+      return {
+        label: friendlyLabel(value, index, explicitLabel),
+        value,
+        type: detectType(value)
+      };
     });
-
-    return fields;
   }
 
   async function copyText(text) {
