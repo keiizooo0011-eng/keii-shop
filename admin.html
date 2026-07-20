@@ -100,7 +100,7 @@
           <label>Produk</label><select id="stockProduct" required></select>
           <label>Nama varian/paket</label><input id="stockVariant" placeholder="Contoh: 1 Bulan" required>
           <label>Isi stok</label>
-          <textarea id="stockContents" rows="7" placeholder="Bebas pakai data apa pun, pisahkan kolom dengan |&#10;Contoh: email@app.com|https://generator.email/email@app.com&#10;---&#10;username|password|kode lisensi|link" required></textarea>
+          <textarea id="stockContents" rows="10" placeholder="Satu data per baris (tekan Enter). Pisahkan akun/stok dengan baris ---&#10;&#10;Contoh:&#10;email@app.com&#10;https://generator.email/email@app.com&#10;---&#10;username&#10;password&#10;LICENSE-ABC-123&#10;https://login.com&#10;&#10;Format lama pakai | tetap didukung." required></textarea>
           <small class="muted">Satu stok boleh berisi 1 atau banyak data. Pisahkan setiap data dengan <b>|</b>, dan pisahkan antarstok dengan baris <b>---</b>. Link, email, password, kode, catatan, atau teks lain semuanya didukung.</small>
           <small class="muted">Gunakan baris --- untuk memisahkan setiap stok.</small>
           <button type="submit">Tambahkan Stok</button>

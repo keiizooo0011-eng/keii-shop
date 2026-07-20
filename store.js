@@ -34,46 +34,63 @@
   };
 
   function parseDeliveryContent(content) {
-    const raw = String(content || "").trim();
+    const raw = String(content || "").replace(/\r\n?/g, "\n").trim();
     if (!raw) return [];
 
     const fields = [];
-    const addField = (label, value) => {
-      const cleanValue = String(value || "").trim();
+    const addField = (label, value, type = "data") => {
+      const cleanValue = String(value ?? "").trim();
       if (!cleanValue) return;
-      fields.push({ label: String(label || `Data ${fields.length + 1}`).trim(), value: cleanValue });
+      fields.push({
+        label: String(label || `Data ${fields.length + 1}`).trim(),
+        value: cleanValue,
+        type
+      });
+    };
+
+    const detectType = value => {
+      const text = String(value || "").trim();
+      // URL wajib diperiksa sebelum email karena URL generator dapat mengandung alamat email.
+      if (/^(?:https?:\/\/|www\.)\S+$/i.test(text)) return "url";
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) return "email";
+      if (/^\+?[0-9][0-9 .()-]{7,}$/.test(text)) return "phone";
+      if (/^(?:[A-Z0-9]{3,}[-_]){1,}[A-Z0-9_-]+$/i.test(text)) return "license";
+      return "data";
     };
 
     const guessLabel = (value, position = 0) => {
-      const text = String(value || "").trim();
-      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) return "Email";
-      if (/^https?:\/\//i.test(text)) return "Link / URL";
-      if (/^\+?[0-9][0-9 .()-]{7,}$/.test(text)) return "Nomor / Kontak";
-      if (/^(?:[A-Z0-9]{4,}[-_]){1,}[A-Z0-9_-]+$/i.test(text)) return "Kode / Lisensi";
-      // Isi kedua tidak selalu password. Hanya beri label Password bila bentuknya
-      // bukan URL, email, nomor, atau teks panjang. Sisanya tetap Data 1, Data 2, dst.
-      if (position === 1 && !/\s/.test(text) && text.length <= 80) return "Password / Data 2";
+      const type = detectType(value);
+      if (type === "url") return "Link / URL";
+      if (type === "email") return "Email";
+      if (type === "phone") return "Nomor / Kontak";
+      if (type === "license") return "Kode / Lisensi";
+      if (position === 1 && !/\s/.test(String(value)) && String(value).length <= 100) return "Password / Data 2";
       return `Data ${position + 1}`;
     };
 
-    raw.split(/\r?\n/).map(line => line.trim()).filter(Boolean).forEach(line => {
-      // Format stok fleksibel KivoPay: setiap bagian dipisahkan dengan tanda | dan boleh berisi data apa pun.
-      // Pipe diproses lebih dulu supaya "https://" tidak salah dianggap sebagai label.
-      if (line.includes("|")) {
-        const parts = line.split("|").map(part => part.trim()).filter(Boolean);
-        parts.forEach((part, index) => addField(guessLabel(part, index), part));
-        return;
-      }
+    // Stok mendukung dua gaya sekaligus:
+    // 1) data1|data2|data3
+    // 2) data1 [Enter] data2 [Enter] data3
+    // Pemisah antar stok tetap dikelola admin dengan baris ---.
+    raw.split("\n").map(line => line.trim()).filter(Boolean).forEach(line => {
+      const values = line.includes("|")
+        ? line.split("|").map(part => part.trim()).filter(Boolean)
+        : [line];
 
-      // Format berlabel, misalnya Email: ..., Password: ..., Link: ...
-      // Jangan memecah protokol URL seperti https://.
-      const match = line.match(/^([A-Za-zÀ-ÿ0-9 _.-]{2,30})\s*:\s*(?!\/\/)(.+)$/);
-      if (match) {
-        addField(match[1], match[2]);
-        return;
-      }
+      values.forEach((value, position) => {
+        // Label bebas seperti "Email: ..." atau "Link: ..." tetap didukung,
+        // tetapi protokol http:// dan https:// tidak pernah dipotong.
+        const labeled = value.match(/^([^:]{2,40})\s*:\s*(.+)$/);
+        if (labeled && !/^(?:https?|ftp)$/i.test(labeled[1].trim())) {
+          const actualValue = labeled[2].trim();
+          addField(labeled[1], actualValue, detectType(actualValue));
+          return;
+        }
 
-      addField(guessLabel(line), line);
+        let normalized = value;
+        if (/^www\./i.test(normalized)) normalized = `https://${normalized}`;
+        addField(guessLabel(normalized, position), normalized, detectType(normalized));
+      });
     });
 
     return fields;
@@ -126,7 +143,9 @@
             <div class="delivery-field">
               <div>
                 <span>${esc(field.label)}</span>
-                <strong>${esc(field.value)}</strong>
+                ${field.type === "url"
+                  ? `<a class="delivery-value delivery-link" href="${esc(field.value)}" target="_blank" rel="noopener noreferrer">${esc(field.value)}</a>`
+                  : `<strong class="delivery-value">${esc(field.value)}</strong>`}
               </div>
               <button type="button" data-copy-field="${index}">Salin</button>
             </div>`).join("") : `
