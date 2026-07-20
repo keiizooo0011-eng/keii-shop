@@ -502,40 +502,36 @@
   }
 
 
-  async function loadRatings() {
+  let communityCache = null;
+
+  async function fetchCommunityFeed(force = false) {
+    if (communityCache && !force) return communityCache;
+    const response = await fetch(`/api/community-feed?t=${Date.now()}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Komunitas gagal dimuat.");
+    communityCache = data;
+    return data;
+  }
+
+  async function loadRatings(force = false) {
     const list = document.querySelector("#ratingList");
     const summary = document.querySelector("#ratingSummary");
-    if (!list || !sb) return;
+    if (!list) return;
 
     try {
-      const { data, error } = await sb
-        .from("product_ratings")
-        .select("id,customer_name,rating,review,created_at,products(name)")
-        .eq("is_visible", true)
-        .order("created_at", { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-      const rows = data || [];
-      const avg = rows.length
-        ? rows.reduce((sum, item) => sum + Number(item.rating || 0), 0) / rows.length
-        : 0;
-
+      const feed = await fetchCommunityFeed(force);
+      const rows = feed.ratings || [];
+      const avg = rows.length ? rows.reduce((sum, item) => sum + Number(item.rating || 0), 0) / rows.length : 0;
       summary.innerHTML = rows.length ? `${stars(avg)} <b>${avg.toFixed(1)}</b> • ${rows.length} ulasan terbaru` : "Belum ada rating";
       list.innerHTML = rows.length ? rows.map(item => `
         <article class="rating-item">
           <div class="rating-avatar">${esc((item.customer_name || "U").slice(0,1).toUpperCase())}</div>
-          <div>
-            <div class="rating-item-head">
-              <strong>${esc(item.customer_name || "Pembeli")}</strong>
-              ${stars(item.rating)}
-            </div>
-            <span>${esc(item.products?.name || "Produk KivoPay")}</span>
-            <p>${esc(item.review || "Transaksi berhasil dan produk diterima.")}</p>
-          </div>
+          <div><div class="rating-item-head"><strong>${esc(item.customer_name || "Pembeli")}</strong>${stars(item.rating)}</div>
+          <span>${esc(item.products?.name || "Produk KivoPay")}</span>
+          <p>${esc(item.review || "Transaksi berhasil dan produk diterima.")}</p></div>
         </article>`).join("") : `<div class="community-empty">Belum ada rating. Jadilah pembeli pertama yang memberi ulasan.</div>`;
     } catch (error) {
-      list.innerHTML = `<div class="community-empty">Rating gagal dimuat.</div>`;
+      list.innerHTML = `<div class="community-empty"><strong>Rating belum dapat dimuat</strong><small>${esc(error.message)}</small><button type="button" onclick="location.reload()">Coba lagi</button></div>`;
     }
   }
 
@@ -552,23 +548,21 @@
       </article>`;
   }
 
-  async function loadChat() {
+  async function loadChat(force = false) {
     const root = document.querySelector("#chatMessages");
-    if (!root || !sb) return;
+    if (!root) return;
     try {
-      const { data, error } = await sb
-        .from("chat_messages")
-        .select("id,guest_id,nickname,message,created_at")
-        .eq("is_visible", true)
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      root.innerHTML = (data || []).length
-        ? [...data].reverse().map(chatItem).join("")
-        : `<div class="community-empty">Belum ada pesan. Mulai obrolan dengan sopan.</div>`;
+      const feed = await fetchCommunityFeed(force);
+      const rows = feed.messages || [];
+      root.innerHTML = rows.length ? rows.map(chatItem).join("") : `
+        <div class="chat-welcome-state">
+          <div class="chat-welcome-logo">K</div>
+          <h4>Mulai obrolan di Kivo Community</h4>
+          <p>Kirim pesan pertama, bagikan pengalaman, atau tanyakan sesuatu kepada pengguna lain.</p>
+        </div>`;
       root.scrollTop = root.scrollHeight;
-    } catch {
-      root.innerHTML = `<div class="community-empty">Chat gagal dimuat.</div>`;
+    } catch (error) {
+      root.innerHTML = `<div class="community-empty"><strong>Chat belum dapat dimuat</strong><small>${esc(error.message)}</small><button type="button" onclick="location.reload()">Coba lagi</button></div>`;
     }
   }
 
@@ -599,7 +593,8 @@
         if (!response.ok) throw new Error(data.error || "Pesan gagal dikirim.");
         localStorage.setItem("kivo_chat_nickname", name);
         input.value = "";
-        await loadChat();
+        communityCache = null;
+        await loadChat(true);
       } catch (error) {
         alert(error.message);
       } finally {

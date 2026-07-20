@@ -3,7 +3,7 @@
 // JANGAN pernah menaruh service_role/secret key di file ini.
 window.KIVOPAY_CONFIG = {
   supabaseUrl: "https://hfxdsyzdlfrekqrfleai.supabase.co",
-  supabaseAnonKey: "sb_publishable_fUkGlV9O9DVtpGznLQb3CA_Z9FNYYnU",
+  supabaseAnonKey: "sb_publishable_NLCCMCVB330LiKCfCVq7GQ_B9iyNSXk",
   storageBucket: "keiishop",
 
   // Isi nomor WhatsApp memakai format negara tanpa tanda +. Contoh: 6281234567890
