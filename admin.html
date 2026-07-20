@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=11">
+  <link rel="stylesheet" href="admin.css?v=13.3">
 </head>
 <body class="admin-body">
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -107,6 +107,25 @@
         <div id="stockMessage" class="admin-message"></div><div id="stockSummary" class="stock-summary"></div>
       </section>
 
+
+      <div class="admin-grid moderation-grid">
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <div><span class="eyebrow">REVIEW MODERATION</span><h2>Rating Produk</h2></div>
+            <button id="refreshRatings" class="ghost">Refresh</button>
+          </div>
+          <div id="adminRatingList" class="admin-moderation-list"></div>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <div><span class="eyebrow">CHAT MODERATION</span><h2>Global Chat</h2></div>
+            <button id="refreshChat" class="ghost">Refresh</button>
+          </div>
+          <div id="adminChatList" class="admin-moderation-list"></div>
+        </section>
+      </div>
+
       <section class="admin-panel orders-panel">
         <div class="admin-panel-head">
           <div><span class="eyebrow">ORDER MANAGER</span><h2>Pesanan Terbaru</h2></div>
@@ -119,6 +138,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=11"></script>
+  <script src="admin.js?v=13.3"></script>
 </body>
 </html>

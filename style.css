@@ -2127,3 +2127,345 @@ body{overflow-x:hidden}
     font-size:21px;
   }
 }
+
+
+/* KivoPay V13.2 — Payment polish */
+.payment-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:16px;
+}
+
+.payment-actions button{
+  min-height:43px;
+  border:1px solid rgba(139,92,246,.28);
+  border-radius:12px;
+  background:rgba(124,58,237,.16);
+  color:#ddd6fe;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.payment-actions button:disabled{
+  opacity:.65;
+  cursor:wait;
+}
+
+.payment-actions .payment-cancel{
+  border-color:rgba(239,68,68,.22);
+  background:rgba(239,68,68,.08);
+  color:#fca5a5;
+}
+
+@media(max-width:390px){
+  .payment-actions{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* =========================================================
+   KivoPay V13.3 — Rating, delivery receipt, global chat
+   ========================================================= */
+.product-rating-mini{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-height:19px;
+  margin-top:8px;
+}
+
+.stars{
+  color:#fbbf24;
+  letter-spacing:1px;
+  white-space:nowrap;
+}
+
+.product-rating-mini .stars{font-size:11px}
+.product-rating-mini span:last-child{color:var(--muted);font-size:9.5px}
+
+.delivery-receipt{
+  margin-top:18px;
+  padding:20px;
+  border:1px solid rgba(34,197,94,.28);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 90% 0,rgba(34,197,94,.12),transparent 34%),
+    rgba(10,18,14,.82);
+  text-align:left;
+}
+
+.delivery-success-icon{
+  display:grid;
+  place-items:center;
+  width:52px;
+  height:52px;
+  margin-bottom:13px;
+  border-radius:50%;
+  background:rgba(34,197,94,.15);
+  color:#86efac;
+  font-size:25px;
+  font-weight:900;
+}
+
+.delivery-receipt-head span,
+.delivery-rating-box>span{
+  color:#86efac;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.13em;
+}
+
+.delivery-receipt-head h3{margin:5px 0;font-size:22px}
+.delivery-receipt-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+
+.delivery-order-meta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:16px 0;
+}
+
+.delivery-order-meta>div{
+  padding:11px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  background:rgba(0,0,0,.18);
+}
+
+.delivery-order-meta span,
+.delivery-field span{
+  display:block;
+  margin-bottom:4px;
+  color:var(--muted);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.delivery-order-meta strong{font-size:11px;word-break:break-word}
+
+.delivery-fields{display:grid;gap:8px}
+
+.delivery-field{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:13px;
+  background:#0b0d0c;
+}
+
+.delivery-field strong{
+  display:block;
+  color:#fff;
+  font-size:13px;
+  line-height:1.45;
+  word-break:break-all;
+}
+
+.delivery-field button,
+.delivery-receipt-actions button,
+.delivery-rating-box>button{
+  flex:0 0 auto;
+  border:1px solid rgba(34,197,94,.22);
+  border-radius:10px;
+  background:rgba(34,197,94,.1);
+  color:#bbf7d0;
+  padding:8px 11px;
+  font-weight:800;
+}
+
+.delivery-receipt-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.delivery-rating-box{
+  margin-top:17px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.rating-input{display:flex;gap:4px;margin:9px 0}
+
+.rating-input button{
+  border:0;
+  background:transparent;
+  color:#81788e;
+  padding:0;
+  font-size:29px;
+}
+
+.rating-input button.active{color:#fbbf24}
+
+.delivery-rating-box textarea{
+  width:100%;
+  box-sizing:border-box;
+  min-height:76px;
+  margin-bottom:9px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;
+  background:#0c0a10;
+  color:#fff;
+  padding:11px;
+  resize:vertical;
+  font:inherit;
+}
+
+.delivery-rating-box small{
+  display:block;
+  min-height:18px;
+  margin-top:7px;
+  color:#a7f3d0;
+  font-size:11px;
+}
+
+.community-section{padding-top:34px}
+
+.community-grid{
+  display:grid;
+  grid-template-columns:.9fr 1.1fr;
+  gap:16px;
+}
+
+.community-panel{
+  min-width:0;
+  padding:20px;
+  border:1px solid rgba(139,92,246,.2);
+  border-radius:21px;
+  background:rgba(16,12,23,.9);
+}
+
+.community-panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.community-panel h3{margin:5px 0 0;font-size:22px}
+.rating-summary{color:var(--muted);font-size:11px;text-align:right}
+.rating-summary .stars{display:block;margin-bottom:3px}
+
+.rating-list{
+  display:grid;
+  gap:9px;
+  max-height:460px;
+  overflow:auto;
+}
+
+.rating-item,
+.chat-message{
+  display:grid;
+  grid-template-columns:40px 1fr;
+  gap:10px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;
+  background:rgba(255,255,255,.018);
+}
+
+.rating-avatar,
+.chat-avatar{
+  display:grid;
+  place-items:center;
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(124,58,237,.85),rgba(147,51,234,.55));
+  color:#fff;
+  font-weight:900;
+}
+
+.rating-item-head,
+.chat-message-head{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.rating-item-head strong,
+.chat-message-head strong{font-size:12px}
+.rating-item-head .stars{font-size:11px}
+.rating-item span{color:#a78bfa;font-size:10px}
+.rating-item p,
+.chat-message p{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
+
+.chat-live{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#86efac;
+  font-size:11px;
+}
+
+.chat-live i{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 0 5px rgba(34,197,94,.1);
+}
+
+.chat-messages{
+  display:grid;
+  gap:8px;
+  height:330px;
+  overflow-y:auto;
+  padding-right:3px;
+}
+
+.chat-message-head time{color:#81788e;font-size:9px}
+
+.chat-form{
+  display:grid;
+  gap:8px;
+  margin-top:12px;
+}
+
+.chat-form input{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;
+  background:#100c18;
+  color:#fff;
+  padding:11px;
+}
+
+.chat-compose{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+}
+
+.chat-compose button{
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+  color:#fff;
+  padding:0 16px;
+  font-weight:800;
+}
+
+.chat-form small{color:#81788e;font-size:9.5px;line-height:1.45}
+.community-empty{padding:25px;text-align:center;color:var(--muted);font-size:12px}
+
+@media(max-width:800px){
+  .community-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:520px){
+  .delivery-order-meta{grid-template-columns:1fr}
+  .delivery-receipt-actions{grid-template-columns:1fr}
+  .delivery-field{align-items:flex-start;flex-direction:column}
+  .delivery-field button{width:100%}
+  .community-panel{padding:15px}
+}

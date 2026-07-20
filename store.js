@@ -19,12 +19,175 @@
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
   }[c]));
 
-  const demoProducts = [
+  const guestId = (() => {
+    let id = localStorage.getItem("kivo_guest_id");
+    if (!id) {
+      id = `guest-${crypto.randomUUID()}`;
+      localStorage.setItem("kivo_guest_id", id);
+    }
+    return id;
+  })();
+
+  const stars = value => {
+    const rating = Math.max(0, Math.min(5, Number(value || 0)));
+    return `<span class="stars" aria-label="${rating} dari 5">${"★".repeat(Math.round(rating))}${"☆".repeat(5 - Math.round(rating))}</span>`;
+  };
+
+  function parseDeliveryContent(content) {
+    const raw = String(content || "").trim();
+    if (!raw) return [];
+
+    const lines = raw.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+    return lines.map((line, index) => {
+      const separator = line.includes(":") ? ":" : (line.includes("|") ? "|" : "");
+      if (separator) {
+        const parts = line.split(separator);
+        const label = parts.shift().trim();
+        const value = parts.join(separator).trim();
+        if (label && value) return { label, value };
+      }
+      return { label: `Data ${index + 1}`, value: line };
+    });
+  }
+
+  function deliveryMarkup(order) {
+    const fields = parseDeliveryContent(order.delivery_content);
+    return `
+      <section class="delivery-receipt">
+        <div class="delivery-success-icon">✓</div>
+        <div class="delivery-receipt-head">
+          <span>PESANAN BERHASIL</span>
+          <h3>Data produk sudah siap</h3>
+          <p>Simpan data ini di tempat aman dan jangan membagikannya kepada siapa pun.</p>
+        </div>
+
+        <div class="delivery-order-meta">
+          <div><span>Invoice</span><strong>${esc(order.invoice)}</strong></div>
+          <div><span>Produk</span><strong>${esc(order.product_name)}</strong></div>
+          <div><span>Paket</span><strong>${esc(order.variant_name || "Paket utama")}</strong></div>
+        </div>
+
+        <div class="delivery-fields">
+          ${fields.length ? fields.map((field, index) => `
+            <div class="delivery-field">
+              <div>
+                <span>${esc(field.label)}</span>
+                <strong>${esc(field.value)}</strong>
+              </div>
+              <button type="button" data-copy-field="${index}">Salin</button>
+            </div>`).join("") : `
+            <div class="delivery-field">
+              <div><span>Informasi</span><strong>Pesanan berhasil diproses.</strong></div>
+            </div>`}
+        </div>
+
+        <div class="delivery-receipt-actions">
+          <button type="button" data-copy-all>Salin Semua</button>
+          <button type="button" data-save-delivery>Simpan TXT</button>
+        </div>
+
+        <div class="delivery-rating-box">
+          <span>Bagaimana pengalamanmu?</span>
+          <div class="rating-input" data-rating-input>
+            ${[1,2,3,4,5].map(n => `<button type="button" data-rate="${n}" aria-label="${n} bintang">☆</button>`).join("")}
+          </div>
+          <textarea data-rating-review maxlength="500" placeholder="Tulis ulasan singkat (opsional)"></textarea>
+          <button type="button" data-submit-rating>Kirim Rating</button>
+          <small data-rating-message></small>
+        </div>
+      </section>`;
+  }
+
+  function bindDeliveryActions(root, order, contact) {
+    const fields = parseDeliveryContent(order.delivery_content);
+
+    root.querySelectorAll("[data-copy-field]").forEach(button => {
+      button.onclick = async () => {
+        const field = fields[Number(button.dataset.copyField)];
+        await navigator.clipboard.writeText(field?.value || "");
+        button.textContent = "Tersalin";
+      };
+    });
+
+    root.querySelector("[data-copy-all]")?.addEventListener("click", async event => {
+      await navigator.clipboard.writeText(String(order.delivery_content || ""));
+      event.currentTarget.textContent = "Berhasil disalin";
+    });
+
+    root.querySelector("[data-save-delivery]")?.addEventListener("click", event => {
+      const text = [
+        "KIVOPAY — DATA PESANAN",
+        `Invoice: ${order.invoice}`,
+        `Produk: ${order.product_name}`,
+        `Paket: ${order.variant_name || "Paket utama"}`,
+        "",
+        String(order.delivery_content || "")
+      ].join("\n");
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `KivoPay-${order.invoice}.txt`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      event.currentTarget.textContent = "TXT tersimpan";
+    });
+
+    let selectedRating = 0;
+    const ratingButtons = [...root.querySelectorAll("[data-rate]")];
+    ratingButtons.forEach(button => {
+      button.onclick = () => {
+        selectedRating = Number(button.dataset.rate);
+        ratingButtons.forEach(item => {
+          item.textContent = Number(item.dataset.rate) <= selectedRating ? "★" : "☆";
+          item.classList.toggle("active", Number(item.dataset.rate) <= selectedRating);
+        });
+      };
+    });
+
+    root.querySelector("[data-submit-rating]")?.addEventListener("click", async event => {
+      const message = root.querySelector("[data-rating-message]");
+      if (!selectedRating) {
+        message.textContent = "Pilih jumlah bintang terlebih dahulu.";
+        return;
+      }
+      if (!contact) {
+        message.textContent = "Rating dapat dikirim langsung setelah checkout selesai.";
+        return;
+      }
+
+      event.currentTarget.disabled = true;
+      message.textContent = "Menyimpan rating...";
+      try {
+        const response = await fetch("/api/submit-rating", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            invoice: order.invoice,
+            contact,
+            rating: selectedRating,
+            review: root.querySelector("[data-rating-review]")?.value || ""
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Rating gagal disimpan.");
+        message.textContent = "Terima kasih! Rating kamu sudah tersimpan.";
+        event.currentTarget.textContent = "Rating Terkirim";
+        loadRatings();
+      } catch (error) {
+        message.textContent = error.message;
+        event.currentTarget.disabled = false;
+      }
+    });
+  }
+
+
+  const fallbackProducts = [
     {
       id: "demo-apk",
       name: "Contoh APK Premium",
       category: "apk-premium",
-      description: "Produk contoh. Tambahkan produk asli melalui panel admin.",
+      description: "Produk digital premium tersedia melalui KivoPay.",
       price: 15000,
       image_url: "https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg",
       stock: 10,
@@ -35,7 +198,7 @@
       id: "demo-bot",
       name: "Contoh Sewa Bot",
       category: "sewa-bot",
-      description: "Paket sewa bot contoh untuk tampilan awal KivoPay.",
+      description: "Paket sewa bot dengan proses cepat melalui KivoPay.",
       price: 25000,
       image_url: "https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg",
       stock: 5,
@@ -45,14 +208,34 @@
   ];
 
   async function loadProducts() {
-    if (!sb) return demoProducts;
+    if (!sb) return fallbackProducts;
     const { data, error } = await sb
       .from("products")
       .select("*")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return data || [];
+
+    const products = data || [];
+    const { data: ratings } = await sb
+      .from("product_ratings")
+      .select("product_id,rating")
+      .eq("is_visible", true);
+
+    const map = {};
+    for (const item of ratings || []) {
+      if (!map[item.product_id]) map[item.product_id] = { total: 0, count: 0 };
+      map[item.product_id].total += Number(item.rating || 0);
+      map[item.product_id].count += 1;
+    }
+
+    return products.map(product => ({
+      ...product,
+      rating_count: map[product.id]?.count || 0,
+      rating_average: map[product.id]?.count
+        ? map[product.id].total / map[product.id].count
+        : 0
+    }));
   }
 
   function productCard(p) {
@@ -66,6 +249,10 @@
         <div class="store-card-body">
           <h3>${esc(p.name)}</h3>
           <p>${esc(p.description || "Produk digital KivoPay.")}</p>
+          <div class="product-rating-mini">
+            ${stars(p.rating_average || 0)}
+            <span>${Number(p.rating_count || 0) ? `${Number(p.rating_average || 0).toFixed(1)} (${Number(p.rating_count)})` : "Belum ada rating"}</span>
+          </div>
           <div class="store-meta">
             <strong>${rupiah(p.price)}</strong>
             <span>Stok ${Number(p.stock || 0)}</span>
@@ -117,8 +304,7 @@
       <input id="checkoutName" placeholder="Nama kamu">
       <label>Nomor WhatsApp / Telegram</label>
       <input id="checkoutContact" placeholder="Contoh: 62812xxxx">
-      <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>
-      <p class="checkout-note">Pembayaran QRIS Sanpay akan diaktifkan pada tahap gateway. Versi ini membuat order pending untuk menguji Store dan Admin.</p>`;
+      <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>`;
 
     modal.classList.add("open");
     body.querySelector(".shop-close").onclick = () => modal.classList.remove("open");
@@ -126,6 +312,7 @@
     body.querySelector("#checkoutSubmit").onclick = async () => {
       const name = body.querySelector("#checkoutName").value.trim();
       const contact = body.querySelector("#checkoutContact").value.trim();
+      const checkoutContact = contact;
       const variantIndex = Number(body.querySelector("#checkoutVariant").value);
       if (!name || !contact) return alert("Nama dan kontak wajib diisi.");
 
@@ -168,6 +355,10 @@
           <div class="invoice-copy"><span>${esc(order.invoice)}</span><button id="copyInvoice">Salin</button></div>
           <div id="paymentStatus" class="payment-status pending">Menunggu pembayaran...</div>
           <small>Berlaku sampai ${expiry.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})}</small>
+          <div class="payment-actions">
+            <button id="downloadQris" type="button">Download QRIS</button>
+            <button id="cancelPayment" type="button" class="payment-cancel">Batal</button>
+          </div>
         </div>`;
       body.querySelector(".shop-close").onclick = () => modal.classList.remove("open");
       body.querySelector("#copyInvoice").onclick = async () => {
@@ -176,9 +367,63 @@
       };
 
       const box = body.querySelector("#qrisBox");
-      if (data.qr_image) box.innerHTML = `<img src="${esc(data.qr_image)}" alt="QRIS pembayaran">`;
-      else if (data.qr_content && window.QRCode) new QRCode(box,{text:data.qr_content,width:230,height:230});
-      else box.innerHTML = "<p>QRIS tidak dapat ditampilkan. Hubungi admin.</p>";
+      if (data.qr_image) {
+        box.innerHTML = `<img src="${esc(data.qr_image)}" crossorigin="anonymous" alt="QRIS pembayaran">`;
+      } else if (data.qr_content && window.QRCode) {
+        new QRCode(box,{text:data.qr_content,width:230,height:230});
+      } else {
+        box.innerHTML = "<p>QRIS tidak dapat ditampilkan. Silakan hubungi admin.</p>";
+      }
+
+      body.querySelector("#cancelPayment").onclick = () => {
+        stopped = true;
+        modal.classList.remove("open");
+      };
+
+      body.querySelector("#downloadQris").onclick = async () => {
+        const button = body.querySelector("#downloadQris");
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = "Menyiapkan...";
+
+        try {
+          const image = box.querySelector("img");
+          const canvas = box.querySelector("canvas");
+          let href = "";
+
+          if (canvas) {
+            href = canvas.toDataURL("image/png");
+          } else if (image) {
+            try {
+              const response = await fetch(image.src, {cache:"no-store"});
+              if (!response.ok) throw new Error("Gagal mengambil gambar QRIS.");
+              const blob = await response.blob();
+              href = URL.createObjectURL(blob);
+            } catch {
+              href = image.src;
+            }
+          }
+
+          if (!href) throw new Error("Gambar QRIS belum tersedia.");
+
+          const link = document.createElement("a");
+          link.href = href;
+          link.download = `QRIS-${order.invoice}.png`;
+          link.target = "_blank";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          if (href.startsWith("blob:")) {
+            setTimeout(() => URL.revokeObjectURL(href), 2000);
+          }
+        } catch (error) {
+          alert(error.message || "QRIS gagal di-download.");
+        } finally {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      };
 
       let stopped = false;
       const check = async () => {
@@ -195,16 +440,8 @@
           if (current.status === "completed") {
             stopped = true;
             status.textContent = "Pembayaran berhasil • Produk terkirim";
-            body.querySelector(".payment-view").insertAdjacentHTML("beforeend",`
-              <div class="delivery-box">
-                <span>PRODUK / AKSES KAMU</span>
-                <pre>${esc(current.delivery_content || "Pesanan berhasil diproses.")}</pre>
-                <button id="copyDelivery">Salin Produk</button>
-              </div>`);
-            body.querySelector("#copyDelivery").onclick = async () => {
-              await navigator.clipboard.writeText(current.delivery_content || "");
-              body.querySelector("#copyDelivery").textContent = "Berhasil disalin";
-            };
+            body.querySelector(".payment-view").insertAdjacentHTML("beforeend", deliveryMarkup(current));
+            bindDeliveryActions(body.querySelector(".delivery-receipt"), current, checkoutContact);
             renderStore();
             return;
           }
@@ -253,15 +490,145 @@
           <span>${esc(order.product_name)} • ${esc(order.variant_name || "")}</span>
           <span>${rupiah(order.amount)}</span>
           <b class="status-${esc(order.status)}">${esc(order.status).toUpperCase()}</b>
-        </div>` : "Pesanan tidak ditemukan.";
+        </div>
+        ${order.status === "completed" ? deliveryMarkup(order) : ""}` : "Pesanan tidak ditemukan.";
+
+      if (order?.status === "completed") {
+        bindDeliveryActions(result.querySelector(".delivery-receipt"), order, "");
+      }
     } catch(e) {
       result.textContent = "Gagal mencari: " + e.message;
     }
   }
 
+
+  async function loadRatings() {
+    const list = document.querySelector("#ratingList");
+    const summary = document.querySelector("#ratingSummary");
+    if (!list || !sb) return;
+
+    try {
+      const { data, error } = await sb
+        .from("product_ratings")
+        .select("id,customer_name,rating,review,created_at,products(name)")
+        .eq("is_visible", true)
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      const rows = data || [];
+      const avg = rows.length
+        ? rows.reduce((sum, item) => sum + Number(item.rating || 0), 0) / rows.length
+        : 0;
+
+      summary.innerHTML = rows.length ? `${stars(avg)} <b>${avg.toFixed(1)}</b> • ${rows.length} ulasan terbaru` : "Belum ada rating";
+      list.innerHTML = rows.length ? rows.map(item => `
+        <article class="rating-item">
+          <div class="rating-avatar">${esc((item.customer_name || "U").slice(0,1).toUpperCase())}</div>
+          <div>
+            <div class="rating-item-head">
+              <strong>${esc(item.customer_name || "Pembeli")}</strong>
+              ${stars(item.rating)}
+            </div>
+            <span>${esc(item.products?.name || "Produk KivoPay")}</span>
+            <p>${esc(item.review || "Transaksi berhasil dan produk diterima.")}</p>
+          </div>
+        </article>`).join("") : `<div class="community-empty">Belum ada rating. Jadilah pembeli pertama yang memberi ulasan.</div>`;
+    } catch (error) {
+      list.innerHTML = `<div class="community-empty">Rating gagal dimuat.</div>`;
+    }
+  }
+
+  function chatItem(item) {
+    const time = new Date(item.created_at).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"});
+    return `
+      <article class="chat-message">
+        <div class="chat-avatar">${esc((item.nickname || "U").slice(0,1).toUpperCase())}</div>
+        <div>
+          <div class="chat-message-head"><strong>${esc(item.nickname)}</strong><time>${time}</time></div>
+          <p>${esc(item.message)}</p>
+        </div>
+      </article>`;
+  }
+
+  async function loadChat() {
+    const root = document.querySelector("#chatMessages");
+    if (!root || !sb) return;
+    try {
+      const { data, error } = await sb
+        .from("chat_messages")
+        .select("id,nickname,message,created_at")
+        .eq("is_visible", true)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      root.innerHTML = (data || []).length
+        ? [...data].reverse().map(chatItem).join("")
+        : `<div class="community-empty">Belum ada pesan. Mulai obrolan dengan sopan.</div>`;
+      root.scrollTop = root.scrollHeight;
+    } catch {
+      root.innerHTML = `<div class="community-empty">Chat gagal dimuat.</div>`;
+    }
+  }
+
+  function setupChat() {
+    const form = document.querySelector("#chatForm");
+    const nickname = document.querySelector("#chatNickname");
+    const input = document.querySelector("#chatInput");
+    if (!form || !sb) return;
+
+    nickname.value = localStorage.getItem("kivo_chat_nickname") || "";
+    form.onsubmit = async event => {
+      event.preventDefault();
+      const name = nickname.value.trim();
+      const message = input.value.trim();
+      if (!name || !message) return;
+
+      const button = form.querySelector("button");
+      button.disabled = true;
+      button.textContent = "Mengirim...";
+
+      try {
+        const response = await fetch("/api/chat-message", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({guest_id: guestId, nickname:name, message})
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Pesan gagal dikirim.");
+        localStorage.setItem("kivo_chat_nickname", name);
+        input.value = "";
+        await loadChat();
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        button.disabled = false;
+        button.textContent = "Kirim";
+      }
+    };
+
+    sb.channel("kivopay-global-chat")
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "chat_messages"
+      }, payload => {
+        if (!payload.new?.is_visible) return;
+        const root = document.querySelector("#chatMessages");
+        if (!root) return;
+        if (root.querySelector(".community-empty")) root.innerHTML = "";
+        root.insertAdjacentHTML("beforeend", chatItem(payload.new));
+        root.scrollTop = root.scrollHeight;
+      })
+      .subscribe();
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     renderStore();
     setupCategoryFilters();
+    loadRatings();
+    loadChat();
+    setupChat();
     document.querySelector("#orderLookupBtn")?.addEventListener("click", checkOrder);
     document.querySelector("#shopModal")?.addEventListener("click", e => {
       if (e.target.id === "shopModal") e.currentTarget.classList.remove("open");

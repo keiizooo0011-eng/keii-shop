@@ -53,7 +53,7 @@
       }
       $("#adminLogin").hidden = true;
       $("#adminDashboard").hidden = false;
-      await Promise.all([loadProducts(), loadOrders()]);
+      await Promise.all([loadProducts(), loadOrders(), loadAdminRatings(), loadAdminChat()]);
     } catch(e) {
       msg($("#loginMessage"), e.message, "error");
     }
@@ -179,10 +179,25 @@
   }
 
   async function deleteProduct(id) {
-    if (!confirm("Hapus produk ini?")) return;
-    const { error } = await sb.from("products").delete().eq("id",id);
-    if (error) return alert(error.message);
-    await loadProducts();
+    const product = productsCache.find(item => String(item.id) === String(id));
+    const productName = product?.name || "produk ini";
+
+    if (!confirm(`Hapus "${productName}"? Produk dan seluruh stok terkait akan dihapus permanen.`)) return;
+
+    try {
+      const { error: stockError } = await sb.from("stock_items").delete().eq("product_id", id);
+      if (stockError && !String(stockError.message || "").includes("does not exist")) {
+        throw stockError;
+      }
+
+      const { error } = await sb.from("products").delete().eq("id", id);
+      if (error) throw error;
+
+      msg($("#productMessage"), `"${productName}" berhasil dihapus.`, "success");
+      await loadProducts();
+    } catch (error) {
+      alert("Produk gagal dihapus: " + error.message);
+    }
   }
 
   async function loadOrders() {
@@ -245,6 +260,74 @@
       return `<div class="stock-row"><strong>${esc(product?.name||"Produk")}</strong><span>${esc(g.variant)}</span><b>${g.available} tersedia</b><small>${g.sold} terjual</small></div>`;
     }).join(""):`<p class="muted">Belum ada stok auto-delivery.</p>`;
   }
+
+
+  async function loadAdminRatings(){
+    const root=$("#adminRatingList");
+    if(!root)return;
+    const {data,error}=await sb.from("product_ratings")
+      .select("id,customer_name,rating,review,is_visible,created_at,products(name)")
+      .order("created_at",{ascending:false}).limit(50);
+    if(error){root.innerHTML=`<p class="muted">${esc(error.message)}</p>`;return;}
+    root.innerHTML=(data||[]).length?(data||[]).map(item=>`
+      <article class="moderation-item">
+        <div>
+          <strong>${esc(item.customer_name)} • ${"★".repeat(item.rating)}</strong>
+          <span>${esc(item.products?.name||"Produk")}</span>
+          <p>${esc(item.review||"Tanpa ulasan")}</p>
+        </div>
+        <div class="item-actions">
+          <button data-toggle-rating="${item.id}" data-visible="${item.is_visible}">${item.is_visible?"Sembunyikan":"Tampilkan"}</button>
+          <button data-delete-rating="${item.id}" class="danger">Hapus</button>
+        </div>
+      </article>`).join(""):`<p class="muted">Belum ada rating.</p>`;
+
+    document.querySelectorAll("[data-toggle-rating]").forEach(btn=>btn.onclick=async()=>{
+      const visible=btn.dataset.visible==="true";
+      const {error}=await sb.from("product_ratings").update({is_visible:!visible}).eq("id",btn.dataset.toggleRating);
+      if(error)alert(error.message);else loadAdminRatings();
+    });
+    document.querySelectorAll("[data-delete-rating]").forEach(btn=>btn.onclick=async()=>{
+      if(!confirm("Hapus rating ini?"))return;
+      const {error}=await sb.from("product_ratings").delete().eq("id",btn.dataset.deleteRating);
+      if(error)alert(error.message);else loadAdminRatings();
+    });
+  }
+
+  async function loadAdminChat(){
+    const root=$("#adminChatList");
+    if(!root)return;
+    const {data,error}=await sb.from("chat_messages")
+      .select("id,nickname,message,is_visible,created_at")
+      .order("created_at",{ascending:false}).limit(80);
+    if(error){root.innerHTML=`<p class="muted">${esc(error.message)}</p>`;return;}
+    root.innerHTML=(data||[]).length?(data||[]).map(item=>`
+      <article class="moderation-item">
+        <div>
+          <strong>${esc(item.nickname)}</strong>
+          <span>${new Date(item.created_at).toLocaleString("id-ID")}</span>
+          <p>${esc(item.message)}</p>
+        </div>
+        <div class="item-actions">
+          <button data-toggle-chat="${item.id}" data-visible="${item.is_visible}">${item.is_visible?"Sembunyikan":"Tampilkan"}</button>
+          <button data-delete-chat="${item.id}" class="danger">Hapus</button>
+        </div>
+      </article>`).join(""):`<p class="muted">Belum ada chat.</p>`;
+
+    document.querySelectorAll("[data-toggle-chat]").forEach(btn=>btn.onclick=async()=>{
+      const visible=btn.dataset.visible==="true";
+      const {error}=await sb.from("chat_messages").update({is_visible:!visible}).eq("id",btn.dataset.toggleChat);
+      if(error)alert(error.message);else loadAdminChat();
+    });
+    document.querySelectorAll("[data-delete-chat]").forEach(btn=>btn.onclick=async()=>{
+      if(!confirm("Hapus pesan ini?"))return;
+      const {error}=await sb.from("chat_messages").delete().eq("id",btn.dataset.deleteChat);
+      if(error)alert(error.message);else loadAdminChat();
+    });
+  }
+
+  $("#refreshRatings")?.addEventListener("click",loadAdminRatings);
+  $("#refreshChat")?.addEventListener("click",loadAdminChat);
 
   $("#refreshProducts").onclick = loadProducts;
   $("#refreshOrders").onclick = loadOrders;

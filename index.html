@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=13.1">
+  <link rel="stylesheet" href="style.css?v=13.3">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -27,6 +27,7 @@
       <a href="#store">Store</a>
       <a href="#tools">Tools</a>
       <a href="#orders">Pesanan</a>
+      <a href="#community">Komunitas</a>
     </nav>
   </header>
 
@@ -76,6 +77,55 @@
       <div id="orderLookupResult" class="order-lookup-result"></div>
     </section>
 
+
+    <section id="community" class="section community-section reveal">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">KIVOPAY COMMUNITY</span>
+          <h2>Rating, testimoni, dan global chat</h2>
+          <p class="section-subtitle">Lihat pengalaman pembeli dan ngobrol dengan pengguna KivoPay lainnya.</p>
+        </div>
+      </div>
+
+      <div class="community-grid">
+        <article class="community-panel">
+          <div class="community-panel-head">
+            <div>
+              <span class="eyebrow">PRODUCT REVIEWS</span>
+              <h3>Rating terbaru</h3>
+            </div>
+            <span id="ratingSummary" class="rating-summary">Belum ada rating</span>
+          </div>
+          <div id="ratingList" class="rating-list">
+            <div class="community-empty">Memuat rating...</div>
+          </div>
+        </article>
+
+        <article class="community-panel chat-panel">
+          <div class="community-panel-head">
+            <div>
+              <span class="eyebrow">GLOBAL CHAT</span>
+              <h3>Obrolan pengguna</h3>
+            </div>
+            <span class="chat-live"><i></i> Live</span>
+          </div>
+
+          <div id="chatMessages" class="chat-messages">
+            <div class="community-empty">Memuat chat...</div>
+          </div>
+
+          <form id="chatForm" class="chat-form">
+            <input id="chatNickname" maxlength="28" placeholder="Nama panggilan" required>
+            <div class="chat-compose">
+              <input id="chatInput" maxlength="280" placeholder="Tulis pesan atau testimoni..." required>
+              <button type="submit">Kirim</button>
+            </div>
+            <small>Jaga bahasa dan jangan membagikan password, token, atau data pribadi.</small>
+          </form>
+        </article>
+      </div>
+    </section>
+
     <section id="tools" class="section reveal">
       <div class="section-head">
         <div><span class="eyebrow">KIVO TOOLS</span><h2>Mau pakai yang mana?</h2><p class="section-subtitle">Cari dan buka fitur yang kamu perlukan.</p></div>
@@ -93,9 +143,9 @@
           <button data-open="animefinder">Buka</button>
         </article>
 
-        <article class="card reveal-card" data-cat="creative" data-key="kartu identitas demo profil foto">
+        <article class="card reveal-card" data-cat="creative" data-key="kartu identitas  profil foto">
           <span class="icon">KD</span><h3>Kartu Profil Demo</h3><p>Buat kartu profil bergaya modern dengan watermark SIMULASI.</p>
-          <button data-open="democard">Buka</button>
+          <button data-open="card">Buka</button>
         </article>
 
         <article class="card reveal-card" data-cat="ai" data-key="ai chat gpt">
@@ -186,6 +236,7 @@
           <a href="#store">Store</a>
           <a href="#tools">Tools</a>
           <a href="#orders">Cek Pesanan</a>
+          <a href="#community">Komunitas</a>
         </div>
 
         <div class="footer-column">
@@ -230,7 +281,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="config.js"></script>
-  <script src="store.js?v=13.1"></script>
-  <script src="script.js?v=13.1"></script>
+  <script src="store.js?v=13.3"></script>
+  <script src="script.js?v=13.3"></script>
 </body>
 </html>
