@@ -1414,10 +1414,9 @@ function initWelcome(){
   const closeBtn=$("#welcomeClose");
   if(!overlay || !textEl || !closeBtn) return;
 
-  const message="Haloo, selamat datang! Semoga website tools ini bermanfaat buat kalian. Salam hangat dari pembuat website, keii official.";
+  const message="Belanja produk digital, kelola pesanan, dan gunakan berbagai tools dalam satu platform yang cepat, praktis, dan terpercaya.";
   const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
 
-  drawWelcomeCanvas();
   initVisitorEntry();
 
   if(hasSeenWelcome){
@@ -1646,3 +1645,34 @@ function initHorizontalToolSelector(){
 }
 
 document.addEventListener("DOMContentLoaded",initHorizontalToolSelector);
+
+
+function initKivoSupport(){
+  const cfg=window.KIVOPAY_CONFIG||{};
+  const popup=document.querySelector("#supportPopup");
+  const note=document.querySelector("#supportConfigNote");
+  const open=()=>{ if(!popup)return; popup.classList.add("open"); popup.setAttribute("aria-hidden","false"); };
+  const close=()=>{ if(!popup)return; popup.classList.remove("open"); popup.setAttribute("aria-hidden","true"); };
+  document.querySelectorAll("[data-open-support]").forEach(btn=>btn.addEventListener("click",open));
+  popup?.querySelector(".support-popup-close")?.addEventListener("click",close);
+  popup?.addEventListener("click",e=>{if(e.target===popup)close()});
+  document.querySelectorAll("[data-support-channel]").forEach(btn=>btn.addEventListener("click",()=>{
+    const channel=btn.dataset.supportChannel;
+    let url="";
+    if(channel==="whatsapp" && cfg.csWhatsapp){
+      const number=String(cfg.csWhatsapp).replace(/\D/g,"");
+      url=`https://wa.me/${number}?text=${encodeURIComponent(cfg.csMessage||"Halo KivoPay, saya membutuhkan bantuan.")}`;
+    }
+    if(channel==="telegram" && cfg.csTelegram){
+      const raw=String(cfg.csTelegram).trim();
+      url=raw.startsWith("http")?raw:`https://t.me/${raw.replace(/^@/,"")}`;
+    }
+    if(!url){
+      if(note) note.textContent=`Kontak ${channel==="whatsapp"?"WhatsApp":"Telegram"} belum diisi di config.js.`;
+      open();
+      return;
+    }
+    window.open(url,"_blank","noopener,noreferrer");
+  }));
+}
+document.addEventListener("DOMContentLoaded",initKivoSupport);

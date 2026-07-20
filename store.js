@@ -541,11 +541,12 @@
 
   function chatItem(item) {
     const time = new Date(item.created_at).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"});
+    const mine = item.guest_id && item.guest_id === guestId;
     return `
-      <article class="chat-message">
+      <article class="chat-message ${mine ? "mine" : "other"}">
         <div class="chat-avatar">${esc((item.nickname || "U").slice(0,1).toUpperCase())}</div>
-        <div>
-          <div class="chat-message-head"><strong>${esc(item.nickname)}</strong><time>${time}</time></div>
+        <div class="chat-bubble-wrap">
+          <div class="chat-message-head"><strong>${esc(item.nickname)}${mine ? " • Kamu" : ""}</strong><time>${time}</time></div>
           <p>${esc(item.message)}</p>
         </div>
       </article>`;
@@ -557,7 +558,7 @@
     try {
       const { data, error } = await sb
         .from("chat_messages")
-        .select("id,nickname,message,created_at")
+        .select("id,guest_id,nickname,message,created_at")
         .eq("is_visible", true)
         .order("created_at", { ascending: false })
         .limit(50);
