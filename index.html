@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0a0710">
-  <title>Kivo Tools</title>
-  <meta name="description" content="Kivo Tools menyediakan AI Chat, downloader, translate, informasi, dan utilitas praktis yang dapat digunakan dengan mudah.">
+  <title>KivoPay — Store, Sewa Bot & Tools</title>
+  <meta name="description" content="KivoPay menyediakan Store APK Premium, Sewa Bot, dan berbagai Kivo Tools dalam satu website.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -17,35 +17,64 @@
     <i></i><i></i><i></i><i></i><i></i><i></i>
   </div>
   <header class="topbar">
-    <a href="#" class="brand"><span class="mark">K</span><span>Kivo Tools</span></a>
+    <a href="#home" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
     <div id="visitorEntry" class="visitor-entry" aria-live="polite">
       <span class="visitor-entry-dot"></span>
       <span id="visitorEntryText">Pengunjung sedang masuk...</span>
     </div>
-    <nav>
-      <button class="nav-btn active" data-filter="all">Semua</button>
-      <button class="nav-btn" data-filter="ai">AI</button>
-      <button class="nav-btn" data-filter="download">Downloader</button>
-      <button class="nav-btn" data-filter="info">Info</button>
-      <button class="nav-btn" data-filter="local">Utilitas</button>
-      <button class="nav-btn" data-filter="creative">Kreatif</button>
+    <nav class="main-nav">
+      <a href="#home">Home</a>
+      <a href="#store">Store</a>
+      <a href="#tools">Tools</a>
+      <a href="#orders">Pesanan</a>
+      <a href="admin.html" class="admin-link">Admin</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero reveal">
+    <section id="home" class="hero reveal">
       <span class="badge">KEII OFFICIAL PRESENTS</span>
-      <h1>Semua tools favoritmu dalam satu website.</h1>
-      <p class="hero-description">Kivo Tools dibuat untuk membantu aktivitas digital sehari-hari. Pilih fitur yang kamu butuhkan, gunakan langsung, dan selesaikan semuanya tanpa ribet.</p>
+      <h1>Store digital dan tools favoritmu dalam satu website.</h1>
+      <p class="hero-description">Beli APK Premium, sewa bot, cek pesanan, dan gunakan Kivo Tools dari satu platform KivoPay.</p>
       <div class="hero-highlight" aria-live="polite">
         <span class="hero-highlight-dot"></span>
         <span id="rotatingText">Cepat, ringan, dan mudah digunakan.</span>
       </div>
       <div class="hero-row">
-        <a href="#tools" class="btn primary">Mulai Sekarang</a>
-        <span class="status"><i></i> Online • Kivo AI aktif</span>
+        <a href="#store" class="btn primary">Buka Store</a><a href="#tools" class="btn secondary">Pakai Tools</a>
+        <span class="status"><i></i> Online • Store & Kivo AI aktif</span>
 
       </div>
+    </section>
+
+
+    <section id="store" class="section store-section reveal">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">KIVOPAY STORE</span>
+          <h2>Produk digital pilihan</h2>
+          <p class="section-subtitle">APK Premium dan paket Sewa Bot dalam satu tempat.</p>
+        </div>
+        <div class="store-filters">
+          <button class="active" data-store-filter="all">Semua</button>
+          <button data-store-filter="apk-premium">APK Premium</button>
+          <button data-store-filter="sewa-bot">Sewa Bot</button>
+        </div>
+      </div>
+      <div id="storeGrid" class="store-grid"></div>
+    </section>
+
+    <section id="orders" class="section order-check reveal">
+      <div>
+        <span class="eyebrow">CEK PESANAN</span>
+        <h2>Pantau status order</h2>
+        <p class="section-subtitle">Masukkan nomor invoice yang didapat setelah checkout.</p>
+      </div>
+      <div class="order-lookup-box">
+        <input id="orderLookup" placeholder="Contoh: KIVO-ABC123">
+        <button id="orderLookupBtn">Cek Status</button>
+      </div>
+      <div id="orderLookupResult" class="order-lookup-result"></div>
     </section>
 
     <section id="tools" class="section reveal">
@@ -142,8 +171,8 @@
     <div class="footer-brand">
       <span class="footer-mark">K</span>
       <div>
-        <strong>Kivo Tools</strong>
-        <p>Tempat praktis untuk berbagai kebutuhan digital sehari-hari.</p>
+        <strong>KivoPay</strong>
+        <p>Store digital, sewa bot, dan tools praktis dalam satu platform.</p>
       </div>
     </div>
     <div class="footer-creator">
@@ -152,7 +181,7 @@
       <small>Developer • UI Designer</small>
     </div>
     <div class="footer-meta">
-      <strong>© 2026 Kivo Tools</strong>
+      <strong>© 2026 KivoPay</strong>
       <span>Made with care by keii official.</span>
       <span>Gunakan fitur downloader hanya untuk konten yang boleh kamu simpan.</span>
     </div>
@@ -161,9 +190,9 @@
 
   <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="true">
     <div class="welcome-box welcome-box-canvas">
-      <canvas id="welcomeCanvas" width="900" height="520" aria-label="Kartu sambutan Kivo Tools"></canvas>
+      <canvas id="welcomeCanvas" width="900" height="520" aria-label="Kartu sambutan KivoPay"></canvas>
       <p id="welcomeText" class="welcome-caption"></p>
-      <button id="welcomeClose" type="button">Masuk ke Kivo Tools</button>
+      <button id="welcomeClose" type="button">Masuk ke KivoPay</button>
     </div>
   </div>
 
@@ -173,7 +202,12 @@
       <div id="panelBody"></div>
     </div>
   </div>
+  <div id="shopModal" class="shop-modal"><div id="shopModalBody" class="shop-panel"></div></div>
   <div id="toast" class="toast"></div>
-  <script src="script.js?v=10.3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="config.js"></script>
+  <script src="store.js?v=11"></script>
+  <script src="script.js?v=11"></script>
 </body>
 </html>

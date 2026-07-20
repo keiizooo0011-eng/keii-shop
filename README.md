@@ -1,150 +1,102 @@
-# Kivo Tools v2
+# KivoPay V11 — Store + Admin Foundation
 
-Versi tanpa emoji, siap deploy ke Vercel.
+Versi ini menggabungkan:
 
-## Isi
-- AI Chat
-- Translate
-- TikTok downloader
-- CapCut downloader
-- SnackVideo downloader
-- TikTok profile
-- Cuaca
-- Zodiak
-- Arti nama
-- Potensi kesehatan berbasis primbon
-- Password, JSON, Base64, Case Converter, UUID, Word Counter
+- Store **APK Premium**
+- Store **Sewa Bot**
+- Seluruh **Kivo Tools v10.3**
+- Cek pesanan
+- Login Admin Supabase
+- Tambah, edit, hapus, aktif/nonaktif produk
+- Upload foto produk dari HP ke bucket `keiishop`
+- Varian/paket produk
+- Kelola status order
 
-## Deploy
-Upload semua file dan folder ini ke repository GitHub:
-- index.html
-- style.css
-- script.js
-- api/siputzx.js
-- README.md
+## Penting
 
-Vercel akan otomatis memakai folder `api` sebagai Serverless Function.
+Versi ini adalah **fondasi Store dan Admin**. QRIS Sanpay belum live supaya gateway tidak dipasang sebelum database dan checkout dasar berhasil dites.
 
-## Catatan
-Endpoint pihak ketiga dapat berubah atau berhenti sewaktu-waktu.
-Downloader hanya untuk konten yang berhak disimpan.
-Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
+## Instalasi
 
+### 1. Jalankan SQL
 
-## Perubahan v3
-- AI tampil seperti chat biasa, bukan JSON.
-- Riwayat chat tersimpan di browser.
-- Downloader menampilkan preview video/gambar/audio dan tombol download.
-- Data mentah tetap tersedia dalam bagian detail.
+Buka Supabase:
 
+`SQL Editor → New query`
 
-## Perubahan v4
-- Input AI dan tombol kirim sejajar seperti WhatsApp/Telegram.
-- Tombol kirim bulat.
-- Textarea otomatis membesar saat mengetik.
-- Bubble pesan memiliki jam dan centang ganda untuk pesan pengguna.
-- Tampilan modal, hasil downloader, dan respons mobile dirapikan.
+Salin seluruh isi file:
 
-## Perubahan v5
-- TikTok Profile tidak lagi menampilkan JSON mentah.
-- Cuaca, zodiak, arti nama, dan potensi kesehatan tampil sebagai kartu teks.
-- Translate menampilkan hasil terjemahan secara langsung.
-- Angka statistik dibuat ringkas dan mudah dibaca.
-- Foto profil, statistik, bio, dan tombol salin username ditambahkan.
-- Pesan kesalahan kini tampil sebagai kartu yang jelas.
+`supabase_setup.sql`
 
+Klik **Run**.
 
-## Perubahan v6
-- Memperbaiki parameter Zodiak (`zodiac` diteruskan sebagai `zodiak`).
-- Animasi muncul saat scroll, glow bergerak, partikel halus, judul berkilau, dan modal lebih lembut.
-- Efek hover kartu dan tombol ditingkatkan.
-- Footer profesional dengan identitas pembuat Hetacase.
-- Menghormati pengaturan reduced motion pengguna.
+### 2. Daftarkan akun sebagai admin
 
-## Perubahan v6.1
-- Bubble AI dibuat lebih kecil dan mengikuti panjang isi pesan.
-- Indikator mengetik menjadi tiga titik bergerak.
-- Pesan kosong atau indikator mengetik yang tersangkut dibersihkan otomatis.
-- Nama pembuat diganti menjadi `keii official`.
-- Ditambahkan layar sambutan dengan efek mengetik saat website dibuka.
+Buka:
 
-## Perubahan v7
-- Seluruh tulisan utama dibuat lebih natural dan memiliki identitas Kivo Tools.
-- Hero memakai kalimat baru dari keii official.
-- Ditambahkan pesan singkat yang berganti otomatis setiap empat detik.
-- Tombol utama, status website, judul bagian tools, dan deskripsi fitur diperbarui.
-- Footer dibuat lebih profesional dan tetap mencantumkan keii official.
-- Sambutan pembuka hanya muncul sekali dalam satu sesi browser agar tidak mengganggu.
+`Authentication → Users`
 
-## Perubahan v8
-- Bug jawaban AI yang terpotong telah diperbaiki.
-- Bubble chat mengikuti panjang dan tinggi konten secara otomatis.
-- Jawaban AI mendukung tampilan bold, italic, daftar, inline code, dan code block.
-- Ditambahkan tombol salin pada setiap pesan dan tombol ulangi pada jawaban AI.
-- Ditambahkan menu pengaturan untuk system prompt dan temperature.
-- Pengaturan AI tersimpan di browser masing-masing pengguna.
-- Chat dapat diekspor menjadi file teks.
-- Identitas default AI diperbarui menjadi Kivo AI buatan keii official.
+Salin **UID** akun admin yang sudah dibuat.
 
+Kembali ke SQL Editor, jalankan:
 
-## Perbaikan v8.1
-- Memperbaiki syntax error JavaScript yang membuat hero dan seluruh kartu tools tidak tampil.
-- Menambahkan cache busting untuk style.css dan script.js agar browser langsung memakai versi terbaru.
-- Semua fitur v8 tetap dipertahankan.
+```sql
+insert into public.admin_users(user_id)
+values ('PASTE_UID_ADMIN_DI_SINI')
+on conflict (user_id) do nothing;
+```
 
-## Perubahan v8.2
-- Bubble pesan dipaksa mengikuti tinggi isi teks.
-- Ukuran teks chat diperkecil dan dibuat lebih proporsional.
-- Padding, jarak waktu, dan tombol aksi dipadatkan.
-- Bubble pengguna dibatasi agar tidak terlalu lebar atau tinggi.
-- Cache versi dinaikkan ke v8.2.
+Ganti `PASTE_UID_ADMIN_DI_SINI` dengan UID akunmu.
 
-## Perubahan v9
-- Menambahkan fitur Anime Quote dari endpoint Siputzx `/api/r/quotesanime`.
-- Menambahkan Kartu Profil Demo yang berjalan langsung di browser.
-- Foto Kartu Profil Demo dapat dipilih melalui link atau upload langsung dari perangkat.
-- Hasil kartu dapat diunduh sebagai PNG.
-- Semua kartu demo memiliki watermark permanen `SIMULASI — TIDAK BERLAKU`.
-- Menambahkan kategori Kreatif di navigasi.
+### 3. Isi konfigurasi Supabase
 
-## Perubahan v9.1 — Downloader
-- Preview video tidak dimuat otomatis; thumbnail tampil lebih dulu agar modal lebih cepat.
-- Video baru dimuat setelah tombol `Putar Preview` ditekan.
-- Ditambahkan proxy media Vercel dengan dukungan HTTP Range untuk preview.
-- Tombol download memakai `Content-Disposition: attachment` agar lebih konsisten.
-- Ditambahkan tombol `Buka Link Asli` sebagai fallback jika CDN menolak proxy.
-- Cache aset dinaikkan ke versi 9.1.
+Buka file:
 
-## Perubahan v9.2 — Welcome Canvas
-- Sambutan pembuka sekarang memakai kartu canvas bergambar seperti welcome card bot WhatsApp.
-- Canvas menampilkan logo Kivo Tools, pesan sambutan, waktu masuk, dan ID pengunjung lokal.
-- Ditambahkan indikator sementara di header saat pengunjung masuk ke website.
-- ID pengunjung disimpan di browser masing-masing sehingga berbeda antar perangkat.
-- Indikator ini bersifat visual per perangkat, bukan jumlah pengunjung real-time global.
+`config.js`
 
-## Perubahan v10 — Anime Center
-- Anime Quote diperbaiki menggunakan endpoint `/api/s/animequotes?query=...`.
-- Anime Quote sekarang memiliki kolom pencarian kata kunci.
-- Ditambahkan Anime Finder untuk poster, sinopsis, rating, episode, status, genre, dan trailer.
-- Anime Finder menggunakan data metadata publik dan mengarahkan pengguna ke trailer/detail resmi.
-- Endpoint unduhan episode dari situs tidak resmi tidak ditambahkan.
+Isi:
+
+```js
+window.KIVOPAY_CONFIG = {
+  supabaseUrl: "PROJECT_URL",
+  supabaseAnonKey: "PUBLISHABLE_ANON_KEY",
+  storageBucket: "keiishop"
+};
+```
+
+Jangan pernah memasukkan `service_role`, secret key, Sanpay API key, atau token bot ke file frontend.
+
+### 4. Deploy
+
+Upload seluruh isi proyek ke repository Vercel yang terhubung dengan `kivopay.shop`.
+
+### 5. Login admin
+
+Buka:
+
+`https://kivopay.shop/admin.html`
+
+Login menggunakan akun Supabase yang sudah dibuat.
+
+## Menambah varian
+
+Di form produk, format satu baris satu varian:
+
+```text
+1 Bulan|15000
+3 Bulan|40000
+Lifetime|100000
+```
+
+## Tahap selanjutnya
+
+Sesudah Store, Admin, upload foto, dan order pending sudah berhasil dites, tahap berikutnya adalah:
+
+- Backend Vercel untuk checkout aman
+- Integrasi QRIS Sanpay
+- Callback pembayaran
+- Status paid otomatis
+- Pengiriman stok atau aktivasi sewa bot
 
 
-## Perubahan v10.1 — Layout Fix
-- Card Anime Quote, Anime Finder, dan Kartu Profil Demo dipindahkan dari hero ke grid tools.
-- Ketiga fitur kini mengikuti layout card yang sama dengan AI, Downloader, Info, dan Utilitas.
-- Cache aset dinaikkan ke versi 10.1.
-
-## Perubahan v10.2 — Anime Finder Fix
-- Proxy Anime Finder dibuat lebih tahan error.
-- Ditambahkan retry otomatis ketika sumber anime terkena rate limit.
-- Frontend memakai Jikan langsung sebagai fallback jika `/api/anime` gagal atau belum aktif.
-- Pesan error sekarang menampilkan penyebab yang lebih jelas.
-- Cache frontend dinaikkan ke versi 10.2.
-
-## Perubahan v10.3 — Horizontal Tool Selector
-- Seluruh pilihan tools tampil menyamping dan dapat digeser ke kanan atau kiri.
-- Hanya satu detail tool yang ditampilkan di bawah pilihan.
-- Deskripsi dan tombol `Buka` berada di dalam kartu detail.
-- Pencarian dan kategori tetap bekerja pada daftar horizontal.
-- Layout lebih ringkas untuk layar HP.
+Baca juga README_V12.md.

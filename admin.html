@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#09060f">
+  <title>Admin KivoPay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="admin.css?v=11">
+</head>
+<body class="admin-body">
+  <div class="glow glow-a"></div><div class="glow glow-b"></div>
+  <main class="admin-shell">
+    <section id="adminLogin" class="admin-login-card">
+      <a class="brand admin-brand" href="index.html"><span class="mark">K</span><span>KivoPay Admin</span></a>
+      <span class="eyebrow">SECURE DASHBOARD</span>
+      <h1>Masuk sebagai admin</h1>
+      <p>Gunakan akun yang sudah kamu buat di Supabase Authentication.</p>
+      <form id="loginForm">
+        <label>Email</label>
+        <input id="loginEmail" type="email" autocomplete="username" required>
+        <label>Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
+        <button type="submit">Masuk ke Dashboard</button>
+      </form>
+      <div id="loginMessage" class="admin-message"></div>
+    </section>
+
+    <section id="adminDashboard" class="admin-dashboard" hidden>
+      <header class="admin-top">
+        <div>
+          <span class="eyebrow">KIVOPAY CONTROL CENTER</span>
+          <h1>Dashboard Admin</h1>
+        </div>
+        <div class="admin-actions">
+          <a href="index.html">Lihat Website</a>
+          <button id="logoutBtn" class="ghost-danger">Keluar</button>
+        </div>
+      </header>
+
+      <div class="admin-stats">
+        <article><span>Total Produk</span><strong id="statProducts">0</strong></article>
+        <article><span>Stok Tersedia</span><strong id="statStock">0</strong></article>
+        <article><span>Order Pending</span><strong id="statPending">0</strong></article>
+        <article><span>Total Order</span><strong id="statOrders">0</strong></article>
+      </div>
+
+      <div class="admin-grid">
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <div><span class="eyebrow">PRODUCT MANAGER</span><h2>Tambah Produk</h2></div>
+          </div>
+          <form id="productForm" class="product-form">
+            <input id="productId" type="hidden">
+            <label>Foto produk</label>
+            <div class="image-uploader">
+              <img id="imagePreview" src="https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg" alt="Preview">
+              <input id="productImage" type="file" accept="image/*">
+            </div>
+            <label>Nama produk</label>
+            <input id="productName" required placeholder="Contoh: Canva Pro">
+            <label>Kategori</label>
+            <select id="productCategory">
+              <option value="apk-premium">APK Premium</option>
+              <option value="sewa-bot">Sewa Bot</option>
+            </select>
+            <div class="form-two">
+              <div><label>Harga</label><input id="productPrice" type="number" min="0" required></div>
+              <div><label>Stok</label><input id="productStock" type="number" min="0" required></div>
+            </div>
+            <label>Varian / paket</label>
+            <textarea id="productVariants" rows="4" placeholder="Satu baris satu paket:&#10;1 Bulan|15000&#10;3 Bulan|40000"></textarea>
+            <label>Deskripsi</label>
+            <textarea id="productDescription" rows="4" required></textarea>
+            <label class="switch-row"><input id="productActive" type="checkbox" checked> Produk aktif</label>
+            <div class="form-actions">
+              <button type="submit" id="saveProductBtn">Simpan Produk</button>
+              <button type="button" id="cancelEditBtn" class="ghost" hidden>Batal Edit</button>
+            </div>
+          </form>
+          <div id="productMessage" class="admin-message"></div>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <div><span class="eyebrow">CATALOG</span><h2>Daftar Produk</h2></div>
+            <button id="refreshProducts" class="ghost">Refresh</button>
+          </div>
+          <div id="adminProductList" class="admin-product-list"></div>
+        </section>
+      </div>
+
+
+      <section class="admin-panel orders-panel">
+        <div class="admin-panel-head"><div><span class="eyebrow">AUTO DELIVERY</span><h2>Tambah Stok Produk</h2></div></div>
+        <form id="stockForm" class="stock-form">
+          <label>Produk</label><select id="stockProduct" required></select>
+          <label>Nama varian/paket</label><input id="stockVariant" placeholder="Contoh: 1 Bulan" required>
+          <label>Isi stok</label>
+          <textarea id="stockContents" rows="7" placeholder="email1@example.com|password1&#10;---&#10;email2@example.com|password2" required></textarea>
+          <small class="muted">Gunakan baris --- untuk memisahkan setiap stok.</small>
+          <button type="submit">Tambahkan Stok</button>
+        </form>
+        <div id="stockMessage" class="admin-message"></div><div id="stockSummary" class="stock-summary"></div>
+      </section>
+
+      <section class="admin-panel orders-panel">
+        <div class="admin-panel-head">
+          <div><span class="eyebrow">ORDER MANAGER</span><h2>Pesanan Terbaru</h2></div>
+          <button id="refreshOrders" class="ghost">Refresh</button>
+        </div>
+        <div id="adminOrderList" class="admin-order-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="admin.js?v=11"></script>
+</body>
+</html>
