@@ -1270,3 +1270,94 @@ body{overflow-x:hidden}
   .demo-grid{grid-template-columns:1fr}
   .anime-quote-card p{font-size:16px}
 }
+
+
+/* ===== Kivo Tools v9.1 — downloader stabil ===== */
+.video-shell{
+  position:relative;
+  min-height:230px;
+  margin-top:12px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#050408;
+}
+
+.video-poster,
+.video-shell .result-video{
+  display:block;
+  width:100%;
+  min-height:230px;
+  max-height:430px;
+  margin:0;
+  object-fit:contain;
+  background:#050408;
+}
+
+.video-poster{
+  position:absolute;
+  inset:0;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.65);
+}
+
+.preview-btn{
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:2;
+  transform:translate(-50%,-50%);
+  min-width:145px;
+  padding:12px 16px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:999px;
+  background:rgba(17,12,28,.88);
+  color:#fff;
+  font-weight:800;
+  backdrop-filter:blur(8px);
+  cursor:pointer;
+}
+
+.preview-btn:disabled{
+  opacity:.72;
+  cursor:wait;
+}
+
+.download-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:12px;
+}
+
+.download-actions .download-btn{
+  margin-top:0;
+}
+
+.media-hint{
+  margin:9px 2px 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.audio-shell{
+  margin-top:14px;
+}
+
+.audio-shell audio{
+  width:100%;
+}
+
+@media(max-width:640px){
+  .video-shell,
+  .video-poster,
+  .video-shell .result-video{
+    min-height:210px;
+  }
+
+  .download-actions{
+    grid-template-columns:1fr;
+  }
+}

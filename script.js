@@ -99,6 +99,11 @@ function collectMedia(obj, found={videos:[],images:[],audios:[],links:[]}){
   return found;
 }
 
+function mediaProxyUrl(url,mode="stream",filename="kivo-media"){
+  const q=new URLSearchParams({url,mode,filename});
+  return "/api/media?"+q.toString();
+}
+
 function renderDownloader(data){
   const payload=getPayload(data) || {};
   const title=findFirst(payload,["title","caption","desc","description","name"]) || "Media berhasil ditemukan";
@@ -115,6 +120,7 @@ function renderDownloader(data){
     media.audios[0];
 
   const imageList=media.images.slice(0,12);
+  const safeTitle=String(title).slice(0,60).replace(/[^\w\s-]/g,"").trim() || "kivo-video";
 
   let html=`<div class="media-result">
     <div class="media-meta">
@@ -122,38 +128,75 @@ function renderDownloader(data){
       ${author?`<p>${esc(typeof author==="object" ? JSON.stringify(author) : author)}</p>`:""}
     </div>`;
 
-  if(cover && /^https?:\/\//.test(String(cover))){
-    html+=`<img class="result-cover" src="${esc(cover)}" alt="Preview" referrerpolicy="no-referrer">`;
-  }
-
   if(preferredVideo){
+    const poster=cover && /^https?:\/\//.test(String(cover)) ? cover : "";
     html+=`
-      <video class="result-video" controls playsinline preload="metadata" src="${esc(preferredVideo)}"></video>
-      <a class="download-btn" href="${esc(preferredVideo)}" target="_blank" rel="noopener noreferrer" download>Download Video</a>`;
+      <div class="video-shell">
+        ${poster?`<img class="video-poster" src="${esc(poster)}" alt="Thumbnail video" referrerpolicy="no-referrer">`:""}
+        <video class="result-video" controls playsinline preload="none" ${poster?`poster="${esc(poster)}"`:""}></video>
+        <button type="button" class="preview-btn" data-preview-url="${esc(preferredVideo)}">Putar Preview</button>
+      </div>
+      <div class="download-actions">
+        <a class="download-btn" href="${esc(mediaProxyUrl(preferredVideo,"download",safeTitle+".mp4"))}" target="_blank" rel="noopener">Download Video</a>
+        <a class="download-btn secondary-download" href="${esc(preferredVideo)}" target="_blank" rel="noopener noreferrer">Buka Link Asli</a>
+      </div>
+      <p class="media-hint">Preview baru dimuat saat tombol ditekan agar halaman lebih cepat.</p>`;
+  }else if(cover && /^https?:\/\//.test(String(cover))){
+    html+=`<img class="result-cover" src="${esc(cover)}" alt="Preview" referrerpolicy="no-referrer">`;
   }
 
   if(imageList.length){
     html+=`<div class="image-grid">`;
     imageList.forEach((url,i)=>{
       html+=`<div class="image-item">
-        <img src="${esc(url)}" alt="Gambar ${i+1}" referrerpolicy="no-referrer">
-        <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" download>Download</a>
+        <img src="${esc(url)}" alt="Gambar ${i+1}" loading="lazy" referrerpolicy="no-referrer">
+        <a href="${esc(mediaProxyUrl(url,"download",`kivo-image-${i+1}.jpg`))}" target="_blank" rel="noopener">Download</a>
       </div>`;
     });
     html+=`</div>`;
   }
 
   if(preferredAudio){
-    html+=`<audio controls src="${esc(preferredAudio)}"></audio>
-      <a class="download-btn secondary-download" href="${esc(preferredAudio)}" target="_blank" rel="noopener noreferrer" download>Download Audio</a>`;
+    html+=`
+      <div class="audio-shell">
+        <audio controls preload="none" src="${esc(mediaProxyUrl(preferredAudio,"stream","kivo-audio.mp3"))}"></audio>
+        <a class="download-btn secondary-download" href="${esc(mediaProxyUrl(preferredAudio,"download","kivo-audio.mp3"))}" target="_blank" rel="noopener">Download Audio</a>
+      </div>`;
   }
 
   if(!preferredVideo && !imageList.length && !preferredAudio){
-    html+=`<div class="empty-media">Media langsung tidak ditemukan. Data mentah tersedia di bawah.</div>`;
+    html+=`<div class="empty-media">Media langsung tidak ditemukan. Coba tautan lain atau buka data lengkap.</div>`;
   }
 
   html+=`<details class="raw-details"><summary>Lihat data lengkap</summary><pre>${esc(JSON.stringify(data,null,2))}</pre></details></div>`;
   $("#result").innerHTML=html;
+
+  const previewButton=$("[data-preview-url]");
+  if(previewButton){
+    previewButton.onclick=()=>{
+      const video=$(".result-video");
+      if(!video) return;
+      previewButton.disabled=true;
+      previewButton.textContent="Memuat preview...";
+      video.src=mediaProxyUrl(previewButton.dataset.previewUrl,"stream",safeTitle+".mp4");
+      video.load();
+
+      const ready=()=>{
+        previewButton.remove();
+        const posterEl=$(".video-poster");
+        if(posterEl) posterEl.remove();
+        video.play().catch(()=>{});
+      };
+      const failed=()=>{
+        previewButton.disabled=false;
+        previewButton.textContent="Coba Lagi";
+        toast("Preview gagal dimuat. Gunakan Buka Link Asli.");
+      };
+
+      video.addEventListener("loadedmetadata",ready,{once:true});
+      video.addEventListener("error",failed,{once:true});
+    };
+  }
 }
 
 function extractAIText(data){

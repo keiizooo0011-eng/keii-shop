@@ -106,3 +106,11 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Hasil kartu dapat diunduh sebagai PNG.
 - Semua kartu demo memiliki watermark permanen `SIMULASI — TIDAK BERLAKU`.
 - Menambahkan kategori Kreatif di navigasi.
+
+## Perubahan v9.1 — Downloader
+- Preview video tidak dimuat otomatis; thumbnail tampil lebih dulu agar modal lebih cepat.
+- Video baru dimuat setelah tombol `Putar Preview` ditekan.
+- Ditambahkan proxy media Vercel dengan dukungan HTTP Range untuk preview.
+- Tombol download memakai `Content-Disposition: attachment` agar lebih konsisten.
+- Ditambahkan tombol `Buka Link Asli` sebagai fallback jika CDN menolak proxy.
+- Cache aset dinaikkan ke versi 9.1.
