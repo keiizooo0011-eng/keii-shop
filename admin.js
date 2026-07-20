@@ -69,12 +69,61 @@
     if (file) $("#imagePreview").src = URL.createObjectURL(file);
   };
 
-  function parseVariants(text, fallbackPrice) {
-    return text.split("\n").map(x=>x.trim()).filter(Boolean).map(line=>{
-      const [name, price] = line.split("|");
-      return {name:(name||"Paket").trim(), price:Number(price||fallbackPrice)};
+  function normalizedVariants(list, fallbackPrice) {
+    const seen = new Set();
+    return (Array.isArray(list) ? list : []).map(item => ({
+      name: String(item?.name || "").trim(),
+      price: Number(item?.price ?? fallbackPrice)
+    })).filter(item => {
+      const key = item.name.toLowerCase();
+      if (!item.name || !Number.isFinite(item.price) || item.price < 0 || seen.has(key)) return false;
+      seen.add(key);
+      return true;
     });
   }
+
+  function getVariantRows() {
+    return [...document.querySelectorAll(".variant-row")].map(row => ({
+      name: row.querySelector("[data-variant-name]").value.trim(),
+      price: Number(row.querySelector("[data-variant-price]").value)
+    }));
+  }
+
+  function renderVariantRows(variants = []) {
+    const root = $("#variantRows");
+    if (!root) return;
+    const safe = normalizedVariants(variants, Number($("#productPrice")?.value || 0));
+    root.innerHTML = safe.length ? "" : `<div class="variant-empty">Belum ada varian. Tekan <b>+ Tambah Varian</b> untuk membuat paket pertama.</div>`;
+    safe.forEach(v => addVariantRow(v));
+  }
+
+  function addVariantRow(variant = {}) {
+    const root = $("#variantRows");
+    if (!root) return;
+    root.querySelector(".variant-empty")?.remove();
+    const row = document.createElement("div");
+    row.className = "variant-row";
+    row.innerHTML = `
+      <div class="variant-field">
+        <label>Nama paket</label>
+        <input data-variant-name required placeholder="Contoh: 1 Tahun" value="${esc(variant.name || "")}">
+      </div>
+      <div class="variant-field">
+        <label>Harga</label>
+        <input data-variant-price type="number" min="0" required placeholder="20000" value="${Number(variant.price ?? $("#productPrice")?.value ?? 0)}">
+      </div>
+      <button type="button" class="variant-remove">Hapus</button>`;
+    row.querySelector(".variant-remove").onclick = () => {
+      row.remove();
+      if (!root.querySelector(".variant-row")) renderVariantRows([]);
+    };
+    root.appendChild(row);
+  }
+
+  $("#addVariantBtn")?.addEventListener("click", () => addVariantRow({
+    name: "",
+    price: Number($("#productPrice")?.value || 0)
+  }));
 
   async function uploadImage(file) {
     if (!file) return currentImageUrl || $("#imagePreview").src;
@@ -102,10 +151,12 @@
         price,
         stock: Number($("#productStock").value),
         image_url,
-        variants: parseVariants($("#productVariants").value, price),
+        variants: normalizedVariants(getVariantRows(), price),
         is_active: $("#productActive").checked,
         updated_at: new Date().toISOString()
       };
+      if (!payload.variants.length) throw new Error("Tambahkan minimal satu varian/paket.");
+      payload.price = Math.min(...payload.variants.map(v => Number(v.price)));
       const id = $("#productId").value;
       const query = id ? sb.from("products").update(payload).eq("id",id) : sb.from("products").insert(payload);
       const { error } = await query;
@@ -128,6 +179,7 @@
     $("#cancelEditBtn").hidden = true;
     $("#saveProductBtn").textContent = "Simpan Produk";
     currentImageUrl = "";
+    renderVariantRows([]);
   }
   $("#cancelEditBtn").onclick = resetForm;
 
@@ -144,6 +196,7 @@
           <strong>${esc(p.name)}</strong>
           <span>${p.category==="sewa-bot"?"Sewa Bot":"APK Premium"} • ${rupiah(p.price)}</span>
           <small>Stok ${Number(p.stock||0)} • ${p.is_active?"Aktif":"Nonaktif"}</small>
+          <div class="variant-badges">${(Array.isArray(p.variants)?p.variants:[]).map(v=>`<span class="variant-badge">${esc(v.name)} · ${rupiah(v.price)}</span>`).join("")}</div>
         </div>
         <div class="item-actions">
           <button data-edit="${p.id}">Edit</button>
@@ -156,6 +209,7 @@
     const stockSelect=$("#stockProduct");
     if(stockSelect){
       stockSelect.innerHTML=productsCache.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      updateStockVariants();
       loadStockSummary();
     }
   }
@@ -169,7 +223,7 @@
     $("#productPrice").value = p.price;
     $("#productStock").value = p.stock;
     $("#productDescription").value = p.description || "";
-    $("#productVariants").value = (p.variants || []).map(v=>`${v.name}|${v.price}`).join("\n");
+    renderVariantRows(p.variants || []);
     $("#productActive").checked = !!p.is_active;
     $("#imagePreview").src = p.image_url || "";
     currentImageUrl = p.image_url || "";
@@ -225,10 +279,27 @@
   }
 
 
+  function updateStockVariants() {
+    const product = productsCache.find(p => String(p.id) === String($("#stockProduct")?.value));
+    const select = $("#stockVariant");
+    if (!select) return;
+    const variants = normalizedVariants(product?.variants || [], Number(product?.price || 0));
+    select.innerHTML = variants.length
+      ? variants.map(v => `<option value="${esc(v.name)}">${esc(v.name)} — ${rupiah(v.price)}</option>`).join("")
+      : `<option value="">Produk ini belum mempunyai varian</option>`;
+    select.disabled = !variants.length;
+    const help = $("#stockVariantHelp");
+    if (help) help.textContent = variants.length
+      ? `Stok yang ditambahkan hanya masuk ke varian yang dipilih.`
+      : `Edit produk dan tambahkan minimal satu varian terlebih dahulu.`;
+  }
+
+  $("#stockProduct")?.addEventListener("change", updateStockVariants);
+
   function splitStock(text){return text.split(/\n\s*---\s*\n/g).map(x=>x.trim()).filter(Boolean);}
   $("#stockForm")?.addEventListener("submit",async e=>{
     e.preventDefault();
-    const productId=$("#stockProduct").value, variantName=$("#stockVariant").value.trim();
+    const productId=$("#stockProduct").value, variantName=$("#stockVariant").value;
     const contents=splitStock($("#stockContents").value);
     if(!productId||!variantName||!contents.length)return;
     msg($("#stockMessage"),`Menambahkan ${contents.length} stok...`);
@@ -331,5 +402,6 @@
 
   $("#refreshProducts").onclick = loadProducts;
   $("#refreshOrders").onclick = loadOrders;
+  renderVariantRows([]);
   boot();
 })();

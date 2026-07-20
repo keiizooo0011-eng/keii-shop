@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=13.3">
+  <link rel="stylesheet" href="admin.css?v=16.1.0">
 </head>
 <body class="admin-body">
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -68,11 +68,17 @@
               <option value="sewa-bot">Sewa Bot</option>
             </select>
             <div class="form-two">
-              <div><label>Harga</label><input id="productPrice" type="number" min="0" required></div>
-              <div><label>Stok</label><input id="productStock" type="number" min="0" required></div>
+              <div><label>Harga utama</label><input id="productPrice" type="number" min="0" required></div>
+              <div><label>Total stok</label><input id="productStock" type="number" min="0" value="0" readonly></div>
             </div>
-            <label>Varian / paket</label>
-            <textarea id="productVariants" rows="4" placeholder="Satu baris satu paket:&#10;1 Bulan|15000&#10;3 Bulan|40000"></textarea>
+            <div class="variant-manager-head">
+              <div>
+                <label>Varian / paket</label>
+                <small class="muted">Setiap varian mempunyai harga dan stok auto-delivery sendiri.</small>
+              </div>
+              <button type="button" id="addVariantBtn" class="ghost variant-add-btn">+ Tambah Varian</button>
+            </div>
+            <div id="variantRows" class="variant-rows"></div>
             <label>Deskripsi</label>
             <textarea id="productDescription" rows="4" required></textarea>
             <label class="switch-row"><input id="productActive" type="checkbox" checked> Produk aktif</label>
@@ -98,7 +104,8 @@
         <div class="admin-panel-head"><div><span class="eyebrow">AUTO DELIVERY</span><h2>Tambah Stok Produk</h2></div></div>
         <form id="stockForm" class="stock-form">
           <label>Produk</label><select id="stockProduct" required></select>
-          <label>Nama varian/paket</label><input id="stockVariant" placeholder="Contoh: 1 Bulan" required>
+          <label>Varian/paket</label><select id="stockVariant" required></select>
+          <small id="stockVariantHelp" class="muted">Pilih produk terlebih dahulu. Daftar varian akan muncul otomatis.</small>
           <label>Isi stok</label>
           <textarea id="stockContents" rows="10" placeholder="Satu data per baris (tekan Enter). Pisahkan akun/stok dengan baris ---&#10;&#10;Contoh:&#10;email@app.com&#10;https://generator.email/email@app.com&#10;---&#10;username&#10;password&#10;LICENSE-ABC-123&#10;https://login.com&#10;&#10;Format lama pakai | tetap didukung." required></textarea>
           <small class="muted">Satu stok boleh berisi satu atau banyak data. Gunakan <b>Enter</b> untuk memisahkan data dalam satu stok, lalu gunakan baris <b>---</b> untuk memisahkan stok berikutnya. Format lama memakai <b>|</b> tetap didukung.</small>
@@ -139,6 +146,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=16.0.0"></script>
+  <script src="admin.js?v=16.1.0"></script>
 </body>
 </html>

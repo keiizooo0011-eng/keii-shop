@@ -25,3 +25,15 @@
 .moderation-item span{color:#9f97ad;font-size:10px}
 .moderation-item p{margin:2px 0 0;color:#c5bdcf;font-size:11px;line-height:1.5;word-break:break-word}
 @media(max-width:560px){.moderation-item{grid-template-columns:1fr}.moderation-item .item-actions{grid-column:auto}}
+
+/* V16.1 — Variant manager */
+.variant-manager-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:6px}
+.variant-manager-head>div{display:grid;gap:5px}
+.variant-add-btn{padding:9px 12px!important;white-space:nowrap}
+.variant-rows{display:grid;gap:10px}
+.variant-empty{padding:15px;border:1px dashed rgba(139,92,246,.35);border-radius:14px;color:#9f97ad;font-size:12px;text-align:center}
+.variant-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(115px,.7fr) auto;gap:9px;align-items:end;padding:12px;border:1px solid rgba(139,92,246,.2);border-radius:15px;background:#110e18}
+.variant-field{display:grid;gap:7px;min-width:0}.variant-field label{font-size:11px!important;color:#9f97ad!important}
+.variant-remove{height:48px;border:1px solid rgba(248,113,113,.2)!important;background:#1b121a!important;color:#fca5a5!important;padding:0 13px!important}
+.variant-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}.variant-badge{padding:4px 8px;border-radius:999px;background:rgba(124,58,237,.15);border:1px solid rgba(139,92,246,.25);font-size:10px;color:#d8c9ff}
+@media(max-width:560px){.variant-manager-head{align-items:stretch;flex-direction:column}.variant-add-btn{width:100%}.variant-row{grid-template-columns:1fr}.variant-remove{height:43px}}
