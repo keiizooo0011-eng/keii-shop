@@ -128,3 +128,23 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Ditambahkan Anime Finder untuk poster, sinopsis, rating, episode, status, genre, dan trailer.
 - Anime Finder menggunakan data metadata publik dan mengarahkan pengguna ke trailer/detail resmi.
 - Endpoint unduhan episode dari situs tidak resmi tidak ditambahkan.
+
+
+## Perubahan v10.1 — Layout Fix
+- Card Anime Quote, Anime Finder, dan Kartu Profil Demo dipindahkan dari hero ke grid tools.
+- Ketiga fitur kini mengikuti layout card yang sama dengan AI, Downloader, Info, dan Utilitas.
+- Cache aset dinaikkan ke versi 10.1.
+
+## Perubahan v10.2 — Anime Finder Fix
+- Proxy Anime Finder dibuat lebih tahan error.
+- Ditambahkan retry otomatis ketika sumber anime terkena rate limit.
+- Frontend memakai Jikan langsung sebagai fallback jika `/api/anime` gagal atau belum aktif.
+- Pesan error sekarang menampilkan penyebab yang lebih jelas.
+- Cache frontend dinaikkan ke versi 10.2.
+
+## Perubahan v10.3 — Horizontal Tool Selector
+- Seluruh pilihan tools tampil menyamping dan dapat digeser ke kanan atau kiri.
+- Hanya satu detail tool yang ditampilkan di bawah pilihan.
+- Deskripsi dan tombol `Buka` berada di dalam kartu detail.
+- Pencarian dan kategori tetap bekerja pada daftar horizontal.
+- Layout lebih ringkas untuk layar HP.

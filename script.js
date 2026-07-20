@@ -1122,13 +1122,70 @@ Asisten:`,
           $("#result").innerHTML='<div class="error-card"><strong>Nama anime diperlukan</strong><p>Masukkan judul anime yang ingin dicari.</p></div>';
           return;
         }
+
         const params=new URLSearchParams({action});
         if(query) params.set("query",query);
-        const response=await fetch("/api/anime?"+params);
-        const data=await response.json();
-        if(!response.ok) throw new Error(data?.error || "Permintaan gagal.");
+
+        let data;
+        let proxyError="";
+
+        try{
+          const response=await fetch("/api/anime?"+params,{cache:"no-store"});
+          const text=await response.text();
+
+          try{
+            data=JSON.parse(text);
+          }catch{
+            throw new Error(`API website tidak mengirim JSON (${response.status}).`);
+          }
+
+          if(!response.ok){
+            throw new Error(data?.error || data?.message || `HTTP ${response.status}`);
+          }
+        }catch(error){
+          proxyError=error.message;
+
+          const directBase="https://api.jikan.moe/v4";
+          let directUrl;
+
+          if(action==="search"){
+            directUrl=`${directBase}/anime?q=${encodeURIComponent(query)}&limit=12&sfw=true`;
+          }else if(action==="top"){
+            directUrl=`${directBase}/top/anime?filter=bypopularity&limit=12&sfw=true`;
+          }else{
+            directUrl=`${directBase}/seasons/now?limit=12&sfw=true`;
+          }
+
+          const directResponse=await fetch(directUrl,{
+            headers:{Accept:"application/json"},
+            cache:"no-store"
+          });
+
+          const directText=await directResponse.text();
+
+          try{
+            data=JSON.parse(directText);
+          }catch{
+            throw new Error(`Proxy gagal: ${proxyError}. Respons cadangan juga tidak valid.`);
+          }
+
+          if(!directResponse.ok){
+            throw new Error(
+              data?.message ||
+              data?.error ||
+              `Proxy gagal: ${proxyError}; sumber cadangan HTTP ${directResponse.status}`
+            );
+          }
+        }
+
         renderAnimeList(data);
-      }catch(e){showFriendlyError(e)}
+      }catch(e){
+        $("#result").innerHTML=`<div class="error-card">
+          <strong>Anime Finder sedang bermasalah</strong>
+          <p>${esc(e.message || "Permintaan gagal.")}</p>
+          <small>Coba tunggu beberapa detik lalu tekan lagi. Sumber anime memiliki batas request.</small>
+        </div>`;
+      }
     };
 
     $("#go").onclick=()=>requestAnime("search");
@@ -1469,3 +1526,123 @@ document.querySelectorAll(".card").forEach(card=>{
   });
   card.addEventListener("pointerleave",()=>card.style.transform="");
 });
+
+
+// ===== Kivo Tools v10.3: horizontal tool selector =====
+function initHorizontalToolSelector(){
+  const selector=$("#toolSelector");
+  const detail=$("#toolDetail");
+  const sourceGrid=$("#grid");
+  const searchInput=$("#search");
+  const navButtons=$$(".nav-btn");
+
+  if(!selector || !detail || !sourceGrid) return;
+
+  const cards=[...sourceGrid.querySelectorAll(".card")].map((card,index)=>{
+    const button=card.querySelector("[data-open]");
+    return {
+      index,
+      card,
+      category:card.dataset.cat || "all",
+      keywords:(card.dataset.key || "").toLowerCase(),
+      icon:card.querySelector(".icon")?.textContent?.trim() || "KT",
+      title:card.querySelector("h3")?.textContent?.trim() || "Tool",
+      description:card.querySelector("p")?.textContent?.trim() || "",
+      openKey:button?.dataset.open || ""
+    };
+  });
+
+  let visibleTools=[...cards];
+  let activeIndex=visibleTools[0]?.index ?? 0;
+
+  sourceGrid.classList.add("tool-source-grid-hidden");
+
+  function showDetail(tool){
+    if(!tool){
+      detail.innerHTML=`
+        <div class="tool-detail-empty">
+          <strong>Fitur tidak ditemukan</strong>
+          <span>Coba kata pencarian atau kategori lain.</span>
+        </div>`;
+      return;
+    }
+
+    activeIndex=tool.index;
+
+    $$(".tool-tab").forEach(tab=>{
+      const selected=Number(tab.dataset.toolIndex)===tool.index;
+      tab.classList.toggle("active",selected);
+      tab.setAttribute("aria-selected",String(selected));
+      if(selected){
+        tab.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+      }
+    });
+
+    detail.innerHTML=`
+      <article class="selected-tool-card">
+        <div class="selected-tool-top">
+          <span class="selected-tool-icon">${esc(tool.icon)}</span>
+          <div>
+            <span class="selected-tool-label">FITUR TERPILIH</span>
+            <h3>${esc(tool.title)}</h3>
+          </div>
+        </div>
+        <p>${esc(tool.description)}</p>
+        <button type="button" class="selected-tool-open">Buka ${esc(tool.title)}</button>
+      </article>`;
+
+    detail.querySelector(".selected-tool-open").onclick=()=>{
+      const originalButton=tool.card.querySelector("[data-open]");
+      if(originalButton) originalButton.click();
+    };
+  }
+
+  function renderSelector(){
+    const q=(searchInput?.value || "").trim().toLowerCase();
+    const activeCategory=document.querySelector(".nav-btn.active")?.dataset.filter || "all";
+
+    visibleTools=cards.filter(tool=>{
+      const matchQuery=!q ||
+        tool.keywords.includes(q) ||
+        tool.title.toLowerCase().includes(q) ||
+        tool.description.toLowerCase().includes(q);
+
+      const matchCategory=activeCategory==="all" || tool.category===activeCategory;
+      return matchQuery && matchCategory;
+    });
+
+    selector.innerHTML=visibleTools.map(tool=>`
+      <button type="button"
+        class="tool-tab${tool.index===activeIndex?" active":""}"
+        data-tool-index="${tool.index}"
+        aria-selected="${tool.index===activeIndex}">
+        <span>${esc(tool.icon)}</span>
+        <strong>${esc(tool.title)}</strong>
+      </button>`).join("");
+
+    $$(".tool-tab").forEach(tab=>{
+      tab.onclick=()=>{
+        const tool=cards.find(item=>item.index===Number(tab.dataset.toolIndex));
+        showDetail(tool);
+      };
+    });
+
+    let selected=visibleTools.find(tool=>tool.index===activeIndex);
+    if(!selected) selected=visibleTools[0];
+    showDetail(selected);
+  }
+
+  if(searchInput) searchInput.oninput=renderSelector;
+
+  navButtons.forEach(button=>{
+    button.onclick=()=>{
+      navButtons.forEach(item=>item.classList.remove("active"));
+      button.classList.add("active");
+      renderSelector();
+    };
+  });
+
+  renderSelector();
+}
+
+document.addEventListener("DOMContentLoaded",initHorizontalToolSelector);

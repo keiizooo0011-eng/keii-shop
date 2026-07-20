@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=10.3">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -45,6 +45,17 @@
         <a href="#tools" class="btn primary">Mulai Sekarang</a>
         <span class="status"><i></i> Online • Kivo AI aktif</span>
 
+      </div>
+    </section>
+
+    <section id="tools" class="section reveal">
+      <div class="section-head">
+        <div><span class="eyebrow">KIVO TOOLS</span><h2>Mau pakai yang mana?</h2><p class="section-subtitle">Cari dan buka fitur yang kamu perlukan.</p></div>
+        <input id="search" class="search" placeholder="Cari fitur...">
+      </div>
+      <div id="toolSelector" class="tool-selector" aria-label="Pilihan tools"></div>
+      <div id="toolDetail" class="tool-detail" aria-live="polite"></div>
+      <div id="grid" class="grid tool-source-grid">
         <article class="card reveal-card" data-cat="creative" data-key="anime quote quotes kutipan">
           <span class="icon">AQ</span><h3>Anime Quote Search</h3><p>Cari kutipan berdasarkan karakter, judul anime, atau kata kunci.</p>
           <button data-open="animequote">Buka</button>
@@ -58,15 +69,7 @@
           <span class="icon">KD</span><h3>Kartu Profil Demo</h3><p>Buat kartu profil bergaya modern dengan watermark SIMULASI.</p>
           <button data-open="democard">Buka</button>
         </article>
-      </div>
-    </section>
 
-    <section id="tools" class="section reveal">
-      <div class="section-head">
-        <div><span class="eyebrow">KIVO TOOLS</span><h2>Mau pakai yang mana?</h2><p class="section-subtitle">Cari dan buka fitur yang kamu perlukan.</p></div>
-        <input id="search" class="search" placeholder="Cari fitur...">
-      </div>
-      <div id="grid" class="grid">
         <article class="card reveal-card" data-cat="ai" data-key="ai chat gpt">
           <span class="icon">AI</span><h3>AI Chat</h3><p>Tempat ngobrol, bertanya, dan mencari bantuan dari Kivo AI.</p>
           <button data-open="ai">Buka</button>
@@ -171,6 +174,6 @@
     </div>
   </div>
   <div id="toast" class="toast"></div>
-  <script src="script.js?v=10"></script>
+  <script src="script.js?v=10.3"></script>
 </body>
 </html>
