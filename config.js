@@ -3,7 +3,7 @@
 // Publishable/anon key aman berada di frontend selama RLS aktif.
 // JANGAN isi service_role/secret key di file ini.
 window.KIVOPAY_CONFIG = {
-  supabaseUrl: "ISI_PROJECT_URL_SUPABASE",
-  supabaseAnonKey: "ISI_PUBLISHABLE_ANON_KEY",
+  supabaseUrl: "https://hfxdsyzdlfrekqrfleai.supabase.co",
+  supabaseAnonKey: "sb_publishable_NLCCMCVB330LiKCfCVq7GQ_B9iyNSXk",
   storageBucket: "keiishop"
 };
