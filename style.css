@@ -1361,3 +1361,211 @@ body{overflow-x:hidden}
     grid-template-columns:1fr;
   }
 }
+
+
+/* ===== Kivo Tools v9.2 — Welcome Canvas ===== */
+.welcome-box-canvas{
+  width:min(720px,100%);
+  padding:16px;
+}
+
+#welcomeCanvas{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:20px;
+  border:1px solid rgba(167,139,250,.35);
+  box-shadow:0 20px 55px rgba(0,0,0,.38);
+}
+
+.welcome-caption{
+  min-height:56px !important;
+  margin-top:15px !important;
+  padding:0 8px;
+}
+
+.visitor-entry{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  max-width:0;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-8px);
+  padding:0;
+  border:1px solid transparent;
+  border-radius:999px;
+  color:#d8d1e4;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+  transition:.45s ease;
+}
+
+.visitor-entry-show{
+  max-width:260px;
+  opacity:1;
+  transform:translateY(0);
+  padding:8px 12px;
+  border-color:rgba(139,92,246,.28);
+  background:rgba(139,92,246,.08);
+}
+
+.visitor-entry-online{
+  border-color:rgba(52,211,153,.28);
+  background:rgba(52,211,153,.07);
+}
+
+.visitor-entry-hide{
+  opacity:0;
+  transform:translateY(-7px);
+  pointer-events:none;
+}
+
+.visitor-entry-dot{
+  flex:0 0 8px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#a78bfa;
+  box-shadow:0 0 12px rgba(167,139,250,.9);
+  animation:visitorPulse 1s ease-in-out infinite;
+}
+
+.visitor-entry-online .visitor-entry-dot{
+  background:#34d399;
+  box-shadow:0 0 12px rgba(52,211,153,.9);
+}
+
+@keyframes visitorPulse{
+  0%,100%{transform:scale(.82);opacity:.6}
+  50%{transform:scale(1.18);opacity:1}
+}
+
+@media(max-width:760px){
+  .topbar{
+    flex-wrap:wrap;
+  }
+
+  .visitor-entry{
+    order:3;
+  }
+
+  .visitor-entry-show{
+    max-width:220px;
+  }
+
+  .welcome-box-canvas{
+    padding:10px;
+  }
+
+  .welcome-caption{
+    font-size:14px !important;
+    min-height:76px !important;
+  }
+}
+
+
+/* ===== Kivo Tools v10 — Anime Center ===== */
+.anime-quote-list{
+  display:grid;
+  gap:12px;
+}
+
+.anime-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.anime-card{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(160deg,rgba(139,92,246,.08),rgba(255,255,255,.02));
+  font-family:Inter,sans-serif;
+}
+
+.anime-card img{
+  width:100%;
+  aspect-ratio:16/10;
+  object-fit:cover;
+  display:block;
+  background:#08060d;
+}
+
+.anime-card-body{
+  padding:14px;
+}
+
+.anime-card h3{
+  margin:0 0 9px;
+  font-size:17px;
+  line-height:1.35;
+}
+
+.anime-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.anime-badges span{
+  padding:5px 8px;
+  border:1px solid rgba(167,139,250,.2);
+  border-radius:999px;
+  background:rgba(139,92,246,.1);
+  color:#d8ccf5;
+  font-size:11px;
+  font-weight:700;
+}
+
+.anime-genres{
+  margin:10px 0 0;
+  color:#c4b5fd;
+  font-size:12px;
+  font-weight:700;
+}
+
+.anime-synopsis{
+  display:-webkit-box;
+  overflow:hidden;
+  margin:10px 0 0;
+  color:var(--muted);
+  line-height:1.55;
+  -webkit-line-clamp:5;
+  -webkit-box-orient:vertical;
+}
+
+.anime-links{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:13px;
+}
+
+.anime-links a{
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface2);
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:800;
+}
+
+.anime-links a:first-child{
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+}
+
+@media(max-width:640px){
+  .anime-grid{
+    grid-template-columns:1fr;
+  }
+
+  .anime-links{
+    grid-template-columns:1fr;
+  }
+}

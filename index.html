@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=9.1">
+  <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -18,6 +18,10 @@
   </div>
   <header class="topbar">
     <a href="#" class="brand"><span class="mark">K</span><span>Kivo Tools</span></a>
+    <div id="visitorEntry" class="visitor-entry" aria-live="polite">
+      <span class="visitor-entry-dot"></span>
+      <span id="visitorEntryText">Pengunjung sedang masuk...</span>
+    </div>
     <nav>
       <button class="nav-btn active" data-filter="all">Semua</button>
       <button class="nav-btn" data-filter="ai">AI</button>
@@ -42,9 +46,14 @@
         <span class="status"><i></i> Online • Kivo AI aktif</span>
 
         <article class="card reveal-card" data-cat="creative" data-key="anime quote quotes kutipan">
-          <span class="icon">AQ</span><h3>Anime Quote</h3><p>Tampilkan kutipan anime acak lengkap dengan karakter dan judul animenya.</p>
+          <span class="icon">AQ</span><h3>Anime Quote Search</h3><p>Cari kutipan berdasarkan karakter, judul anime, atau kata kunci.</p>
           <button data-open="animequote">Buka</button>
         </article>
+        <article class="card reveal-card" data-cat="creative" data-key="anime finder search trailer info">
+          <span class="icon">AF</span><h3>Anime Finder</h3><p>Cari poster, sinopsis, rating, episode, dan trailer anime.</p>
+          <button data-open="animefinder">Buka</button>
+        </article>
+
         <article class="card reveal-card" data-cat="creative" data-key="kartu identitas demo profil foto">
           <span class="icon">KD</span><h3>Kartu Profil Demo</h3><p>Buat kartu profil bergaya modern dengan watermark SIMULASI.</p>
           <button data-open="democard">Buka</button>
@@ -148,9 +157,9 @@
 
 
   <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="true">
-    <div class="welcome-box">
-      <span class="welcome-logo">K</span>
-      <p id="welcomeText"></p>
+    <div class="welcome-box welcome-box-canvas">
+      <canvas id="welcomeCanvas" width="900" height="520" aria-label="Kartu sambutan Kivo Tools"></canvas>
+      <p id="welcomeText" class="welcome-caption"></p>
       <button id="welcomeClose" type="button">Masuk ke Kivo Tools</button>
     </div>
   </div>
@@ -162,6 +171,6 @@
     </div>
   </div>
   <div id="toast" class="toast"></div>
-  <script src="script.js?v=9.1"></script>
+  <script src="script.js?v=10"></script>
 </body>
 </html>

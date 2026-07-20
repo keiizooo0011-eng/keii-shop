@@ -114,3 +114,17 @@ Fitur potensi kesehatan adalah hiburan dan bukan diagnosis medis.
 - Tombol download memakai `Content-Disposition: attachment` agar lebih konsisten.
 - Ditambahkan tombol `Buka Link Asli` sebagai fallback jika CDN menolak proxy.
 - Cache aset dinaikkan ke versi 9.1.
+
+## Perubahan v9.2 — Welcome Canvas
+- Sambutan pembuka sekarang memakai kartu canvas bergambar seperti welcome card bot WhatsApp.
+- Canvas menampilkan logo Kivo Tools, pesan sambutan, waktu masuk, dan ID pengunjung lokal.
+- Ditambahkan indikator sementara di header saat pengunjung masuk ke website.
+- ID pengunjung disimpan di browser masing-masing sehingga berbeda antar perangkat.
+- Indikator ini bersifat visual per perangkat, bukan jumlah pengunjung real-time global.
+
+## Perubahan v10 — Anime Center
+- Anime Quote diperbaiki menggunakan endpoint `/api/s/animequotes?query=...`.
+- Anime Quote sekarang memiliki kolom pencarian kata kunci.
+- Ditambahkan Anime Finder untuk poster, sinopsis, rating, episode, status, genre, dan trailer.
+- Anime Finder menggunakan data metadata publik dan mengarahkan pengguna ke trailer/detail resmi.
+- Endpoint unduhan episode dari situs tidak resmi tidak ditambahkan.

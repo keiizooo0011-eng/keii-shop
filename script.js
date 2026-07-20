@@ -756,9 +756,21 @@ const forms={
     <div class="note">Jangan gunakan hasil ini untuk mengambil keputusan kesehatan.</div>
     <div id="result" class="result">Hasil akan muncul di sini.</div>`),
 
-  animequote:()=>open(`<h2>Anime Quote</h2><p class="desc">Ambil kutipan anime secara acak.</p>
-    <div class="actions"><button class="run" id="go">Tampilkan Kutipan</button></div>
-    <div id="result" class="result readable">Kutipan akan muncul di sini.</div>`),
+  animequote:()=>open(`<h2>Anime Quote Search</h2>
+    <p class="desc">Cari kutipan berdasarkan nama karakter, judul anime, atau kata kunci.</p>
+    <div class="field"><label>Kata kunci</label><input id="animeQuoteQuery" placeholder="Contoh: fate, naruto, saber"></div>
+    <div class="actions"><button class="run" id="go">Cari Kutipan</button></div>
+    <div id="result" class="result readable">Hasil kutipan akan muncul di sini.</div>`),
+
+  animefinder:()=>open(`<h2>Anime Finder</h2>
+    <p class="desc">Cari informasi anime, poster, rating, episode, dan trailer resmi.</p>
+    <div class="field"><label>Nama anime</label><input id="animeSearchQuery" placeholder="Contoh: One Piece"></div>
+    <div class="actions">
+      <button class="run" id="go">Cari Anime</button>
+      <button class="secondary" id="topAnime">Anime Populer</button>
+      <button class="secondary" id="seasonAnime">Musim Ini</button>
+    </div>
+    <div id="result" class="result readable">Hasil anime akan muncul di sini.</div>`),
 
   democard:()=>open(`<h2>Kartu Profil Demo</h2>
     <p class="desc">Buat kartu profil digital dengan watermark SIMULASI — bukan dokumen resmi.</p>
@@ -1018,24 +1030,113 @@ Asisten:`,
 
 
   if(key==="animequote"){
-    $("#go").onclick=async()=>{
+    const runQuoteSearch=async()=>{
+      const query=$("#animeQuoteQuery").value.trim();
+      if(!query){
+        $("#result").innerHTML='<div class="error-card"><strong>Kata kunci diperlukan</strong><p>Masukkan nama karakter, judul anime, atau kata kunci.</p></div>';
+        return;
+      }
+
       loading();
       try{
-        const data=await api("animequote");
-        const payload=getPayload(data) || {};
-        const quote=findFirst(payload,["quote","quotes","text","content","message"]);
-        const character=findFirst(payload,["character","char","name"]);
-        const anime=findFirst(payload,["anime","title","series"]);
-        $("#result").innerHTML=`<div class="anime-quote-card">
-          <span class="quote-mark">“</span>
-          <p>${esc(quote || "Kutipan tidak ditemukan.")}</p>
-          <div>
-            ${character?`<strong>${esc(character)}</strong>`:""}
-            ${anime?`<span>${esc(anime)}</span>`:""}
-          </div>
-        </div>`;
+        const data=await api("animequote",{query});
+        const payload=getPayload(data);
+        const items=Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.result)
+            ? payload.result
+            : Array.isArray(payload?.data)
+              ? payload.data
+              : payload && typeof payload==="object"
+                ? [payload]
+                : [];
+
+        if(!items.length){
+          $("#result").innerHTML='<div class="friendly-empty">Kutipan tidak ditemukan.</div>';
+          return;
+        }
+
+        $("#result").innerHTML=`<div class="anime-quote-list">${items.slice(0,20).map(item=>{
+          const quote=findFirst(item,["quote","quotes","text","content","message","kata"]);
+          const character=findFirst(item,["character","char","name","karakter"]);
+          const anime=findFirst(item,["anime","title","series","judul"]);
+          return `<article class="anime-quote-card">
+            <span class="quote-mark">“</span>
+            <p>${esc(quote || "Kutipan tidak tersedia.")}</p>
+            <div>
+              ${character?`<strong>${esc(character)}</strong>`:""}
+              ${anime?`<span>${esc(anime)}</span>`:""}
+            </div>
+          </article>`;
+        }).join("")}</div>`;
       }catch(e){showFriendlyError(e)}
     };
+
+    $("#go").onclick=runQuoteSearch;
+    $("#animeQuoteQuery").addEventListener("keydown",e=>{
+      if(e.key==="Enter") runQuoteSearch();
+    });
+  }
+
+  if(key==="animefinder"){
+    const renderAnimeList=data=>{
+      const items=Array.isArray(data?.data) ? data.data : [];
+      if(!items.length){
+        $("#result").innerHTML='<div class="friendly-empty">Anime tidak ditemukan.</div>';
+        return;
+      }
+
+      $("#result").innerHTML=`<div class="anime-grid">${items.map(item=>{
+        const image=item.images?.webp?.large_image_url || item.images?.jpg?.large_image_url || item.images?.jpg?.image_url || "";
+        const trailer=item.trailer?.url || item.trailer?.embed_url || "";
+        const official=item.url || "";
+        const title=item.title_english || item.title || "Tanpa judul";
+        const synopsis=item.synopsis || "Sinopsis belum tersedia.";
+        const genres=(item.genres||[]).map(g=>g.name).slice(0,4).join(", ");
+
+        return `<article class="anime-card">
+          ${image?`<img src="${esc(image)}" alt="${esc(title)}" loading="lazy">`:""}
+          <div class="anime-card-body">
+            <h3>${esc(title)}</h3>
+            <div class="anime-badges">
+              ${item.score?`<span>Rating ${esc(item.score)}</span>`:""}
+              ${item.episodes?`<span>${esc(item.episodes)} episode</span>`:""}
+              ${item.status?`<span>${esc(item.status)}</span>`:""}
+            </div>
+            ${genres?`<p class="anime-genres">${esc(genres)}</p>`:""}
+            <p class="anime-synopsis">${esc(synopsis)}</p>
+            <div class="anime-links">
+              ${trailer?`<a href="${esc(trailer)}" target="_blank" rel="noopener">Tonton Trailer</a>`:""}
+              ${official?`<a href="${esc(official)}" target="_blank" rel="noopener">Lihat Detail</a>`:""}
+            </div>
+          </div>
+        </article>`;
+      }).join("")}</div>`;
+    };
+
+    const requestAnime=async(action)=>{
+      loading();
+      try{
+        const query=$("#animeSearchQuery").value.trim();
+        if(action==="search" && !query){
+          $("#result").innerHTML='<div class="error-card"><strong>Nama anime diperlukan</strong><p>Masukkan judul anime yang ingin dicari.</p></div>';
+          return;
+        }
+        const params=new URLSearchParams({action});
+        if(query) params.set("query",query);
+        const response=await fetch("/api/anime?"+params);
+        const data=await response.json();
+        if(!response.ok) throw new Error(data?.error || "Permintaan gagal.");
+        renderAnimeList(data);
+      }catch(e){showFriendlyError(e)}
+    };
+
+    $("#go").onclick=()=>requestAnime("search");
+    $("#topAnime").onclick=()=>requestAnime("top");
+    $("#seasonAnime").onclick=()=>requestAnime("season");
+    $("#animeSearchQuery").addEventListener("keydown",e=>{
+      if(e.key==="Enter") requestAnime("search");
+    });
   }
 
   if(key==="democard"){
@@ -1122,16 +1223,151 @@ Asisten:`,
 }
 
 
+function getVisitorIdentity(){
+  let id=localStorage.getItem("kivo_visitor_id");
+  if(!id){
+    id="KV-"+Math.random().toString(36).slice(2,7).toUpperCase();
+    localStorage.setItem("kivo_visitor_id",id);
+  }
+  return id;
+}
+
+function drawWelcomeCanvas(){
+  const canvas=$("#welcomeCanvas");
+  if(!canvas) return;
+
+  const ctx=canvas.getContext("2d");
+  const w=canvas.width;
+  const h=canvas.height;
+  const visitorId=getVisitorIdentity();
+  const now=new Date();
+
+  const gradient=ctx.createLinearGradient(0,0,w,h);
+  gradient.addColorStop(0,"#0b0713");
+  gradient.addColorStop(.55,"#17102a");
+  gradient.addColorStop(1,"#08060e");
+  ctx.fillStyle=gradient;
+  ctx.fillRect(0,0,w,h);
+
+  ctx.globalAlpha=.28;
+  const glow=ctx.createRadialGradient(735,90,10,735,90,260);
+  glow.addColorStop(0,"#8b5cf6");
+  glow.addColorStop(1,"rgba(139,92,246,0)");
+  ctx.fillStyle=glow;
+  ctx.fillRect(470,-40,430,390);
+
+  const glow2=ctx.createRadialGradient(120,470,10,120,470,230);
+  glow2.addColorStop(0,"#5b21b6");
+  glow2.addColorStop(1,"rgba(91,33,182,0)");
+  ctx.fillStyle=glow2;
+  ctx.fillRect(-80,250,420,300);
+  ctx.globalAlpha=1;
+
+  ctx.strokeStyle="rgba(167,139,250,.45)";
+  ctx.lineWidth=3;
+  ctx.strokeRect(18,18,w-36,h-36);
+
+  // Logo / avatar
+  ctx.save();
+  ctx.shadowColor="rgba(139,92,246,.72)";
+  ctx.shadowBlur=34;
+  const logoGrad=ctx.createLinearGradient(80,90,230,240);
+  logoGrad.addColorStop(0,"#a78bfa");
+  logoGrad.addColorStop(1,"#6d28d9");
+  ctx.fillStyle=logoGrad;
+  ctx.beginPath();
+  ctx.roundRect(72,86,180,180,44);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle="#fff";
+  ctx.font="800 104px Space Grotesk, sans-serif";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("K",162,178);
+
+  ctx.textAlign="left";
+  ctx.textBaseline="alphabetic";
+  ctx.fillStyle="#ffffff";
+  ctx.font="800 54px Space Grotesk, sans-serif";
+  ctx.fillText("Welcome to Kivo Tools",300,126);
+
+  ctx.fillStyle="#c4b5fd";
+  ctx.font="700 24px Inter, sans-serif";
+  ctx.fillText("KEII OFFICIAL",302,170);
+
+  ctx.fillStyle="#ebe7f3";
+  ctx.font="500 25px Inter, sans-serif";
+  ctx.fillText("Haloo, selamat datang!",302,228);
+
+  ctx.fillStyle="#bbb3c8";
+  ctx.font="500 21px Inter, sans-serif";
+  const message=[
+    "Semoga website tools ini bermanfaat buat kalian.",
+    "Salam hangat dari pembuat website, keii official."
+  ];
+  message.forEach((line,i)=>ctx.fillText(line,302,273+(i*36)));
+
+  // Visitor badge
+  ctx.fillStyle="rgba(139,92,246,.16)";
+  ctx.beginPath();
+  ctx.roundRect(72,330,756,105,24);
+  ctx.fill();
+
+  ctx.fillStyle="#34d399";
+  ctx.beginPath();
+  ctx.arc(105,368,9,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#f5f3f8";
+  ctx.font="700 22px Inter, sans-serif";
+  ctx.fillText("Pengunjung sedang masuk ke website",130,376);
+
+  ctx.fillStyle="#a9a1b7";
+  ctx.font="500 18px Inter, sans-serif";
+  ctx.fillText(`${visitorId}  •  ${now.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})}`,130,410);
+
+  ctx.fillStyle="rgba(255,255,255,.38)";
+  ctx.font="600 15px Inter, sans-serif";
+  ctx.fillText("Kivo Tools • dibuat oleh keii official",72,482);
+}
+
+function initVisitorEntry(){
+  const box=$("#visitorEntry");
+  const text=$("#visitorEntryText");
+  if(!box || !text) return;
+
+  const id=getVisitorIdentity();
+  text.textContent=`${id} sedang masuk...`;
+  box.classList.add("visitor-entry-show");
+
+  setTimeout(()=>{
+    text.textContent=`${id} online`;
+    box.classList.add("visitor-entry-online");
+  },1800);
+
+  setTimeout(()=>{
+    box.classList.add("visitor-entry-hide");
+  },5200);
+}
+
 function initWelcome(){
   const overlay=$("#welcomeOverlay");
   const textEl=$("#welcomeText");
   const closeBtn=$("#welcomeClose");
   if(!overlay || !textEl || !closeBtn) return;
 
-  const message="Haloo, selamat datang di Kivo Tools! Semoga semua fitur di sini bermanfaat dan membantu kalian. Salam hangat dari keii official.";
-
+  const message="Haloo, selamat datang! Semoga website tools ini bermanfaat buat kalian. Salam hangat dari pembuat website, keii official.";
   const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
-  if(hasSeenWelcome){ overlay.remove(); return; }
+
+  drawWelcomeCanvas();
+  initVisitorEntry();
+
+  if(hasSeenWelcome){
+    overlay.remove();
+    return;
+  }
+
   let timer;
   let index=0;
 
@@ -1151,14 +1387,13 @@ function initWelcome(){
       clearInterval(timer);
       closeBtn.classList.add("welcome-button-show");
     }
-  },28);
+  },24);
 
   closeBtn.onclick=closeWelcome;
   overlay.onclick=e=>{
     if(e.target===overlay && index>message.length) closeWelcome();
   };
 }
-
 document.addEventListener("DOMContentLoaded",initWelcome);
 
 
