@@ -2750,3 +2750,28 @@ body{overflow-x:hidden}
 .chat-page-body{min-height:100vh}.chat-page-main{width:min(980px,calc(100% - 32px));margin:0 auto;padding:128px 0 48px}.chat-page-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px;padding:0 4px}.chat-page-hero h1{margin:.35rem 0 .55rem;font-family:"Space Grotesk",sans-serif;font-size:clamp(2rem,6vw,3.35rem);line-height:1}.chat-page-hero p{max-width:670px;margin:0;color:var(--muted);line-height:1.7}.chat-page-panel{padding:0;overflow:hidden;min-height:calc(100vh - 270px);display:flex;flex-direction:column}.chat-page-panel-head{padding:22px 24px;border-bottom:1px solid rgba(255,255,255,.08)}.chat-page-messages{height:auto;min-height:430px;max-height:none;flex:1;padding:22px 24px}.chat-page-form{position:sticky;bottom:0;padding:18px 22px 22px;background:linear-gradient(180deg,rgba(9,6,17,.82),rgba(9,6,17,.98));backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08)}
 .main-nav a.active{color:#c084fc}.main-nav a.active:after{transform:scaleX(1)}
 @media(max-width:720px){.chat-page-main{width:calc(100% - 24px);padding-top:114px}.chat-page-hero{align-items:flex-start}.chat-page-hero p{font-size:.92rem}.chat-page-panel{min-height:calc(100vh - 225px);border-radius:22px}.chat-page-panel-head{padding:18px}.chat-page-messages{min-height:420px;padding:16px 14px}.chat-page-form{padding:14px}.community-chat-link{width:100%;justify-content:center}.community-section .section-head{align-items:stretch}}
+
+/* V16.6.10 — Robux package cards use a wrapped product grid on mobile */
+@media (max-width:760px){
+  .robux-package-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    overflow:visible;
+    padding:2px 0 10px;
+    scroll-snap-type:none;
+  }
+  .robux-package-card{
+    min-width:0;
+    width:100%;
+    min-height:132px;
+    flex:none;
+    scroll-snap-align:none;
+  }
+}
+@media (max-width:360px){
+  .robux-package-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .robux-package-card{padding:13px;min-height:124px}
+  .robux-package-card span{font-size:1rem}
+  .robux-package-card strong{font-size:.94rem}
+}
