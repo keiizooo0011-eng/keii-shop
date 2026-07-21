@@ -306,23 +306,68 @@
 
   $("#stockProduct")?.addEventListener("change", updateStockVariants);
 
-  function splitStock(text){return text.split(/\n\s*---\s*\n/g).map(x=>x.trim()).filter(Boolean);}
+  function parseStockInput(text, mode = "line") {
+    const rawItems = mode === "block"
+      ? text.split(/\n\s*---\s*\n/g)
+      : text.split(/\r?\n/g);
+    const cleaned = rawItems.map(item => item.trim()).filter(Boolean);
+    const seen = new Set();
+    const contents = [];
+    let duplicates = 0;
+    for (const content of cleaned) {
+      const key = content.toLowerCase();
+      if (seen.has(key)) { duplicates += 1; continue; }
+      seen.add(key);
+      contents.push(content);
+    }
+    return { contents, duplicates };
+  }
+
+  function refreshStockImportPreview() {
+    const mode = $("#stockInputMode")?.value || "line";
+    const parsed = parseStockInput($("#stockContents")?.value || "", mode);
+    const count = $("#stockParsedCount");
+    const duplicate = $("#stockDuplicateCount");
+    const button = $("#stockSubmitButton");
+    const help = $("#stockFormatHelp");
+    if (count) count.textContent = `${parsed.contents.length} stok terbaca`;
+    if (duplicate) duplicate.textContent = parsed.duplicates
+      ? `${parsed.duplicates} duplikat dalam input akan dilewati.`
+      : "Tidak ada duplikat dalam input.";
+    if (button) button.textContent = parsed.contents.length
+      ? `Tambahkan ${parsed.contents.length} Stok`
+      : "Tambahkan Stok";
+    if (help) help.innerHTML = mode === "block"
+      ? `Mode blok: satu stok boleh terdiri dari beberapa baris. Pisahkan stok berikutnya menggunakan baris <b>---</b>.`
+      : `Mode massal: setiap baris yang tidak kosong menjadi satu stok. Cocok untuk format <b>email|password</b>.`;
+    return parsed;
+  }
+
+  $("#stockContents")?.addEventListener("input", refreshStockImportPreview);
+  $("#stockInputMode")?.addEventListener("change", refreshStockImportPreview);
+  refreshStockImportPreview();
+
   $("#stockForm")?.addEventListener("submit",async e=>{
     e.preventDefault();
     const productId=$("#stockProduct").value, variantName=$("#stockVariant").value;
-    const contents=splitStock($("#stockContents").value);
-    if(!productId||!variantName||!contents.length)return;
+    const {contents,duplicates}=refreshStockImportPreview();
+    if(!productId||!variantName||!contents.length){
+      return msg($("#stockMessage"),"Pilih produk, varian, lalu masukkan minimal satu stok.","error");
+    }
     msg($("#stockMessage"),`Menambahkan ${contents.length} stok...`);
-    const {error}=await sb.from("stock_items").insert(contents.map(content=>({
-      product_id:productId,variant_name:variantName,content,status:"available"
-    })));
-    if(error)return msg($("#stockMessage"),error.message,"error");
+    const rows=contents.map(content=>({product_id:productId,variant_name:variantName,content,status:"available"}));
+    const chunkSize=250;
+    for(let i=0;i<rows.length;i+=chunkSize){
+      const {error}=await sb.from("stock_items").insert(rows.slice(i,i+chunkSize));
+      if(error)return msg($("#stockMessage"),`Gagal pada batch ${Math.floor(i/chunkSize)+1}: ${error.message}`,"error");
+    }
     const product=productsCache.find(p=>String(p.id)===String(productId));
     if(product)await sb.from("products").update({
       stock:Number(product.stock||0)+contents.length,updated_at:new Date().toISOString()
     }).eq("id",productId);
     $("#stockContents").value="";
-    msg($("#stockMessage"),`${contents.length} stok berhasil ditambahkan.`,"success");
+    refreshStockImportPreview();
+    msg($("#stockMessage"),`${contents.length} stok berhasil ditambahkan${duplicates?`; ${duplicates} duplikat dilewati`:""}.`,"success");
     await loadProducts();
   });
   async function loadStockSummary(){

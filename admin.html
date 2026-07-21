@@ -206,11 +206,19 @@
           <label>Produk</label><select id="stockProduct" required></select>
           <label>Varian/paket</label><select id="stockVariant" required></select>
           <small id="stockVariantHelp" class="muted">Pilih produk terlebih dahulu. Daftar varian akan muncul otomatis.</small>
+          <label>Mode input stok</label>
+          <select id="stockInputMode">
+            <option value="line">Massal — 1 baris = 1 stok</option>
+            <option value="block">Blok — pisahkan stok dengan baris ---</option>
+          </select>
           <label>Isi stok</label>
-          <textarea id="stockContents" rows="10" placeholder="Satu data per baris (tekan Enter). Pisahkan akun/stok dengan baris ---&#10;&#10;Contoh:&#10;email@app.com&#10;https://generator.email/email@app.com&#10;---&#10;username&#10;password&#10;LICENSE-ABC-123&#10;https://login.com&#10;&#10;Format lama pakai | tetap didukung." required></textarea>
-          <small class="muted">Satu stok boleh berisi satu atau banyak data. Gunakan <b>Enter</b> untuk memisahkan data dalam satu stok, lalu gunakan baris <b>---</b> untuk memisahkan stok berikutnya. Format lama memakai <b>|</b> tetap didukung.</small>
-          <small class="muted">Gunakan baris --- untuk memisahkan setiap stok.</small>
-          <button type="submit">Tambahkan Stok</button>
+          <textarea id="stockContents" rows="12" placeholder="Contoh massal:&#10;email1@gmail.com|password1&#10;email2@gmail.com|password2&#10;email3@gmail.com|password3" required></textarea>
+          <div class="stock-import-preview">
+            <span id="stockParsedCount">0 stok terbaca</span>
+            <small id="stockDuplicateCount">Duplikat dalam input akan dilewati otomatis.</small>
+          </div>
+          <small id="stockFormatHelp" class="muted">Mode massal: setiap baris yang tidak kosong akan disimpan sebagai satu stok. Cocok untuk format <b>email|password</b>.</small>
+          <button id="stockSubmitButton" type="submit">Tambahkan Stok</button>
         </form>
         <div id="stockMessage" class="admin-message"></div><div id="stockSummary" class="stock-summary"></div>
       </section>
