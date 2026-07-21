@@ -4,6 +4,12 @@
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
   let methods=[],packages=[],activeFilter='gamepass';
+  const methodKind=m=>{
+    const value=String(m?.form_type||m?.slug||m?.name||'').toLowerCase();
+    if(value.includes('login')) return 'login';
+    if(value.includes('username')||value.includes('user-name')||value.includes('usn')) return 'username';
+    return 'gamepass';
+  };
   const msg=(el,t,type='')=>{if(el){el.textContent=t;el.className='admin-message '+type}};
   async function load(){
     const session=(await sb.auth.getSession()).data.session; if(!session)return;
