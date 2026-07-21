@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a0710">
+  <title>Top Up Robux — KivoPay</title>
+  <meta name="description" content="Top Up Robux KivoPay melalui Gamepass, Via Username, atau Via Login.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=16.6.4">
+</head>
+<body class="robux-page">
+  <div class="glow glow-a"></div><div class="glow glow-b"></div>
+  <div class="particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <header class="topbar">
+    <a href="index.html#home" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
+    <nav class="main-nav">
+      <a href="index.html#home">Home</a>
+      <a href="index.html#store">Store</a>
+      <a class="active" href="robux.html">Top Up Robux</a>
+      <a href="index.html#tools">Tools</a>
+      <a href="#orders">Pesanan</a>
+      <a href="index.html#community">Komunitas</a>
+    </nav>
+  </header>
+
+  <main class="robux-page-main">
+    <section id="robux" class="section robux-section reveal">
+      <div class="robux-page-hero">
+        <div><span class="eyebrow">KIVOPAY GAME TOP UP</span><h1>Top Up Robux</h1><p>Pilih layanan, tentukan paket, lalu lengkapi data Roblox dengan benar.</p></div>
+        <span id="robuxServiceStatus" class="robux-service-status">Memuat layanan...</span>
+      </div>
+      <div id="robuxClosedNotice" class="robux-closed" hidden>⚠️ Layanan Top Up Robux sedang ditutup sementara.</div>
+      <div class="robux-layout robux-layout-page">
+        <aside class="robux-method-panel">
+          <div class="robux-stage-title"><span class="robux-step">01</span><div><h3>Pilih metode</h3><small>Gamepass, Username, atau Via Login.</small></div></div>
+          <div id="robuxMethodList" class="robux-method-list"><div class="robux-loading">Memuat metode...</div></div>
+        </aside>
+        <div class="robux-main-panel">
+          <div class="robux-stage-head"><div><span class="robux-step">02</span><h3>Pilih paket Robux</h3></div><small id="robuxMethodHelp">Pilih metode terlebih dahulu.</small></div>
+          <div id="robuxPackageList" class="robux-package-grid"><div class="robux-empty">Belum ada metode dipilih.</div></div>
+          <form id="robuxOrderForm" class="robux-order-form" hidden>
+            <div class="robux-stage-head"><div><span class="robux-step">03</span><h3>Lengkapi data</h3></div><strong id="robuxSelectedPrice">Rp0</strong></div>
+            <input id="robuxMethodId" type="hidden"><input id="robuxPackageId" type="hidden">
+            <div class="robux-form-grid">
+              <label>Username Roblox<input id="robuxUsername" required maxlength="40" placeholder="Contoh: keii_neverlose2"></label>
+              <label id="robuxPasswordWrap" hidden>Password Roblox<input id="robuxPassword" type="password" maxlength="100" autocomplete="off" placeholder="Masukkan password Roblox"></label>
+              <fieldset id="robuxBackupWrap" class="robux-backup-fieldset" hidden>
+                <legend>3 Backup Code</legend>
+                <div class="robux-backup-grid">
+                  <input id="robuxBackupCode1" maxlength="100" placeholder="Backup Code 1">
+                  <input id="robuxBackupCode2" maxlength="100" placeholder="Backup Code 2">
+                  <input id="robuxBackupCode3" maxlength="100" placeholder="Backup Code 3">
+                </div>
+              </fieldset>
+              <label>Nomor WhatsApp<input id="robuxWhatsapp" required inputmode="tel" maxlength="20" placeholder="08xxxxxxxxxx"></label>
+            </div>
+            <div class="robux-summary"><span>Pesanan dipilih</span><strong id="robuxSummaryText">-</strong></div>
+            <button id="robuxContinueBtn" type="submit">Lanjut ke Pembayaran</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="orders" class="section order-check reveal robux-order-check">
+      <div><span class="eyebrow">CEK PESANAN ROBUX</span><h2>Pantau status top up</h2><p class="section-subtitle">Masukkan invoice RBX yang didapat setelah checkout.</p></div>
+      <div class="order-lookup-box"><input id="orderLookup" placeholder="Contoh: RBX-ABC123"><button id="orderLookupBtn">Cek Status</button></div>
+      <div id="orderLookupResult" class="order-lookup-result"></div>
+    </section>
+  </main>
+
+  <button type="button" class="floating-support" data-open-support aria-label="Hubungi Customer Service"><span>💬</span><div><strong>Butuh bantuan?</strong><small>Hubungi CS</small></div></button>
+  <div id="supportPopup" class="support-popup" aria-hidden="true"><div class="support-popup-card"><button class="support-popup-close" type="button">×</button><span class="eyebrow">KIVOPAY SUPPORT</span><h3>Ada yang bisa dibantu?</h3><p>Sertakan invoice jika kendalanya terkait pesanan.</p><button type="button" data-support-channel="whatsapp">WhatsApp CS</button><button type="button" data-support-channel="telegram">Telegram CS</button><small id="supportConfigNote"></small></div></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="config.js"></script>
+  <script src="robux.js?v=16.6.4"></script>
+  <script src="script.js?v=16.5.1"></script>
+</body>
+</html>

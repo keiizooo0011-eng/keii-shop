@@ -6,6 +6,7 @@
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const rupiah = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
   let methods = [], packages = [], selectedMethod = null, selectedPackage = null, paymentStopped = false;
+  if (!document.querySelector('#robuxMethodList')) return;
 
   async function load() {
     try {
@@ -29,7 +30,7 @@
   function renderMethods() {
     $('#robuxMethodList').innerHTML = methods.length ? methods.map(m => `
       <button type="button" class="robux-method-card ${selectedMethod?.id===m.id?'active':''}" data-method="${m.id}">
-        <span>${m.form_type==='login'?'🔐':m.slug.includes('gamepass')?'🎟️':'💎'}</span>
+        <span>${String(m.slug||'').includes('login')?'🔐':String(m.slug||'').includes('gamepass')?'🎟️':'💎'}</span>
         <div><strong>${esc(m.name)}</strong><small>${esc(m.description)}</small></div><b>→</b>
       </button>`).join('') : '<div class="robux-empty">Belum ada metode aktif.</div>';
     document.querySelectorAll('[data-method]').forEach(b => b.onclick = () => selectMethod(b.dataset.method));
@@ -59,11 +60,24 @@
     $('#robuxPackageId').value = selectedPackage.id;
     $('#robuxSelectedPrice').textContent = rupiah(selectedPackage.price);
     $('#robuxSummaryText').textContent = `${selectedMethod.name} • ${selectedPackage.label}`;
-    const login = selectedMethod.form_type === 'login';
-    $('#robuxPasswordWrap').hidden = !login;
-    $('#robuxBackupWrap').hidden = !login;
+    // Hanya metode Via Login yang boleh menampilkan data sensitif.
+    // Gunakan slug sebagai sumber utama agar salah set form_type di panel admin tidak
+    // membuat form username/gamepass ikut meminta password.
+    const login = String(selectedMethod.slug || '').toLowerCase().includes('login');
+    const passwordWrap = $('#robuxPasswordWrap');
+    const backupWrap = $('#robuxBackupWrap');
+    passwordWrap.hidden = !login;
+    backupWrap.hidden = !login;
+    passwordWrap.style.display = login ? '' : 'none';
+    backupWrap.style.display = login ? '' : 'none';
     $('#robuxPassword').required = login;
     ['#robuxBackupCode1','#robuxBackupCode2','#robuxBackupCode3'].forEach(id => $(id).required = login);
+    if (!login) {
+      $('#robuxPassword').value = '';
+      $('#robuxBackupCode1').value = '';
+      $('#robuxBackupCode2').value = '';
+      $('#robuxBackupCode3').value = '';
+    }
     $('#robuxOrderForm').scrollIntoView({behavior:'smooth',block:'center'});
   }
 

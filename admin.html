@@ -132,7 +132,11 @@
             <label>Nama metode</label><input id="robuxAdminMethodName" required placeholder="Contoh: Robux Gamepass">
             <label>Slug</label><input id="robuxAdminMethodSlug" required placeholder="gamepass">
             <label>Deskripsi singkat</label><textarea id="robuxAdminMethodDescription" rows="3" required></textarea>
-            <label>Tipe form</label><select id="robuxAdminMethodFormType"><option value="username">Via Username / Gamepass</option><option value="login">Via Login</option></select>
+            <label>Jenis layanan</label><select id="robuxAdminMethodFormType">
+              <option value="gamepass">Robux Gamepass</option>
+              <option value="username">Robux Via Username</option>
+              <option value="login">Robux Via Login</option>
+            </select>
             <div class="form-two"><label>Urutan<input id="robuxAdminMethodSort" type="number" min="0" value="0"></label><label class="switch-row"><input id="robuxAdminMethodActive" type="checkbox" checked> Metode dibuka</label></div>
             <div class="form-actions"><button type="submit">Simpan Metode</button><button id="cancelRobuxMethodEdit" type="button" class="ghost" hidden>Batal</button></div>
             <div id="robuxMethodMessage" class="admin-message"></div>
@@ -149,12 +153,12 @@
             <div id="robuxPackageMessage" class="admin-message"></div>
           </form>
         </div>
-        <div class="robux-admin-lists"><div><h3>Daftar Metode</h3><div id="robuxAdminMethodList" class="admin-product-list"></div></div><div><h3>Daftar Paket</h3><div id="robuxAdminPackageList" class="admin-product-list"></div></div></div>
-        <div class="robux-order-admin">
-          <div class="section-title-row"><div><span class="eyebrow">PESANAN ROBUX</span><h3>Proses pesanan pelanggan</h3></div><button id="refreshRobuxOrders" type="button">Refresh</button></div>
-          <div id="robuxOrderStats" class="robux-order-stats"></div>
-          <div id="robuxAdminOrderList" class="admin-product-list"><p class="muted">Memuat pesanan Robux...</p></div>
+        <div class="robux-admin-tabs" role="tablist">
+          <button type="button" class="active" data-robux-admin-filter="gamepass">Gamepass</button>
+          <button type="button" data-robux-admin-filter="username">Via Username</button>
+          <button type="button" data-robux-admin-filter="login">Via Login</button>
         </div>
+        <div class="robux-admin-lists"><div><h3 id="robuxAdminMethodListTitle">Metode Gamepass</h3><div id="robuxAdminMethodList" class="admin-product-list"></div></div><div><h3 id="robuxAdminPackageListTitle">Paket Gamepass</h3><div id="robuxAdminPackageList" class="admin-product-list"></div></div></div>
       </section>
 
       <section class="admin-panel orders-panel">
@@ -204,6 +208,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=16.5.0"></script>
-  <script src="robux-admin.js?v=16.6.2"></script>
+  <script src="robux-admin.js?v=16.6.4"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=16.6.1">
+  <link rel="stylesheet" href="style.css?v=16.6.4">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -25,7 +25,7 @@
     <nav class="main-nav">
       <a href="#home">Home</a>
       <a href="#store">Store</a>
-      <a href="#robux">Top Up Robux</a>
+      <a href="robux.html">Top Up Robux</a>
       <a href="#tools">Tools</a>
       <a href="#orders">Pesanan</a>
       <a href="#community">Komunitas</a>
@@ -107,45 +107,6 @@
         </div>
       </div>
       <div id="storeGrid" class="store-grid"></div>
-    </section>
-
-
-    <section id="robux" class="section robux-section reveal">
-      <div class="section-head robux-head">
-        <div><span class="eyebrow">KIVOPAY GAME TOP UP</span><h2>Top Up Robux</h2><p class="section-subtitle">Pilih metode yang sesuai, tentukan paket, lalu isi data Roblox dengan benar.</p></div>
-        <span id="robuxServiceStatus" class="robux-service-status">Memuat layanan...</span>
-      </div>
-      <div id="robuxClosedNotice" class="robux-closed" hidden>⚠️ Layanan Top Up Robux sedang ditutup sementara.</div>
-      <div class="robux-layout">
-        <aside class="robux-method-panel">
-          <span class="robux-step">01</span><h3>Pilih metode</h3>
-          <div id="robuxMethodList" class="robux-method-list"><div class="robux-loading">Memuat metode...</div></div>
-        </aside>
-        <div class="robux-main-panel">
-          <div class="robux-stage-head"><div><span class="robux-step">02</span><h3>Pilih paket Robux</h3></div><small id="robuxMethodHelp">Pilih metode terlebih dahulu.</small></div>
-          <div id="robuxPackageList" class="robux-package-grid"><div class="robux-empty">Belum ada metode dipilih.</div></div>
-          <form id="robuxOrderForm" class="robux-order-form" hidden>
-            <div class="robux-stage-head"><div><span class="robux-step">03</span><h3>Lengkapi data</h3></div><strong id="robuxSelectedPrice">Rp0</strong></div>
-            <input id="robuxMethodId" type="hidden"><input id="robuxPackageId" type="hidden">
-            <div class="robux-form-grid">
-              <label>Username Roblox<input id="robuxUsername" required maxlength="40" placeholder="Contoh: keii_neverlose2"></label>
-              <label id="robuxPasswordWrap" hidden>Password Roblox<input id="robuxPassword" type="password" maxlength="120" autocomplete="off" placeholder="Masukkan password Roblox"></label>
-              <div id="robuxBackupWrap" class="robux-backup-wrap" hidden>
-                <span>3 Backup Code</span>
-                <div class="robux-backup-grid">
-                  <input id="robuxBackupCode1" maxlength="80" autocomplete="off" placeholder="Backup Code 1">
-                  <input id="robuxBackupCode2" maxlength="80" autocomplete="off" placeholder="Backup Code 2">
-                  <input id="robuxBackupCode3" maxlength="80" autocomplete="off" placeholder="Backup Code 3">
-                </div>
-              </div>
-              <label>Nomor WhatsApp<input id="robuxWhatsapp" required inputmode="tel" maxlength="20" placeholder="08xxxxxxxxxx"></label>
-            </div>
-            <div class="robux-summary"><span>Pesanan dipilih</span><strong id="robuxSummaryText">-</strong></div>
-            <button id="robuxContinueBtn" type="submit">Lanjut ke Pembayaran</button>
-
-          </form>
-        </div>
-      </div>
     </section>
 
     <section id="orders" class="section order-check reveal">
@@ -389,7 +350,6 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="config.js"></script>
   <script src="store.js?v=16.5.4"></script>
-  <script src="robux.js?v=16.6.2"></script>
   <script src="script.js?v=16.5.1"></script>
 </body>
 </html>
