@@ -55,88 +55,122 @@
 })();
 
 (() => {
-  const cfg=window.KIVOPAY_CONFIG||{}; if(!window.supabase||!cfg.supabaseUrl)return;
-  const sb=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey),$=s=>document.querySelector(s);
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
-  const labels={pending:'Menunggu Bayar',paid:'Sudah Dibayar',processing:'Diproses',completed:'Selesai',cancelled:'Dibatalkan',failed:'Gagal'};
-  async function loadRobuxOrders(){
-    if(!$('#robuxAdminOrderList'))return;
-    const {data,error}=await sb.from('robux_orders').select('*').order('created_at',{ascending:false});
-    if(error){$('#robuxAdminOrderList').innerHTML=`<p class="muted">${esc(error.message)}</p>`;return}
-    const rows=data||[];
-    const paid=rows.filter(x=>['paid','processing'].includes(x.status)).length;
-    $('#robuxOrderStats').innerHTML=`<span>Total <b>${rows.length}</b></span><span>Perlu diproses <b>${paid}</b></span><span>Selesai <b>${rows.filter(x=>x.status==='completed').length}</b></span>`;
-    $('#robuxAdminOrderList').innerHTML=rows.length?rows.map(o=>`
-      <article class="admin-product-item robux-order-item">
-        <div><strong>${esc(o.invoice)} • ${esc(o.username)}</strong><span>${esc(o.method_name)} • ${esc(o.package_label)} • ${rp(o.payment_amount)}</span><small>${esc(o.whatsapp)} • ${new Date(o.created_at).toLocaleString('id-ID')}</small>
-        ${o.password?`<details><summary>Data Via Login</summary><p>Password: <code>${esc(o.password)}</code></p><p>Backup: ${(Array.isArray(o.backup_codes)?o.backup_codes:[]).map(esc).join(' • ')}</p></details>`:''}</div>
-        <div class="robux-order-controls">
-          <select data-robux-order-status="${o.id}">${Object.entries(labels).map(([v,l])=>`<option value="${v}" ${o.status===v?'selected':''}>${l}</option>`).join('')}</select>
-          <input data-robux-order-note="${o.id}" value="${esc(o.admin_note||'')}" placeholder="Catatan admin">
-          <button data-save-robux-order="${o.id}">Simpan</button>
-        </div>
-      </article>`).join(''):'<p class="muted">Belum ada pesanan Robux.</p>';
-    document.querySelectorAll('[data-save-robux-order]').forEach(btn=>btn.onclick=async()=>{
-      const id=btn.dataset.saveRobuxOrder,status=document.querySelector(`[data-robux-order-status="${id}"]`).value,note=document.querySelector(`[data-robux-order-note="${id}"]`).value.trim();
-      const patch={status,admin_note:note,updated_at:new Date().toISOString()};
-      if(status==='processing')patch.processed_at=new Date().toISOString();
-      if(status==='completed')patch.completed_at=new Date().toISOString();
-      btn.disabled=true;btn.textContent='Menyimpan...';
-      const {error}=await sb.from('robux_orders').update(patch).eq('id',id);
-      if(error)alert(error.message);else await loadRobuxOrders();
-    });
-  }
-  $('#refreshRobuxOrders')?.addEventListener('click',loadRobuxOrders);
-  setTimeout(loadRobuxOrders,1500);
-  setInterval(loadRobuxOrders,30000);
-})();
+  const cfg = window.KIVOPAY_CONFIG || {};
+  if (!window.supabase || !cfg.supabaseUrl) return;
+  const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  const $ = (s) => document.querySelector(s);
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const rp = (n) => new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', maximumFractionDigits:0}).format(Number(n || 0));
+  const dt = (v) => v ? new Date(v).toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'}) : '-';
+  const labels = {pending:'Pending', paid:'Sudah Bayar', processing:'Proses', completed:'Completed', cancelled:'Canceled', failed:'Gagal'};
+  let allOrders = [], activeOrderFilter = 'all';
 
-(() => {
-  const cfg=window.KIVOPAY_CONFIG||{}; if(!window.supabase||!cfg.supabaseUrl)return;
-  const sb=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey),$=s=>document.querySelector(s);
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
-  const labels={pending:'Pending',paid:'Sudah Bayar',processing:'Proses',completed:'Completed',cancelled:'Canceled',failed:'Gagal'};
-  let allOrders=[],activeOrderFilter='all';
-  function filtered(){return activeOrderFilter==='all'?allOrders:allOrders.filter(o=>o.status===activeOrderFilter)}
-  function updateBadge(){const count=allOrders.filter(o=>['paid','processing'].includes(o.status)).length;const badge=$('#robuxPendingBadge');if(badge){badge.textContent=count;badge.hidden=!count}}
-  async function saveStatus(id,status,note=''){
-    const patch={status,admin_note:note,updated_at:new Date().toISOString()};
-    if(status==='processing')patch.processed_at=new Date().toISOString();
-    if(status==='completed')patch.completed_at=new Date().toISOString();
-    const {error}=await sb.from('robux_orders').update(patch).eq('id',id);
-    if(error) alert(error.message); else await loadRobuxOrders();
+  function methodType(o){
+    const value = String(o.method_name || '').toLowerCase();
+    if (value.includes('login')) return 'login';
+    if (value.includes('username') || value.includes('usn')) return 'username';
+    return 'gamepass';
+  }
+  function filtered(){ return activeOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === activeOrderFilter); }
+  function updateBadge(){
+    const count = allOrders.filter(o => ['paid','processing'].includes(o.status)).length;
+    const badge = $('#robuxPendingBadge');
+    if (badge) { badge.textContent = count; badge.hidden = !count; }
+  }
+  async function saveStatus(id, status, note=''){
+    const patch = {status, admin_note:note, updated_at:new Date().toISOString()};
+    if (status === 'processing') patch.processed_at = new Date().toISOString();
+    if (status === 'completed') patch.completed_at = new Date().toISOString();
+    const {error} = await sb.from('robux_orders').update(patch).eq('id', id);
+    if (error) alert(error.message); else await loadRobuxOrders();
+  }
+  function loginData(o){
+    if(methodType(o) !== 'login') return '';
+    const codes = Array.isArray(o.backup_codes) ? o.backup_codes : [];
+    return `<section class="robux-sensitive-box">
+      <div class="robux-detail-head"><strong>🔐 Data Via Login</strong><span>Rahasia</span></div>
+      <div class="robux-copy-row"><label>Password Roblox</label><code>${esc(o.password || '-')}</code><button type="button" data-copy-value="${esc(o.password || '')}">Salin</button></div>
+      <div class="robux-backup-grid">
+        ${[0,1,2].map(i=>`<div><label>Backup Code ${i+1}</label><code>${esc(codes[i] || '-')}</code><button type="button" data-copy-value="${esc(codes[i] || '')}">Salin</button></div>`).join('')}
+      </div>
+      <small>Jangan membagikan data login di luar proses pesanan.</small>
+    </section>`;
   }
   function renderOrders(){
-    if(!$('#robuxAdminOrderList'))return;
-    const rows=filtered();
-    $('#robuxOrderStats').innerHTML=`<span>Total <b>${allOrders.length}</b></span><span>Sudah bayar <b>${allOrders.filter(x=>x.status==='paid').length}</b></span><span>Diproses <b>${allOrders.filter(x=>x.status==='processing').length}</b></span><span>Selesai <b>${allOrders.filter(x=>x.status==='completed').length}</b></span>`;
-    $('#robuxAdminOrderList').innerHTML=rows.length?rows.map(o=>`
-      <article class="admin-product-item robux-order-item">
-        <div><span class="robux-status-chip ${esc(o.status)}">${labels[o.status]||esc(o.status)}</span><strong>${esc(o.invoice)} • ${esc(o.username)}</strong><span>${esc(o.method_name)} • ${esc(o.package_label)} • ${rp(o.payment_amount)}</span><small>${esc(o.whatsapp)} • ${new Date(o.created_at).toLocaleString('id-ID')}</small>
-        ${o.password?`<details><summary>Data Via Login</summary><p>Password: <code>${esc(o.password)}</code></p><p>Backup: ${(Array.isArray(o.backup_codes)?o.backup_codes:[]).map(esc).join(' • ')}</p></details>`:''}</div>
-        <div class="robux-order-controls">
-          <div class="robux-quick-actions">
-            <button data-quick-status="pending" data-order-id="${o.id}" class="${o.status==='pending'?'is-active':''}">Pending</button>
-            <button data-quick-status="processing" data-order-id="${o.id}" class="${o.status==='processing'?'is-active':''}">Proses</button>
-            <button data-quick-status="completed" data-order-id="${o.id}" class="${o.status==='completed'?'is-active':''}">Completed</button>
-            <button data-quick-status="cancelled" data-order-id="${o.id}" class="danger ${o.status==='cancelled'?'is-active':''}">Canceled</button>
+    if (!$('#robuxAdminOrderList')) return;
+    const rows = filtered();
+    $('#robuxOrderStats').innerHTML = `
+      <span>Total <b>${allOrders.length}</b></span>
+      <span>Sudah bayar <b>${allOrders.filter(x=>x.status==='paid').length}</b></span>
+      <span>Diproses <b>${allOrders.filter(x=>x.status==='processing').length}</b></span>
+      <span>Selesai <b>${allOrders.filter(x=>x.status==='completed').length}</b></span>`;
+    $('#robuxAdminOrderList').innerHTML = rows.length ? rows.map(o => `
+      <article class="robux-order-card">
+        <header class="robux-order-card-head">
+          <div>
+            <span class="robux-status-chip ${esc(o.status)}">${labels[o.status] || esc(o.status)}</span>
+            <h3>${esc(o.invoice)}</h3>
+            <p>${esc(o.method_name)} • ${esc(o.package_label)}</p>
           </div>
-          <input data-robux-order-note="${o.id}" value="${esc(o.admin_note||'')}" placeholder="Catatan admin">
-          <button data-save-note="${o.id}">Simpan Catatan</button>
+          <div class="robux-order-price"><small>Total bayar</small><strong>${rp(o.payment_amount)}</strong></div>
+        </header>
+
+        <div class="robux-order-info-grid">
+          <div><small>Username Roblox</small><strong>${esc(o.username)}</strong></div>
+          <div><small>Nomor WhatsApp</small><strong>${esc(o.whatsapp)}</strong></div>
+          <div><small>Jumlah Robux</small><strong>${esc(o.robux_amount)} R$</strong></div>
+          <div><small>Harga paket</small><strong>${rp(o.amount)}</strong></div>
+          <div><small>Biaya unik</small><strong>${rp(o.unique_fee)}</strong></div>
+          <div><small>Dibuat</small><strong>${dt(o.created_at)}</strong></div>
+          <div><small>Dibayar</small><strong>${dt(o.paid_at)}</strong></div>
+          <div><small>Selesai</small><strong>${dt(o.completed_at)}</strong></div>
         </div>
-      </article>`).join(''):'<p class="muted">Tidak ada pesanan pada status ini.</p>';
-    document.querySelectorAll('[data-quick-status]').forEach(btn=>btn.onclick=()=>saveStatus(btn.dataset.orderId,btn.dataset.quickStatus,document.querySelector(`[data-robux-order-note="${btn.dataset.orderId}"]`)?.value.trim()||''));
-    document.querySelectorAll('[data-save-note]').forEach(btn=>btn.onclick=()=>{const id=btn.dataset.saveNote,o=allOrders.find(x=>String(x.id)===String(id));saveStatus(id,o.status,document.querySelector(`[data-robux-order-note="${id}"]`)?.value.trim()||'')});
+
+        ${loginData(o)}
+
+        <section class="robux-admin-action-box">
+          <label>Ubah status pesanan</label>
+          <div class="robux-quick-actions">
+            <button type="button" data-quick-status="pending" data-order-id="${o.id}" class="${o.status==='pending'?'is-active':''}">Pending</button>
+            <button type="button" data-quick-status="paid" data-order-id="${o.id}" class="${o.status==='paid'?'is-active':''}">Sudah Bayar</button>
+            <button type="button" data-quick-status="processing" data-order-id="${o.id}" class="${o.status==='processing'?'is-active':''}">Proses</button>
+            <button type="button" data-quick-status="completed" data-order-id="${o.id}" class="success ${o.status==='completed'?'is-active':''}">Completed</button>
+            <button type="button" data-quick-status="cancelled" data-order-id="${o.id}" class="danger ${o.status==='cancelled'?'is-active':''}">Canceled</button>
+          </div>
+          <div class="robux-note-row">
+            <textarea data-robux-order-note="${o.id}" rows="2" placeholder="Catatan admin untuk pesanan ini">${esc(o.admin_note || '')}</textarea>
+            <button type="button" data-save-note="${o.id}">Simpan Catatan</button>
+          </div>
+        </section>
+      </article>`).join('') : '<p class="muted">Tidak ada pesanan pada status ini.</p>';
+
+    document.querySelectorAll('[data-quick-status]').forEach(btn => btn.onclick = () => {
+      const note = document.querySelector(`[data-robux-order-note="${btn.dataset.orderId}"]`)?.value.trim() || '';
+      saveStatus(btn.dataset.orderId, btn.dataset.quickStatus, note);
+    });
+    document.querySelectorAll('[data-save-note]').forEach(btn => btn.onclick = () => {
+      const id = btn.dataset.saveNote, order = allOrders.find(x => String(x.id) === String(id));
+      saveStatus(id, order.status, document.querySelector(`[data-robux-order-note="${id}"]`)?.value.trim() || '');
+    });
+    document.querySelectorAll('[data-copy-value]').forEach(btn => btn.onclick = async () => {
+      const value = btn.dataset.copyValue || '';
+      if (!value) return;
+      try { await navigator.clipboard.writeText(value); btn.textContent='Tersalin'; setTimeout(()=>btn.textContent='Salin',1200); }
+      catch { prompt('Salin data berikut:', value); }
+    });
   }
   async function loadRobuxOrders(){
-    if(!$('#robuxAdminOrderList'))return;
-    const {data,error}=await sb.from('robux_orders').select('*').order('created_at',{ascending:false});
-    if(error){$('#robuxAdminOrderList').innerHTML=`<p class="muted">${esc(error.message)}</p>`;return}
-    allOrders=data||[];updateBadge();renderOrders();
+    if (!$('#robuxAdminOrderList')) return;
+    const {data,error} = await sb.from('robux_orders').select('*').order('created_at',{ascending:false});
+    if(error){ $('#robuxAdminOrderList').innerHTML = `<p class="muted">${esc(error.message)}</p>`; return; }
+    allOrders = data || []; updateBadge(); renderOrders();
   }
-  document.querySelectorAll('[data-robux-order-filter]').forEach(btn=>btn.addEventListener('click',()=>{activeOrderFilter=btn.dataset.robuxOrderFilter;document.querySelectorAll('[data-robux-order-filter]').forEach(x=>x.classList.toggle('active',x===btn));renderOrders()}));
-  $('#refreshRobuxOrders')?.addEventListener('click',loadRobuxOrders);
-  setTimeout(loadRobuxOrders,1200);setInterval(loadRobuxOrders,30000);
+  document.querySelectorAll('[data-robux-order-filter]').forEach(btn => btn.addEventListener('click', () => {
+    activeOrderFilter = btn.dataset.robuxOrderFilter;
+    document.querySelectorAll('[data-robux-order-filter]').forEach(x => x.classList.toggle('active', x===btn));
+    renderOrders();
+  }));
+  $('#refreshRobuxOrders')?.addEventListener('click', loadRobuxOrders);
+  setTimeout(loadRobuxOrders, 1200);
+  setInterval(loadRobuxOrders, 30000);
 })();
