@@ -2610,3 +2610,47 @@ body{overflow-x:hidden}
 .product-package-list{display:grid;gap:7px}.product-package-list>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border-radius:11px;background:#17121f}.product-package-list span{font-size:11px;color:#c9c1d3}.product-package-list strong{font-size:11px;color:#d9caff}.more-packages{display:block;margin-top:9px;color:#91889d;font-size:9px}
 .product-detail-action{position:sticky;bottom:-1px;z-index:3;display:grid;grid-template-columns:auto minmax(180px,1fr);gap:14px;align-items:center;padding:13px 14px;border:1px solid rgba(139,92,246,.23);border-radius:16px;background:rgba(13,9,19,.94);backdrop-filter:blur(16px);box-shadow:0 -14px 40px rgba(0,0,0,.3)}.product-detail-action>div{display:grid}.product-detail-action small{color:#8f879d;font-size:9px}.product-detail-action>div strong{font-size:17px;color:#d9caff}.product-detail-action .product-detail-buy{margin:0}.product-detail-buy span{margin-left:7px}
 @media(max-width:700px){.catalog-category-head{grid-template-columns:44px 1fr}.catalog-category-icon{width:44px;height:44px}.catalog-category-head>b{display:none}.catalog-category-head p{font-size:10px}.product-detail-hero{grid-template-columns:1fr;padding:18px;gap:15px}.product-detail-v2 .product-detail-cover{min-height:190px}.product-detail-v2 .product-detail-cover img{min-height:190px;max-height:235px}.product-detail-summary h2{font-size:25px}.product-detail-v2 .product-detail-content{padding:0 18px 18px}.product-info-strip{grid-template-columns:1fr 1fr 1fr}.product-info-strip>span{display:flex;flex-direction:column;text-align:center;gap:2px;padding:10px 5px}.product-info-strip b{font-size:17px}.product-detail-action{grid-template-columns:1fr}.product-detail-action>div{display:none}.product-description-v2 .product-description-text{max-height:280px}}
+
+/* =========================================================
+   KivoPay V16.5.4 — Catalog Width Hotfix
+   Outer catalog must stack category sections vertically.
+   Only each category's inner grid may use product columns.
+   ========================================================= */
+#storeGrid.store-grid{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  gap:34px;
+}
+
+#storeGrid > .catalog-category{
+  width:100%;
+  min-width:0;
+}
+
+#storeGrid .catalog-category-grid{
+  display:grid;
+  width:100%;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+}
+
+@media(max-width:1050px){
+  #storeGrid .catalog-category-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+@media(max-width:760px){
+  #storeGrid.store-grid{gap:28px}
+  #storeGrid .catalog-category-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+}
+
+@media(max-width:370px){
+  #storeGrid .catalog-category-grid{
+    grid-template-columns:1fr;
+  }
+}
