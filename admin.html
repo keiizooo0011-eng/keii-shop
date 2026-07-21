@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=16.1.0">
+  <link rel="stylesheet" href="admin.css?v=16.5.0">
 </head>
 <body class="admin-body">
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -41,11 +41,33 @@
         </div>
       </header>
 
-      <div class="admin-stats">
-        <article><span>Total Produk</span><strong id="statProducts">0</strong></article>
-        <article><span>Stok Tersedia</span><strong id="statStock">0</strong></article>
-        <article><span>Order Pending</span><strong id="statPending">0</strong></article>
-        <article><span>Total Order</span><strong id="statOrders">0</strong></article>
+      <div class="admin-welcome">
+        <div><span class="eyebrow">RINGKASAN HARI INI</span><h2>Semua aktivitas toko dalam satu layar.</h2><p>Pantau pelanggan, transaksi, stok, dan komunitas tanpa berpindah halaman.</p></div>
+        <div class="admin-live"><i></i><span>Sistem aktif</span></div>
+      </div>
+
+      <div class="admin-stats admin-stats-premium">
+        <article class="stat-card stat-users"><div class="stat-icon">👥</div><span>Total User</span><strong id="statUsers">0</strong><small>Pelanggan unik</small></article>
+        <article class="stat-card"><div class="stat-icon">🛍️</div><span>Total Produk</span><strong id="statProducts">0</strong><small>Produk terdaftar</small></article>
+        <article class="stat-card"><div class="stat-icon">📦</div><span>Stok Tersedia</span><strong id="statStock">0</strong><small>Siap auto-delivery</small></article>
+        <article class="stat-card"><div class="stat-icon">⏳</div><span>Order Pending</span><strong id="statPending">0</strong><small>Perlu dipantau</small></article>
+        <article class="stat-card"><div class="stat-icon">🧾</div><span>Total Order</span><strong id="statOrders">0</strong><small>Seluruh transaksi</small></article>
+        <article class="stat-card stat-revenue"><div class="stat-icon">💸</div><span>Omzet Selesai</span><strong id="statRevenue">Rp0</strong><small>Order paid/completed</small></article>
+      </div>
+
+      <div class="admin-overview-grid">
+        <section class="admin-panel admin-insight-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">STORE INSIGHT</span><h2>Performa Singkat</h2></div></div>
+          <div class="insight-list">
+            <div><span>Rating masuk</span><strong id="statRatings">0</strong></div>
+            <div><span>Pesan komunitas</span><strong id="statChats">0</strong></div>
+            <div><span>Order berhasil</span><strong id="statCompleted">0</strong></div>
+          </div>
+        </section>
+        <section class="admin-panel admin-activity-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">LATEST ACTIVITY</span><h2>Aktivitas Terbaru</h2></div></div>
+          <div id="adminActivityList" class="admin-activity-list"><p class="muted">Memuat aktivitas...</p></div>
+        </section>
       </div>
 
       <div class="admin-grid">
@@ -146,6 +168,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=16.1.0"></script>
+  <script src="admin.js?v=16.5.0"></script>
 </body>
 </html>

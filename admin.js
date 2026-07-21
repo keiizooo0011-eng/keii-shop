@@ -54,6 +54,7 @@
       $("#adminLogin").hidden = true;
       $("#adminDashboard").hidden = false;
       await Promise.all([loadProducts(), loadOrders(), loadAdminRatings(), loadAdminChat()]);
+      await refreshOverview();
     } catch(e) {
       msg($("#loginMessage"), e.message, "error");
     }
@@ -254,12 +255,21 @@
     }
   }
 
+  let ordersCache = [];
+  let ratingsCount = 0;
+  let chatsCount = 0;
+
   async function loadOrders() {
-    const { data, error } = await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(50);
+    const { data, error } = await sb.from("orders").select("*").order("created_at",{ascending:false});
     if (error) return;
     const orders = data || [];
+    ordersCache = orders;
     $("#statOrders").textContent = orders.length;
     $("#statPending").textContent = orders.filter(x=>x.status==="pending").length;
+    $("#statCompleted").textContent = orders.filter(x=>["paid","completed"].includes(x.status)).length;
+    $("#statRevenue").textContent = rupiah(orders.filter(x=>["paid","completed"].includes(x.status)).reduce((sum,x)=>sum+Number(x.amount||0),0));
+    const uniqueUsers = new Set(orders.map(x=>String(x.customer_contact||x.customer_name||"").trim().toLowerCase()).filter(Boolean));
+    $("#statUsers").textContent = uniqueUsers.size;
     $("#adminOrderList").innerHTML = orders.length ? orders.map(o=>`
       <article class="admin-order-item">
         <div><strong>${esc(o.invoice)}</strong><span>${esc(o.customer_name)} • ${esc(o.customer_contact)}</span></div>
@@ -340,6 +350,8 @@
       .select("id,customer_name,rating,review,is_visible,created_at,products(name)")
       .order("created_at",{ascending:false}).limit(50);
     if(error){root.innerHTML=`<p class="muted">${esc(error.message)}</p>`;return;}
+    ratingsCount = (data || []).length;
+    $("#statRatings").textContent = ratingsCount;
     root.innerHTML=(data||[]).length?(data||[]).map(item=>`
       <article class="moderation-item">
         <div>
@@ -372,6 +384,8 @@
       .select("id,nickname,message,is_visible,created_at")
       .order("created_at",{ascending:false}).limit(80);
     if(error){root.innerHTML=`<p class="muted">${esc(error.message)}</p>`;return;}
+    chatsCount = (data || []).length;
+    $("#statChats").textContent = chatsCount;
     root.innerHTML=(data||[]).length?(data||[]).map(item=>`
       <article class="moderation-item">
         <div>
@@ -397,11 +411,29 @@
     });
   }
 
+
+  async function refreshOverview(){
+    const root = $("#adminActivityList");
+    if (!root) return;
+    const items = ordersCache.slice(0, 6).map(order => ({
+      icon: order.status === "completed" ? "✓" : order.status === "pending" ? "⏳" : "🧾",
+      title: `${order.customer_name || "Pelanggan"} membeli ${order.product_name || "produk"}`,
+      detail: `${order.invoice || "Tanpa invoice"} • ${rupiah(order.amount)}`,
+      date: order.created_at
+    }));
+    root.innerHTML = items.length ? items.map(item => `
+      <article class="activity-item">
+        <span>${esc(item.icon)}</span>
+        <div><strong>${esc(item.title)}</strong><small>${esc(item.detail)}</small></div>
+        <time>${item.date ? new Date(item.date).toLocaleString("id-ID",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : "-"}</time>
+      </article>`).join("") : `<p class="muted">Belum ada aktivitas transaksi.</p>`;
+  }
+
   $("#refreshRatings")?.addEventListener("click",loadAdminRatings);
   $("#refreshChat")?.addEventListener("click",loadAdminChat);
 
   $("#refreshProducts").onclick = loadProducts;
-  $("#refreshOrders").onclick = loadOrders;
+  $("#refreshOrders").onclick = async () => { await loadOrders(); await refreshOverview(); };
   renderVariantRows([]);
   boot();
 })();
