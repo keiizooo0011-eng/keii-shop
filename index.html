@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=16.6.4">
+  <link rel="stylesheet" href="style.css?v=16.6.7">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -28,7 +28,7 @@
       <a href="robux.html">Top Up Robux</a>
       <a href="#tools">Tools</a>
       <a href="#orders">Pesanan</a>
-      <a href="#community">Komunitas</a>
+      <a href="chat.html">Ruang Obrolan</a>
     </nav>
   </header>
 
@@ -126,13 +126,14 @@
     <section id="community" class="section community-section reveal">
       <div class="section-head">
         <div>
-          <span class="eyebrow">KIVOPAY COMMUNITY</span>
-          <h2>Rating, testimoni, dan global chat</h2>
-          <p class="section-subtitle">Lihat pengalaman pembeli dan ngobrol dengan pengguna KivoPay lainnya.</p>
+          <span class="eyebrow">KIVOPAY REVIEWS</span>
+          <h2>Rating dan testimoni pembeli</h2>
+          <p class="section-subtitle">Lihat pengalaman terbaru dari pelanggan KivoPay.</p>
         </div>
+        <a class="community-chat-link" href="chat.html">Buka Ruang Obrolan <span>→</span></a>
       </div>
 
-      <div class="community-grid">
+      <div class="community-grid community-grid-reviews-only">
         <article class="community-panel">
           <div class="community-panel-head">
             <div>
@@ -144,29 +145,6 @@
           <div id="ratingList" class="rating-list">
             <div class="community-empty">Memuat rating...</div>
           </div>
-        </article>
-
-        <article class="community-panel chat-panel">
-          <div class="community-panel-head">
-            <div>
-              <span class="eyebrow">GLOBAL CHAT</span>
-              <h3>Ruang obrolan</h3><p class="chat-subtitle">Diskusi dan berbagi pengalaman secara realtime.</p>
-            </div>
-            <span class="chat-live"><i></i> Live</span>
-          </div>
-
-          <div id="chatMessages" class="chat-messages">
-            <div class="community-empty">Memuat chat...</div>
-          </div>
-
-          <form id="chatForm" class="chat-form chat-form-v14">
-            <div class="chat-identity-row"><span class="chat-self-avatar">K</span><input id="chatNickname" maxlength="28" placeholder="Nama panggilan" required></div>
-            <div class="chat-compose">
-              <input id="chatInput" maxlength="280" placeholder="Tulis pesan..." required autocomplete="off">
-              <button type="submit" aria-label="Kirim pesan"><span>Kirim</span><b>➤</b></button>
-            </div>
-            <small>Jaga bahasa dan jangan membagikan password, token, atau data pribadi.</small>
-          </form>
         </article>
       </div>
     </section>
@@ -296,7 +274,7 @@
           <a href="#store">Store</a>
           <a href="#tools">Tools</a>
           <a href="#orders">Cek Pesanan</a>
-          <a href="#community">Komunitas</a>
+          <a href="chat.html">Ruang Obrolan</a>
         </div>
 
         <div class="footer-column">

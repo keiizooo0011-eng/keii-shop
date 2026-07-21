@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a0710">
+  <title>Ruang Obrolan — KivoPay</title>
+  <meta name="description" content="Ruang obrolan komunitas KivoPay secara realtime.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=16.6.7">
+</head>
+<body class="chat-page-body">
+  <div class="glow glow-a"></div><div class="glow glow-b"></div>
+  <div class="particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <header class="topbar">
+    <a href="index.html#home" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
+    <nav class="main-nav">
+      <a href="index.html#home">Home</a>
+      <a href="index.html#store">Store</a>
+      <a href="robux.html">Top Up Robux</a>
+      <a href="index.html#tools">Tools</a>
+      <a href="index.html#orders">Pesanan</a>
+      <a class="active" href="chat.html">Ruang Obrolan</a>
+    </nav>
+  </header>
+
+  <main class="chat-page-main">
+    <section class="chat-page-hero">
+      <div>
+        <span class="eyebrow">KIVOPAY COMMUNITY</span>
+        <h1>Ruang obrolan</h1>
+        <p>Ngobrol, berbagi pengalaman, dan bertanya dengan pengguna KivoPay lainnya secara realtime.</p>
+      </div>
+      <span class="chat-live"><i></i> Live</span>
+    </section>
+
+    <section class="community-panel chat-panel chat-page-panel">
+      <div class="community-panel-head chat-page-panel-head">
+        <div>
+          <span class="eyebrow">GLOBAL CHAT</span>
+          <h2>Komunitas KivoPay</h2>
+          <p class="chat-subtitle">Jaga obrolan tetap nyaman dan jangan bagikan data pribadi.</p>
+        </div>
+      </div>
+
+      <div id="chatMessages" class="chat-messages chat-page-messages">
+        <div class="community-empty">Memuat chat...</div>
+      </div>
+
+      <form id="chatForm" class="chat-form chat-form-v14 chat-page-form">
+        <div class="chat-identity-row">
+          <span class="chat-self-avatar">K</span>
+          <input id="chatNickname" maxlength="28" placeholder="Nama panggilan" required>
+        </div>
+        <div class="chat-compose">
+          <input id="chatInput" maxlength="280" placeholder="Tulis pesan..." required autocomplete="off">
+          <button type="submit" aria-label="Kirim pesan"><span>Kirim</span><b>➤</b></button>
+        </div>
+        <small>Jaga bahasa dan jangan membagikan password, token, atau data pribadi.</small>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="store.js?v=16.6.7"></script>
+</body>
+</html>
