@@ -350,6 +350,16 @@
     try {
       const products = await loadProducts();
       window.__KIVO_PRODUCTS__ = products;
+      const totalStock = products.reduce((sum, item) => sum + Number(item.stock || 0), 0);
+      const categories = new Set(products.map(item => item.category).filter(Boolean)).size;
+      const dashProducts = document.querySelector("#dashProducts");
+      const dashStock = document.querySelector("#dashStock");
+      const dashCategories = document.querySelector("#dashCategories");
+      const dashProductText = document.querySelector("#dashProductText");
+      if (dashProducts) dashProducts.textContent = products.length;
+      if (dashStock) dashStock.textContent = totalStock;
+      if (dashCategories) dashCategories.textContent = categories || 2;
+      if (dashProductText) dashProductText.textContent = `${products.length} produk aktif • ${totalStock} stok siap`;
       root.innerHTML = products.length
         ? products.map(productCard).join("")
         : `<div class="store-empty">Belum ada produk aktif. Tambahkan dari Admin Panel.</div>`;
@@ -371,56 +381,95 @@
     let variants = Array.isArray(product.variants) ? product.variants : [];
     if (!variants.length) variants = [{name:"Paket utama",price:product.price}];
 
-    body.innerHTML = `
-      <button class="shop-close" type="button" aria-label="Tutup">×</button>
-      <div class="checkout-head">
-        <img src="${esc(product.image_url || "")}" alt="${esc(product.name)}">
-        <div><span>CHECKOUT KIVOPAY</span><h2>${esc(product.name)}</h2></div>
-      </div>
-      <label>Pilih paket</label>
-      <select id="checkoutVariant">
-        ${variants.map((v,i)=>`<option value="${i}">${esc(v.name)} — ${rupiah(v.price ?? product.price)}</option>`).join("")}
-      </select>
-      <label>Nama pembeli</label>
-      <input id="checkoutName" placeholder="Nama kamu">
-      <label>Nomor WhatsApp / Telegram</label>
-      <input id="checkoutContact" placeholder="Contoh: 62812xxxx">
-      <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>`;
+    const description = esc(product.description || "Produk digital KivoPay.")
+      .replace(/\r?\n/g, "<br>");
+    const startPrice = Math.min(...variants.map(v => Number(v.price ?? product.price) || Number(product.price) || 0));
 
+    const closeModal = () => modal.classList.remove("open");
+
+    function renderProductDetail() {
+      body.innerHTML = `
+        <button class="shop-close" type="button" aria-label="Tutup">×</button>
+        <div class="product-detail-view">
+          <div class="product-detail-cover">
+            <img src="${esc(product.image_url || "")}" alt="${esc(product.name)}">
+            <span>${product.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"}</span>
+          </div>
+          <div class="product-detail-content">
+            <span class="product-detail-kicker">DETAIL PRODUK</span>
+            <h2>${esc(product.name)}</h2>
+            <div class="product-detail-rating">${stars(product.rating_average || 0)} <span>${Number(product.rating_count || 0) ? `${Number(product.rating_average || 0).toFixed(1)} dari ${Number(product.rating_count)} ulasan` : "Belum ada ulasan"}</span></div>
+            <div class="product-detail-price"><small>Mulai dari</small><strong>${rupiah(startPrice)}</strong><span>Stok ${Number(product.stock || 0)}</span></div>
+            <div class="product-description-box">
+              <h3>Deskripsi Produk</h3>
+              <div class="product-description-text">${description}</div>
+            </div>
+            <div class="product-detail-benefits">
+              <span>⚡ Proses cepat</span><span>🔒 Pembayaran aman</span><span>📦 Auto delivery</span>
+            </div>
+            <button id="continueCheckout" class="checkout-submit product-detail-buy">Lanjut Checkout</button>
+          </div>
+        </div>`;
+      body.querySelector(".shop-close").onclick = closeModal;
+      body.querySelector("#continueCheckout").onclick = renderCheckoutForm;
+    }
+
+    function renderCheckoutForm() {
+      body.innerHTML = `
+        <button class="shop-close" type="button" aria-label="Tutup">×</button>
+        <button class="checkout-back" type="button">← Kembali ke detail</button>
+        <div class="checkout-head">
+          <img src="${esc(product.image_url || "")}" alt="${esc(product.name)}">
+          <div><span>CHECKOUT KIVOPAY</span><h2>${esc(product.name)}</h2></div>
+        </div>
+        <label>Pilih paket</label>
+        <select id="checkoutVariant">
+          ${variants.map((v,i)=>`<option value="${i}">${esc(v.name)} — ${rupiah(v.price ?? product.price)}</option>`).join("")}
+        </select>
+        <label>Nama pembeli</label>
+        <input id="checkoutName" placeholder="Nama kamu">
+        <label>Nomor WhatsApp / Telegram</label>
+        <input id="checkoutContact" placeholder="Contoh: 62812xxxx">
+        <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>`;
+
+      body.querySelector(".shop-close").onclick = closeModal;
+      body.querySelector(".checkout-back").onclick = renderProductDetail;
+
+      body.querySelector("#checkoutSubmit").onclick = async () => {
+        const name = body.querySelector("#checkoutName").value.trim();
+        const contact = body.querySelector("#checkoutContact").value.trim();
+        const checkoutContact = contact;
+        const variantIndex = Number(body.querySelector("#checkoutVariant").value);
+        if (!name || !contact) return alert("Nama dan kontak wajib diisi.");
+
+        const submit = body.querySelector("#checkoutSubmit");
+        submit.disabled = true;
+        submit.textContent = "Membuat QRIS...";
+
+        try {
+          const response = await fetch("/api/create-order", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({
+              product_id: product.id,
+              variant_index: variantIndex,
+              customer_name: name,
+              customer_contact: contact
+            })
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "Gagal membuat pembayaran.");
+          showPayment(data);
+        } catch (e) {
+          alert(e.message);
+          submit.disabled = false;
+          submit.textContent = "Buat Pesanan";
+        }
+      };
+    }
+
+    renderProductDetail();
     modal.classList.add("open");
-    body.querySelector(".shop-close").onclick = () => modal.classList.remove("open");
-
-    body.querySelector("#checkoutSubmit").onclick = async () => {
-      const name = body.querySelector("#checkoutName").value.trim();
-      const contact = body.querySelector("#checkoutContact").value.trim();
-      const checkoutContact = contact;
-      const variantIndex = Number(body.querySelector("#checkoutVariant").value);
-      if (!name || !contact) return alert("Nama dan kontak wajib diisi.");
-
-      const submit = body.querySelector("#checkoutSubmit");
-      submit.disabled = true;
-      submit.textContent = "Membuat QRIS...";
-
-      try {
-        const response = await fetch("/api/create-order", {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify({
-            product_id: product.id,
-            variant_index: variantIndex,
-            customer_name: name,
-            customer_contact: contact
-          })
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Gagal membuat pembayaran.");
-        showPayment(data);
-      } catch (e) {
-        alert(e.message);
-        submit.disabled = false;
-        submit.textContent = "Buat Pesanan";
-      }
-    };
 
     function showPayment(data) {
       const order = data.order;
