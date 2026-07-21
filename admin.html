@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=16.5.0">
+  <link rel="stylesheet" href="admin.css?v=16.6.0">
 </head>
 <body class="admin-body">
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -122,6 +122,36 @@
       </div>
 
 
+
+      <section class="admin-panel robux-admin-panel">
+        <div class="admin-panel-head"><div><span class="eyebrow">ROBUX MANAGER</span><h2>Metode & Paket Robux</h2><p class="muted">Kelola Gamepass, Via Username, dan Via Login tanpa mencampurnya dengan stok APK Premium.</p></div><button id="refreshRobuxAdmin" class="ghost">Refresh</button></div>
+        <div class="robux-admin-grid">
+          <form id="robuxMethodForm" class="product-form robux-admin-form">
+            <input id="robuxAdminMethodId" type="hidden">
+            <h3>Tambah / Edit Metode</h3>
+            <label>Nama metode</label><input id="robuxAdminMethodName" required placeholder="Contoh: Robux Gamepass">
+            <label>Slug</label><input id="robuxAdminMethodSlug" required placeholder="gamepass">
+            <label>Deskripsi singkat</label><textarea id="robuxAdminMethodDescription" rows="3" required></textarea>
+            <label>Tipe form</label><select id="robuxAdminMethodFormType"><option value="username">Via Username / Gamepass</option><option value="login">Via Login</option></select>
+            <div class="form-two"><label>Urutan<input id="robuxAdminMethodSort" type="number" min="0" value="0"></label><label class="switch-row"><input id="robuxAdminMethodActive" type="checkbox" checked> Metode dibuka</label></div>
+            <div class="form-actions"><button type="submit">Simpan Metode</button><button id="cancelRobuxMethodEdit" type="button" class="ghost" hidden>Batal</button></div>
+            <div id="robuxMethodMessage" class="admin-message"></div>
+          </form>
+          <form id="robuxPackageForm" class="product-form robux-admin-form">
+            <input id="robuxAdminPackageId" type="hidden">
+            <h3>Tambah / Edit Paket</h3>
+            <label>Metode</label><select id="robuxAdminPackageMethod" required></select>
+            <div class="form-two"><label>Jumlah Robux<input id="robuxAdminAmount" type="number" min="1" required placeholder="100"></label><label>Harga<input id="robuxAdminPrice" type="number" min="0" required placeholder="15000"></label></div>
+            <label>Label paket</label><input id="robuxAdminLabel" required placeholder="100 Robux">
+            <label>Estimasi proses</label><input id="robuxAdminEta" placeholder="5-30 menit">
+            <div class="form-two"><label>Urutan<input id="robuxAdminPackageSort" type="number" min="0" value="0"></label><label class="switch-row"><input id="robuxAdminPackageActive" type="checkbox" checked> Paket dibuka</label></div>
+            <div class="form-actions"><button type="submit">Simpan Paket</button><button id="cancelRobuxPackageEdit" type="button" class="ghost" hidden>Batal</button></div>
+            <div id="robuxPackageMessage" class="admin-message"></div>
+          </form>
+        </div>
+        <div class="robux-admin-lists"><div><h3>Daftar Metode</h3><div id="robuxAdminMethodList" class="admin-product-list"></div></div><div><h3>Daftar Paket</h3><div id="robuxAdminPackageList" class="admin-product-list"></div></div></div>
+      </section>
+
       <section class="admin-panel orders-panel">
         <div class="admin-panel-head"><div><span class="eyebrow">AUTO DELIVERY</span><h2>Tambah Stok Produk</h2></div></div>
         <form id="stockForm" class="stock-form">
@@ -169,5 +199,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=16.5.0"></script>
+  <script src="robux-admin.js?v=16.6.0"></script>
 </body>
 </html>
