@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=16.6.0">
+  <link rel="stylesheet" href="admin.css?v=16.6.8">
 </head>
 <body class="admin-body">
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -37,10 +37,22 @@
         </div>
         <div class="admin-actions">
           <a href="index.html">Lihat Website</a>
+          <button id="adminThemeToggle" class="admin-theme-toggle" type="button" aria-label="Ganti tema">☀️ Mode Siang</button>
           <button id="logoutBtn" class="ghost-danger">Keluar</button>
         </div>
       </header>
 
+      <nav class="admin-module-nav" aria-label="Menu admin">
+        <button class="active" data-admin-page-btn="overview">🏠 Ringkasan</button>
+        <button data-admin-page-btn="products">🛍️ Produk</button>
+        <button data-admin-page-btn="robux-catalog">💎 Katalog Robux</button>
+        <button data-admin-page-btn="robux-orders">🎮 Proses Robux <span id="robuxPendingBadge" class="admin-nav-badge" hidden>0</span></button>
+        <button data-admin-page-btn="stock">📦 Stok</button>
+        <button data-admin-page-btn="moderation">💬 Moderasi</button>
+        <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
+      </nav>
+
+      <div class="admin-page active" data-admin-page="overview">
       <div class="admin-welcome">
         <div><span class="eyebrow">RINGKASAN HARI INI</span><h2>Semua aktivitas toko dalam satu layar.</h2><p>Pantau pelanggan, transaksi, stok, dan komunitas tanpa berpindah halaman.</p></div>
         <div class="admin-live"><i></i><span>Sistem aktif</span></div>
@@ -70,6 +82,9 @@
         </section>
       </div>
 
+      </div>
+
+      <div class="admin-page" data-admin-page="products">
       <div class="admin-grid">
         <section class="admin-panel">
           <div class="admin-panel-head">
@@ -123,6 +138,9 @@
 
 
 
+      </div>
+
+      <div class="admin-page" data-admin-page="robux-catalog">
       <section class="admin-panel robux-admin-panel">
         <div class="admin-panel-head"><div><span class="eyebrow">ROBUX MANAGER</span><h2>Metode & Paket Robux</h2><p class="muted">Kelola Gamepass, Via Username, dan Via Login tanpa mencampurnya dengan stok APK Premium.</p></div><button id="refreshRobuxAdmin" class="ghost">Refresh</button></div>
         <div class="robux-admin-grid">
@@ -161,6 +179,25 @@
         <div class="robux-admin-lists"><div><h3 id="robuxAdminMethodListTitle">Metode Gamepass</h3><div id="robuxAdminMethodList" class="admin-product-list"></div></div><div><h3 id="robuxAdminPackageListTitle">Paket Gamepass</h3><div id="robuxAdminPackageList" class="admin-product-list"></div></div></div>
       </section>
 
+      </div>
+
+      <div class="admin-page" data-admin-page="robux-orders">
+        <section class="admin-panel robux-process-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">ROBUX ORDER CENTER</span><h2>Proses Pesanan Robux</h2><p class="muted">Kelola pesanan langsung dari panel admin. Tidak terhubung ke bot WhatsApp.</p></div><button id="refreshRobuxOrders" class="ghost">Refresh</button></div>
+          <div id="robuxOrderStats" class="robux-order-stats"></div>
+          <div class="robux-order-filterbar">
+            <button class="active" data-robux-order-filter="all">Semua</button>
+            <button data-robux-order-filter="pending">Pending</button>
+            <button data-robux-order-filter="paid">Sudah Bayar</button>
+            <button data-robux-order-filter="processing">Proses</button>
+            <button data-robux-order-filter="completed">Completed</button>
+            <button data-robux-order-filter="cancelled">Canceled</button>
+          </div>
+          <div id="robuxAdminOrderList" class="admin-product-list robux-admin-order-list"></div>
+        </section>
+      </div>
+
+      <div class="admin-page" data-admin-page="stock">
       <section class="admin-panel orders-panel">
         <div class="admin-panel-head"><div><span class="eyebrow">AUTO DELIVERY</span><h2>Tambah Stok Produk</h2></div></div>
         <form id="stockForm" class="stock-form">
@@ -177,6 +214,9 @@
       </section>
 
 
+      </div>
+
+      <div class="admin-page" data-admin-page="moderation">
       <div class="admin-grid moderation-grid">
         <section class="admin-panel">
           <div class="admin-panel-head">
@@ -195,6 +235,9 @@
         </section>
       </div>
 
+      </div>
+
+      <div class="admin-page" data-admin-page="orders">
       <section class="admin-panel orders-panel">
         <div class="admin-panel-head">
           <div><span class="eyebrow">ORDER MANAGER</span><h2>Pesanan Terbaru</h2></div>
@@ -202,12 +245,13 @@
         </div>
         <div id="adminOrderList" class="admin-order-list"></div>
       </section>
+      </div>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=16.5.0"></script>
-  <script src="robux-admin.js?v=16.6.4"></script>
+  <script src="admin.js?v=16.6.8"></script>
+  <script src="robux-admin.js?v=16.6.8"></script>
 </body>
 </html>

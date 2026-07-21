@@ -91,3 +91,52 @@
   setTimeout(loadRobuxOrders,1500);
   setInterval(loadRobuxOrders,30000);
 })();
+
+(() => {
+  const cfg=window.KIVOPAY_CONFIG||{}; if(!window.supabase||!cfg.supabaseUrl)return;
+  const sb=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey),$=s=>document.querySelector(s);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
+  const labels={pending:'Pending',paid:'Sudah Bayar',processing:'Proses',completed:'Completed',cancelled:'Canceled',failed:'Gagal'};
+  let allOrders=[],activeOrderFilter='all';
+  function filtered(){return activeOrderFilter==='all'?allOrders:allOrders.filter(o=>o.status===activeOrderFilter)}
+  function updateBadge(){const count=allOrders.filter(o=>['paid','processing'].includes(o.status)).length;const badge=$('#robuxPendingBadge');if(badge){badge.textContent=count;badge.hidden=!count}}
+  async function saveStatus(id,status,note=''){
+    const patch={status,admin_note:note,updated_at:new Date().toISOString()};
+    if(status==='processing')patch.processed_at=new Date().toISOString();
+    if(status==='completed')patch.completed_at=new Date().toISOString();
+    const {error}=await sb.from('robux_orders').update(patch).eq('id',id);
+    if(error) alert(error.message); else await loadRobuxOrders();
+  }
+  function renderOrders(){
+    if(!$('#robuxAdminOrderList'))return;
+    const rows=filtered();
+    $('#robuxOrderStats').innerHTML=`<span>Total <b>${allOrders.length}</b></span><span>Sudah bayar <b>${allOrders.filter(x=>x.status==='paid').length}</b></span><span>Diproses <b>${allOrders.filter(x=>x.status==='processing').length}</b></span><span>Selesai <b>${allOrders.filter(x=>x.status==='completed').length}</b></span>`;
+    $('#robuxAdminOrderList').innerHTML=rows.length?rows.map(o=>`
+      <article class="admin-product-item robux-order-item">
+        <div><span class="robux-status-chip ${esc(o.status)}">${labels[o.status]||esc(o.status)}</span><strong>${esc(o.invoice)} • ${esc(o.username)}</strong><span>${esc(o.method_name)} • ${esc(o.package_label)} • ${rp(o.payment_amount)}</span><small>${esc(o.whatsapp)} • ${new Date(o.created_at).toLocaleString('id-ID')}</small>
+        ${o.password?`<details><summary>Data Via Login</summary><p>Password: <code>${esc(o.password)}</code></p><p>Backup: ${(Array.isArray(o.backup_codes)?o.backup_codes:[]).map(esc).join(' • ')}</p></details>`:''}</div>
+        <div class="robux-order-controls">
+          <div class="robux-quick-actions">
+            <button data-quick-status="pending" data-order-id="${o.id}" class="${o.status==='pending'?'is-active':''}">Pending</button>
+            <button data-quick-status="processing" data-order-id="${o.id}" class="${o.status==='processing'?'is-active':''}">Proses</button>
+            <button data-quick-status="completed" data-order-id="${o.id}" class="${o.status==='completed'?'is-active':''}">Completed</button>
+            <button data-quick-status="cancelled" data-order-id="${o.id}" class="danger ${o.status==='cancelled'?'is-active':''}">Canceled</button>
+          </div>
+          <input data-robux-order-note="${o.id}" value="${esc(o.admin_note||'')}" placeholder="Catatan admin">
+          <button data-save-note="${o.id}">Simpan Catatan</button>
+        </div>
+      </article>`).join(''):'<p class="muted">Tidak ada pesanan pada status ini.</p>';
+    document.querySelectorAll('[data-quick-status]').forEach(btn=>btn.onclick=()=>saveStatus(btn.dataset.orderId,btn.dataset.quickStatus,document.querySelector(`[data-robux-order-note="${btn.dataset.orderId}"]`)?.value.trim()||''));
+    document.querySelectorAll('[data-save-note]').forEach(btn=>btn.onclick=()=>{const id=btn.dataset.saveNote,o=allOrders.find(x=>String(x.id)===String(id));saveStatus(id,o.status,document.querySelector(`[data-robux-order-note="${id}"]`)?.value.trim()||'')});
+  }
+  async function loadRobuxOrders(){
+    if(!$('#robuxAdminOrderList'))return;
+    const {data,error}=await sb.from('robux_orders').select('*').order('created_at',{ascending:false});
+    if(error){$('#robuxAdminOrderList').innerHTML=`<p class="muted">${esc(error.message)}</p>`;return}
+    allOrders=data||[];updateBadge();renderOrders();
+  }
+  document.querySelectorAll('[data-robux-order-filter]').forEach(btn=>btn.addEventListener('click',()=>{activeOrderFilter=btn.dataset.robuxOrderFilter;document.querySelectorAll('[data-robux-order-filter]').forEach(x=>x.classList.toggle('active',x===btn));renderOrders()}));
+  $('#refreshRobuxOrders')?.addEventListener('click',loadRobuxOrders);
+  setTimeout(loadRobuxOrders,1200);setInterval(loadRobuxOrders,30000);
+})();

@@ -437,3 +437,29 @@
   renderVariantRows([]);
   boot();
 })();
+
+
+// V16.6.8 modular admin navigation and theme
+(() => {
+  const buttons=[...document.querySelectorAll('[data-admin-page-btn]')];
+  const pages=[...document.querySelectorAll('[data-admin-page]')];
+  function openPage(name){
+    buttons.forEach(b=>b.classList.toggle('active',b.dataset.adminPageBtn===name));
+    pages.forEach(p=>p.classList.toggle('active',p.dataset.adminPage===name));
+    localStorage.setItem('kivopay_admin_page',name);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  buttons.forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.adminPageBtn)));
+  const savedPage=localStorage.getItem('kivopay_admin_page');
+  if(savedPage && pages.some(p=>p.dataset.adminPage===savedPage)) openPage(savedPage);
+
+  const toggle=document.querySelector('#adminThemeToggle');
+  function applyTheme(theme){
+    document.body.classList.toggle('admin-light',theme==='light');
+    document.documentElement.style.colorScheme=theme;
+    if(toggle) toggle.textContent=theme==='light'?'🌙 Mode Malam':'☀️ Mode Siang';
+    localStorage.setItem('kivopay_admin_theme',theme);
+  }
+  applyTheme(localStorage.getItem('kivopay_admin_theme')||'dark');
+  toggle?.addEventListener('click',()=>applyTheme(document.body.classList.contains('admin-light')?'dark':'light'));
+})();
