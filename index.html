@@ -129,14 +129,20 @@
             <input id="robuxMethodId" type="hidden"><input id="robuxPackageId" type="hidden">
             <div class="robux-form-grid">
               <label>Username Roblox<input id="robuxUsername" required maxlength="40" placeholder="Contoh: keii_neverlose2"></label>
+              <label id="robuxPasswordWrap" hidden>Password Roblox<input id="robuxPassword" type="password" maxlength="120" autocomplete="off" placeholder="Masukkan password Roblox"></label>
+              <div id="robuxBackupWrap" class="robux-backup-wrap" hidden>
+                <span>3 Backup Code</span>
+                <div class="robux-backup-grid">
+                  <input id="robuxBackupCode1" maxlength="80" autocomplete="off" placeholder="Backup Code 1">
+                  <input id="robuxBackupCode2" maxlength="80" autocomplete="off" placeholder="Backup Code 2">
+                  <input id="robuxBackupCode3" maxlength="80" autocomplete="off" placeholder="Backup Code 3">
+                </div>
+              </div>
               <label>Nomor WhatsApp<input id="robuxWhatsapp" required inputmode="tel" maxlength="20" placeholder="08xxxxxxxxxx"></label>
-              <label id="robuxPasswordWrap" hidden>Password Roblox<input id="robuxPassword" type="password" maxlength="100" autocomplete="off" placeholder="Isi hanya untuk metode Via Login"></label>
-              <label id="robuxBackupWrap" hidden>Backup Code<input id="robuxBackupCode" maxlength="100" placeholder="Opsional / sesuai instruksi admin"></label>
             </div>
-            <label>Catatan untuk admin<textarea id="robuxNote" rows="3" maxlength="300" placeholder="Contoh: proses malam hari / catatan tambahan"></textarea></label>
             <div class="robux-summary"><span>Pesanan dipilih</span><strong id="robuxSummaryText">-</strong></div>
             <button id="robuxContinueBtn" type="submit">Lanjut ke Pembayaran</button>
-            <small class="robux-stage-note">Tahap 1 menyiapkan katalog, metode, paket, dan form. Penyambungan pembayaran serta riwayat status dilanjutkan pada Tahap 2.</small>
+
           </form>
         </div>
       </div>
@@ -383,7 +389,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="config.js"></script>
   <script src="store.js?v=16.5.4"></script>
-  <script src="robux.js?v=16.6.1"></script>
+  <script src="robux.js?v=16.6.2"></script>
   <script src="script.js?v=16.5.1"></script>
 </body>
 </html>

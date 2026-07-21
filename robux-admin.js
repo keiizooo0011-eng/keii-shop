@@ -33,3 +33,41 @@
   $('#refreshRobuxAdmin')?.addEventListener('click',load);
   setTimeout(load,1200);
 })();
+
+(() => {
+  const cfg=window.KIVOPAY_CONFIG||{}; if(!window.supabase||!cfg.supabaseUrl)return;
+  const sb=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey),$=s=>document.querySelector(s);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
+  const labels={pending:'Menunggu Bayar',paid:'Sudah Dibayar',processing:'Diproses',completed:'Selesai',cancelled:'Dibatalkan',failed:'Gagal'};
+  async function loadRobuxOrders(){
+    if(!$('#robuxAdminOrderList'))return;
+    const {data,error}=await sb.from('robux_orders').select('*').order('created_at',{ascending:false});
+    if(error){$('#robuxAdminOrderList').innerHTML=`<p class="muted">${esc(error.message)}</p>`;return}
+    const rows=data||[];
+    const paid=rows.filter(x=>['paid','processing'].includes(x.status)).length;
+    $('#robuxOrderStats').innerHTML=`<span>Total <b>${rows.length}</b></span><span>Perlu diproses <b>${paid}</b></span><span>Selesai <b>${rows.filter(x=>x.status==='completed').length}</b></span>`;
+    $('#robuxAdminOrderList').innerHTML=rows.length?rows.map(o=>`
+      <article class="admin-product-item robux-order-item">
+        <div><strong>${esc(o.invoice)} • ${esc(o.username)}</strong><span>${esc(o.method_name)} • ${esc(o.package_label)} • ${rp(o.payment_amount)}</span><small>${esc(o.whatsapp)} • ${new Date(o.created_at).toLocaleString('id-ID')}</small>
+        ${o.password?`<details><summary>Data Via Login</summary><p>Password: <code>${esc(o.password)}</code></p><p>Backup: ${(Array.isArray(o.backup_codes)?o.backup_codes:[]).map(esc).join(' • ')}</p></details>`:''}</div>
+        <div class="robux-order-controls">
+          <select data-robux-order-status="${o.id}">${Object.entries(labels).map(([v,l])=>`<option value="${v}" ${o.status===v?'selected':''}>${l}</option>`).join('')}</select>
+          <input data-robux-order-note="${o.id}" value="${esc(o.admin_note||'')}" placeholder="Catatan admin">
+          <button data-save-robux-order="${o.id}">Simpan</button>
+        </div>
+      </article>`).join(''):'<p class="muted">Belum ada pesanan Robux.</p>';
+    document.querySelectorAll('[data-save-robux-order]').forEach(btn=>btn.onclick=async()=>{
+      const id=btn.dataset.saveRobuxOrder,status=document.querySelector(`[data-robux-order-status="${id}"]`).value,note=document.querySelector(`[data-robux-order-note="${id}"]`).value.trim();
+      const patch={status,admin_note:note,updated_at:new Date().toISOString()};
+      if(status==='processing')patch.processed_at=new Date().toISOString();
+      if(status==='completed')patch.completed_at=new Date().toISOString();
+      btn.disabled=true;btn.textContent='Menyimpan...';
+      const {error}=await sb.from('robux_orders').update(patch).eq('id',id);
+      if(error)alert(error.message);else await loadRobuxOrders();
+    });
+  }
+  $('#refreshRobuxOrders')?.addEventListener('click',loadRobuxOrders);
+  setTimeout(loadRobuxOrders,1500);
+  setInterval(loadRobuxOrders,30000);
+})();

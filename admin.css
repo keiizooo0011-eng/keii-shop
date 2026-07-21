@@ -49,3 +49,7 @@
 /* V16.6 Stage 1 — Robux admin */
 .robux-admin-panel{margin-top:22px}.robux-admin-grid,.robux-admin-lists{display:grid;grid-template-columns:1fr 1fr;gap:18px}.robux-admin-form{padding:18px;border-radius:18px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07)}.robux-admin-form h3,.robux-admin-lists h3{margin-top:0}.robux-admin-lists{margin-top:20px}.robux-admin-lists>div{min-width:0}.robux-admin-lists .admin-product-item{grid-template-columns:1fr auto}.robux-admin-lists .item-actions{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
 @media(max-width:850px){.robux-admin-grid,.robux-admin-lists{grid-template-columns:1fr}}
+
+/* V16.6.2 Robux order management */
+.robux-order-admin{margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08)}.section-title-row{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:16px}.robux-order-stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}.robux-order-stats span{padding:10px 14px;border-radius:12px;background:rgba(142,68,255,.1);border:1px solid rgba(142,68,255,.22)}.robux-order-item{align-items:flex-start}.robux-order-item details{margin-top:10px;color:#cbbde0}.robux-order-controls{display:grid;gap:8px;min-width:220px}.robux-order-controls select,.robux-order-controls input{width:100%}
+@media(max-width:700px){.robux-order-item{display:block}.robux-order-controls{margin-top:14px;min-width:0}}

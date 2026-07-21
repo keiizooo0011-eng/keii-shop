@@ -7,7 +7,7 @@ window.KIVOPAY_CONFIG = {
   storageBucket: "keiishop",
 
   // Isi nomor WhatsApp memakai format negara tanpa tanda +. Contoh: 6281234567890
-  csWhatsapp: "6281511650629",
+  csWhatsapp: "6285657279971",
   // Isi username atau URL Telegram. Contoh: keiiofficial atau https://t.me/keiiofficial
   csTelegram: "https://t.me/keiixyzpedia",
   csMessage: "Halo KivoPay, saya membutuhkan bantuan terkait pesanan saya."
