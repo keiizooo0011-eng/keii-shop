@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=14.0">
+  <link rel="stylesheet" href="style.css?v=16.5.0">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -52,6 +52,25 @@
         <div class="hero-logo-card"><span>K</span><strong>KivoPay</strong><small>Fast. Simple. Trusted.</small></div>
         <div class="hero-mini-card hero-mini-top"><i></i><span>System Online</span></div>
         <div class="hero-mini-card hero-mini-bottom"><b>⚡</b><span>Auto Delivery</span></div>
+      </div>
+    </section>
+
+    <section class="user-dashboard reveal" aria-label="Dashboard pengguna KivoPay">
+      <div class="user-dashboard-head">
+        <div><span class="eyebrow">YOUR KIVOPAY SPACE</span><h2>Semua kebutuhan digitalmu, lebih dekat.</h2><p>Belanja, cek pesanan, gunakan tools, dan hubungi bantuan dari satu dashboard ringkas.</p></div>
+        <span class="dashboard-status"><i></i> Layanan online</span>
+      </div>
+      <div class="user-dashboard-grid">
+        <a href="#store" class="user-dash-card user-dash-primary"><span class="dash-icon">🛍️</span><div><small>STORE</small><strong>Mulai Belanja</strong><p id="dashProductText">Memuat produk aktif...</p></div><b>→</b></a>
+        <a href="#orders" class="user-dash-card"><span class="dash-icon">🧾</span><div><small>PESANAN</small><strong>Cek Status Order</strong><p>Pantau invoice dan ambil produkmu.</p></div><b>→</b></a>
+        <a href="#tools" class="user-dash-card"><span class="dash-icon">✨</span><div><small>KIVO TOOLS</small><strong>Buka Smart Tools</strong><p>Tools praktis langsung dari browser.</p></div><b>→</b></a>
+        <button type="button" class="user-dash-card" data-open-support><span class="dash-icon">💬</span><div><small>SUPPORT</small><strong>Butuh Bantuan?</strong><p>Customer Service siap membantu.</p></div><b>→</b></button>
+      </div>
+      <div class="user-dashboard-metrics">
+        <div><span>Produk aktif</span><strong id="dashProducts">—</strong></div>
+        <div><span>Stok siap</span><strong id="dashStock">—</strong></div>
+        <div><span>Kategori</span><strong id="dashCategories">2</strong></div>
+        <div><span>Auto delivery</span><strong>24/7</strong></div>
       </div>
     </section>
 
@@ -329,7 +348,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="config.js"></script>
-  <script src="store.js?v=16.0.0"></script>
-  <script src="script.js?v=16.0.0"></script>
+  <script src="store.js?v=16.5.1"></script>
+  <script src="script.js?v=16.5.1"></script>
 </body>
 </html>

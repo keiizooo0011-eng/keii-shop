@@ -314,7 +314,7 @@ function loadChat(){
   }catch{chatMessages=[]}
 }
 function renderChat(){
-  const box=$("#chatMessages");
+  const box=$("#aiChatMessages");
   if(!box) return;
 
   if(!chatMessages.length){
@@ -711,7 +711,7 @@ const forms={
       </div>
     </div>
 
-    <div id="chatMessages" class="chat-messages"></div>
+    <div id="aiChatMessages" class="chat-messages ai-chat-messages"></div>
     <div class="chat-compose">
       <textarea id="prompt" rows="1" placeholder="Tulis pesan..."></textarea>
       <button class="run send-btn" id="go" aria-label="Kirim pesan" title="Kirim">➤</button>
