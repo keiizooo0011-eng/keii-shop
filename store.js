@@ -360,8 +360,20 @@
       if (dashStock) dashStock.textContent = totalStock;
       if (dashCategories) dashCategories.textContent = categories || 2;
       if (dashProductText) dashProductText.textContent = `${products.length} produk aktif • ${totalStock} stok siap`;
+      const apkProducts = products.filter(item => item.category === "apk-premium");
+      const botProducts = products.filter(item => item.category === "sewa-bot");
+      const categorySection = (key, title, subtitle, icon, items) => items.length ? `
+        <section class="catalog-category" data-catalog-section="${key}">
+          <div class="catalog-category-head">
+            <div class="catalog-category-icon">${icon}</div>
+            <div><span>KATEGORI</span><h3>${title}</h3><p>${subtitle}</p></div>
+            <b>${items.length} produk</b>
+          </div>
+          <div class="store-grid catalog-category-grid">${items.map(productCard).join("")}</div>
+        </section>` : "";
       root.innerHTML = products.length
-        ? products.map(productCard).join("")
+        ? `${categorySection("sewa-bot", "Sewa Bot", "Pilih paket bot sesuai kebutuhan dan durasi penggunaanmu.", "🤖", botProducts)}
+           ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "✨", apkProducts)}`
         : `<div class="store-empty">Belum ada produk aktif. Tambahkan dari Admin Panel.</div>`;
       document.querySelectorAll(".store-buy").forEach(btn => {
         btn.onclick = () => openCheckout(btn.dataset.productId);
@@ -390,24 +402,38 @@
     function renderProductDetail() {
       body.innerHTML = `
         <button class="shop-close" type="button" aria-label="Tutup">×</button>
-        <div class="product-detail-view">
-          <div class="product-detail-cover">
-            <img src="${esc(product.image_url || "")}" alt="${esc(product.name)}">
-            <span>${product.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"}</span>
+        <div class="product-detail-view product-detail-v2">
+          <div class="product-detail-hero">
+            <div class="product-detail-cover">
+              <img src="${esc(product.image_url || "")}" alt="${esc(product.name)}">
+              <span>${product.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"}</span>
+            </div>
+            <div class="product-detail-summary">
+              <span class="product-detail-kicker">PRODUK KIVOPAY</span>
+              <h2>${esc(product.name)}</h2>
+              <div class="product-detail-rating">${stars(product.rating_average || 0)} <span>${Number(product.rating_count || 0) ? `${Number(product.rating_average || 0).toFixed(1)} • ${Number(product.rating_count)} ulasan` : "Belum ada ulasan"}</span></div>
+              <div class="product-detail-price"><div><small>Harga mulai</small><strong>${rupiah(startPrice)}</strong></div><span>${Number(product.stock || 0) > 0 ? `Stok ${Number(product.stock || 0)}` : "Cek pilihan paket"}</span></div>
+            </div>
           </div>
           <div class="product-detail-content">
-            <span class="product-detail-kicker">DETAIL PRODUK</span>
-            <h2>${esc(product.name)}</h2>
-            <div class="product-detail-rating">${stars(product.rating_average || 0)} <span>${Number(product.rating_count || 0) ? `${Number(product.rating_average || 0).toFixed(1)} dari ${Number(product.rating_count)} ulasan` : "Belum ada ulasan"}</span></div>
-            <div class="product-detail-price"><small>Mulai dari</small><strong>${rupiah(startPrice)}</strong><span>Stok ${Number(product.stock || 0)}</span></div>
-            <div class="product-description-box">
-              <h3>Deskripsi Produk</h3>
+            <div class="product-info-strip">
+              <span><b>⚡</b><small>Proses</small><strong>Cepat</strong></span>
+              <span><b>🔒</b><small>Pembayaran</small><strong>Aman</strong></span>
+              <span><b>📦</b><small>Pengiriman</small><strong>Otomatis</strong></span>
+            </div>
+            <section class="product-description-box product-description-v2">
+              <div class="product-section-title"><span>01</span><div><small>INFORMASI PRODUK</small><h3>Deskripsi lengkap</h3></div></div>
               <div class="product-description-text">${description}</div>
+            </section>
+            <section class="product-package-preview">
+              <div class="product-section-title"><span>02</span><div><small>PILIHAN TERSEDIA</small><h3>Paket produk</h3></div></div>
+              <div class="product-package-list">${variants.slice(0,4).map(v=>`<div><span>${esc(v.name)}</span><strong>${rupiah(v.price ?? product.price)}</strong></div>`).join("")}</div>
+              ${variants.length > 4 ? `<small class="more-packages">+${variants.length-4} pilihan lainnya tersedia saat checkout</small>` : ""}
+            </section>
+            <div class="product-detail-action">
+              <div><small>Mulai dari</small><strong>${rupiah(startPrice)}</strong></div>
+              <button id="continueCheckout" class="checkout-submit product-detail-buy">Pilih Paket & Checkout <span>→</span></button>
             </div>
-            <div class="product-detail-benefits">
-              <span>⚡ Proses cepat</span><span>🔒 Pembayaran aman</span><span>📦 Auto delivery</span>
-            </div>
-            <button id="continueCheckout" class="checkout-submit product-detail-buy">Lanjut Checkout</button>
           </div>
         </div>`;
       body.querySelector(".shop-close").onclick = closeModal;
@@ -594,9 +620,10 @@
         document.querySelectorAll("[data-store-filter]").forEach(x=>x.classList.remove("active"));
         btn.classList.add("active");
         const cat = btn.dataset.storeFilter;
-        document.querySelectorAll(".store-card").forEach(card => {
-          card.hidden = cat !== "all" && card.dataset.category !== cat;
+        document.querySelectorAll("[data-catalog-section]").forEach(section => {
+          section.hidden = cat !== "all" && section.dataset.catalogSection !== cat;
         });
+        document.querySelectorAll(".store-card").forEach(card => card.hidden = false);
       };
     });
   }
