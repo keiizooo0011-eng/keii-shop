@@ -100,66 +100,15 @@
       });
       const data=await response.json();
       if(!response.ok) throw new Error(data.error||'Gagal membuat pembayaran.');
-      localStorage.setItem('kivopay_last_robux_invoice', data.order.invoice);
-      showPayment(data);
+      const invoice=data.order.invoice;
+      localStorage.setItem('kivopay_last_robux_invoice', invoice);
+      const invoices=JSON.parse(localStorage.getItem('kivopay_robux_invoices')||'[]');
+      localStorage.setItem('kivopay_robux_invoices',JSON.stringify([invoice,...invoices.filter(x=>x!==invoice)].slice(0,30)));
+      sessionStorage.setItem('kivopay_robux_payment_'+invoice,JSON.stringify(data));
+      location.href='payment-robux.html?invoice='+encodeURIComponent(invoice);
     } catch(err) { alert(err.message); }
     finally { btn.disabled=false; btn.textContent='Lanjut ke Pembayaran'; }
   });
-
-  function ensureModal(){
-    let modal=$('#robuxPaymentModal');
-    if(modal) return modal;
-    modal=document.createElement('div'); modal.id='robuxPaymentModal'; modal.className='robux-payment-modal';
-    modal.innerHTML='<div class="robux-payment-card" id="robuxPaymentCard"></div>';
-    document.body.appendChild(modal);
-    modal.addEventListener('click',e=>{if(e.target===modal){paymentStopped=true;modal.classList.remove('open')}});
-    return modal;
-  }
-
-  function showPayment(data){
-    paymentStopped=false;
-    const modal=ensureModal(), card=modal.querySelector('#robuxPaymentCard'), o=data.order;
-    card.innerHTML=`
-      <button class="robux-payment-close" type="button">×</button>
-      <span class="eyebrow">PEMBAYARAN TOP UP ROBUX</span><h2>Scan QRIS</h2>
-      <p>Bayar sesuai nominal agar pembayaran dapat terdeteksi otomatis.</p>
-      <div class="robux-pay-detail"><span>Invoice</span><strong>${esc(o.invoice)}</strong><span>Metode</span><strong>${esc(o.method_name)}</strong><span>Paket</span><strong>${esc(o.package_label)}</strong><span>Username</span><strong>${esc(o.username)}</strong></div>
-      <div id="robuxQrisBox" class="qris-box"></div>
-      <div class="payment-total"><span>Total pembayaran</span><strong>${rupiah(o.payment_amount)}</strong></div>
-      <div id="robuxPaymentStatus" class="payment-status pending">Menunggu pembayaran...</div>
-      <div class="payment-actions"><button id="copyRobuxInvoice">Salin Invoice</button><button id="downloadRobuxQris">Download QRIS</button></div>
-      <small>Simpan invoice untuk mengecek status pesanan.</small>`;
-    modal.classList.add('open');
-    card.querySelector('.robux-payment-close').onclick=()=>{paymentStopped=true;modal.classList.remove('open')};
-    card.querySelector('#copyRobuxInvoice').onclick=async()=>{await navigator.clipboard.writeText(o.invoice);card.querySelector('#copyRobuxInvoice').textContent='Tersalin ✓'};
-    const qbox=card.querySelector('#robuxQrisBox');
-    if(data.qr_image) qbox.innerHTML=`<img src="${esc(data.qr_image)}" crossorigin="anonymous" alt="QRIS pembayaran">`;
-    else if(data.qr_content && window.QRCode) new QRCode(qbox,{text:data.qr_content,width:230,height:230});
-    else qbox.innerHTML='<p>QRIS tidak dapat ditampilkan. Hubungi admin.</p>';
-    card.querySelector('#downloadRobuxQris').onclick=()=>downloadQris(qbox,o.invoice);
-    pollPayment(o.invoice,card);
-  }
-
-  async function downloadQris(box,invoice){
-    const image=box.querySelector('img'),canvas=box.querySelector('canvas'); let href='';
-    if(canvas) href=canvas.toDataURL('image/png'); else if(image) href=image.src;
-    if(!href) return alert('QRIS belum tersedia.');
-    const a=document.createElement('a');a.href=href;a.download=`QRIS-${invoice}.png`;a.target='_blank';document.body.appendChild(a);a.click();a.remove();
-  }
-
-  async function pollPayment(invoice,card){
-    if(paymentStopped||!document.body.contains(card)) return;
-    try{
-      const r=await fetch('/api/check-robux-payment?invoice='+encodeURIComponent(invoice),{cache:'no-store'}); const d=await r.json();
-      if(!r.ok) throw new Error(d.error||'Gagal cek pembayaran.');
-      const s=card.querySelector('#robuxPaymentStatus'); if(!s)return;
-      s.className='payment-status '+d.order.status;
-      const labels={pending:'Menunggu pembayaran...',paid:'Pembayaran berhasil • Menunggu diproses admin',processing:'Pesanan sedang diproses admin',completed:'Pesanan selesai',cancelled:'Pembayaran kedaluwarsa / dibatalkan',failed:'Pesanan gagal'};
-      s.textContent=labels[d.order.status]||d.order.status;
-      if(['paid','processing','completed','cancelled','failed'].includes(d.order.status)) return;
-    }catch(e){const s=card.querySelector('#robuxPaymentStatus');if(s)s.textContent='Mengecek ulang pembayaran...';}
-    setTimeout(()=>pollPayment(invoice,card),5000);
-  }
 
   const oldLookup=$('#orderLookupBtn');
   oldLookup?.addEventListener('click', async e=>{
