@@ -511,7 +511,14 @@
               customer_contact: contact
             })
           });
-          const data = await response.json();
+          const raw = await response.text();
+          let data = {};
+          try { data = raw ? JSON.parse(raw) : {}; } catch (_) {
+            const looksTimedOut = /page could not|timed out|timeout|function invocation/i.test(raw || "");
+            throw new Error(looksTimedOut
+              ? "Server pembayaran terlalu lama merespons. Coba lagi beberapa detik. Stok tidak akan terpotong."
+              : "Respons server pembayaran tidak valid. Silakan coba lagi.");
+          }
           if (!response.ok) throw new Error(data.error || "Gagal membuat pembayaran.");
           showPayment(data);
         } catch (e) {
