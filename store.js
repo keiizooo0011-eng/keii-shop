@@ -288,6 +288,17 @@
     }
   ];
 
+  async function loadInventory() {
+    try {
+      const response = await fetch(`/api/product-stock?t=${Date.now()}`, { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Stok gagal dimuat.");
+      return data.products || {};
+    } catch (_) {
+      return {};
+    }
+  }
+
   async function loadProducts() {
     if (!sb) return fallbackProducts;
     const { data, error } = await sb
@@ -336,9 +347,9 @@
           </div>
           <div class="store-meta">
             <strong>${rupiah(p.price)}</strong>
-            <span>Stok ${Number(p.stock || 0)}</span>
+            <span>${Number(p.stock || 0) > 0 ? `Stok ${Number(p.stock || 0)}` : "Stok habis"}</span>
           </div>
-          <button class="store-buy" data-product-id="${esc(p.id)}">Beli Sekarang</button>
+          <button class="store-buy" data-product-id="${esc(p.id)}" ${Number(p.stock || 0) > 0 ? "" : "disabled"}>${Number(p.stock || 0) > 0 ? "Beli Sekarang" : "Stok Habis"}</button>
         </div>
       </article>`;
   }
@@ -348,7 +359,15 @@
     if (!root) return;
     root.innerHTML = `<div class="store-loading">Memuat produk...</div>`;
     try {
-      const products = await loadProducts();
+      const [products, inventory] = await Promise.all([loadProducts(), loadInventory()]);
+      products.forEach(product => {
+        const info = inventory[String(product.id)] || null;
+        if (info) {
+          product.stock = Number(info.available || 0);
+          product.stock_reserved = Number(info.reserved || 0);
+          product.variant_stock = info.variants || {};
+        }
+      });
       window.__KIVO_PRODUCTS__ = products;
       const totalStock = products.reduce((sum, item) => sum + Number(item.stock || 0), 0);
       const categories = new Set(products.map(item => item.category).filter(Boolean)).size;
@@ -386,6 +405,10 @@
   function openCheckout(id) {
     const product = (window.__KIVO_PRODUCTS__ || []).find(p => String(p.id) === String(id));
     if (!product) return;
+    if (Number(product.stock || 0) <= 0) {
+      alert("Stok produk ini sedang habis.");
+      return;
+    }
     const modal = document.querySelector("#shopModal");
     const body = document.querySelector("#shopModalBody");
     if (!modal || !body) return;
@@ -450,13 +473,18 @@
         </div>
         <label>Pilih paket</label>
         <select id="checkoutVariant">
-          ${variants.map((v,i)=>`<option value="${i}">${esc(v.name)} — ${rupiah(v.price ?? product.price)}</option>`).join("")}
+          ${variants.map((v,i)=>{
+            const itemStock = product.variant_stock?.[String(v.name)]?.available;
+            const hasStock = itemStock === undefined ? true : Number(itemStock) > 0;
+            return `<option value="${i}" ${hasStock ? "" : "disabled"}>${esc(v.name)} — ${rupiah(v.price ?? product.price)}${itemStock === undefined ? "" : ` • ${Number(itemStock)} stok`}${hasStock ? "" : " • HABIS"}</option>`;
+          }).join("")}
         </select>
         <label>Nama pembeli</label>
         <input id="checkoutName" placeholder="Nama kamu">
         <label>Nomor WhatsApp / Telegram</label>
         <input id="checkoutContact" placeholder="Contoh: 62812xxxx">
-        <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>`;
+        <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>
+        <small class="checkout-auto-note">Setelah pembayaran berhasil, data produk dikirim otomatis dari stok yang tersedia.</small>`;
 
       body.querySelector(".shop-close").onclick = closeModal;
       body.querySelector(".checkout-back").onclick = renderProductDetail;
@@ -595,7 +623,7 @@
 
           if (current.status === "completed") {
             stopped = true;
-            status.textContent = "Pembayaran berhasil • Produk terkirim";
+            status.textContent = "Pembayaran berhasil • Data produk terkirim otomatis";
             body.querySelector(".payment-view").insertAdjacentHTML("beforeend", deliveryMarkup(current));
             bindDeliveryActions(body.querySelector(".delivery-receipt"), current, checkoutContact);
             renderStore();
