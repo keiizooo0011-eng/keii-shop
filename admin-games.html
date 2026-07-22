@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin Game Top Up — KivoPay</title>
-  <link rel="stylesheet" href="style.css?v=20.3">
-  <link rel="stylesheet" href="admin.css?v=20.3">
-  <link rel="stylesheet" href="game.css?v=20.3">
+  <link rel="stylesheet" href="style.css?v=20.7">
+  <link rel="stylesheet" href="admin.css?v=20.7">
+  <link rel="stylesheet" href="game.css?v=20.7">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .vip-picker-button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:0 18px;border:1px solid rgba(168,134,255,.42);border-radius:16px;background:#14111c;color:#f7f3ff;font:inherit;text-align:left;cursor:pointer}
@@ -20,27 +20,37 @@
     .vip-option{width:100%;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:14px 12px;border:0;border-bottom:1px solid rgba(255,255,255,.07);background:transparent;color:#fff;text-align:left;cursor:pointer}.vip-option:hover,.vip-option.active{background:rgba(126,77,255,.13);border-radius:13px}.vip-option strong{display:block;font-size:16px}.vip-option span{display:block;color:#9e93aa;font-size:12px;margin-top:4px}.vip-option em{font-style:normal;color:#9e7cff;font-size:18px}.vip-option.configured em{color:#59d889}
     .vip-empty{padding:30px 18px;text-align:center;color:#9f95aa}
     @media(min-width:800px){.vip-picker-modal{align-items:center}.vip-picker-sheet{border-radius:24px}}
+  .provider-card{margin-bottom:20px}.provider-profile{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.provider-stat{padding:16px;border-radius:16px;background:#14111c;border:1px solid rgba(168,134,255,.2)}.provider-stat small{display:block;color:#9e93aa;margin-bottom:7px}.provider-stat strong{font-size:1.08rem}.provider-online{color:#59d889}.provider-offline{color:#ff8798}@media(max-width:700px){.provider-profile{grid-template-columns:repeat(2,minmax(0,1fr))}}
   </style>
 </head>
 <body class="admin-body">
 <main class="admin-shell">
   <header class="admin-top">
-    <div><span class="eyebrow">VIPAYMENT CATALOG</span><h1>Kelola Game Top Up</h1></div>
+    <div><span class="eyebrow">PANELPEDIA CATALOG</span><h1>Kelola Game Top Up</h1></div>
     <div class="admin-actions"><a href="admin.html">← Dashboard</a><a href="topup-game.html">Lihat Halaman</a></div>
   </header>
 
   <section id="gameAdminAuth" class="admin-panel"><p>Memeriksa akses admin...</p></section>
 
-  <section id="gameAdminPanel" class="admin-grid" hidden>
+  <section id="gameAdminPanel" hidden>
+    <section class="admin-panel provider-card">
+      <div class="admin-panel-head">
+        <div><span class="eyebrow">PROVIDER PANELPEDIA</span><h2>Status API & Saldo</h2></div>
+        <button id="refreshProvider" class="ghost" type="button">Tes Koneksi</button>
+      </div>
+      <div id="providerProfile" class="provider-profile"><p>Memuat koneksi PanelPedia...</p></div>
+    </section>
+
+    <div class="admin-grid">
     <section class="admin-panel">
       <div class="admin-panel-head"><div><span class="eyebrow">GAME MANAGER</span><h2>Tambah / Edit Game</h2></div></div>
       <form id="gameCatalogForm" class="product-form">
         <input id="gameCatalogId" type="hidden">
         <input id="vipBrand" type="hidden" required>
 
-        <label>Pilih produk dari VIPayment</label>
+        <label>Pilih produk dari PanelPedia</label>
         <button id="openVipPicker" class="vip-picker-button" type="button">
-          <span id="vipPickerLabel">Pilih produk VIPayment</span><small>Ketuk untuk memilih ▾</small>
+          <span id="vipPickerLabel">Pilih produk PanelPedia</span><small>Ketuk untuk memilih ▾</small>
         </button>
         <div id="vipPickerMeta" class="vip-picker-meta" hidden></div>
 
@@ -66,12 +76,13 @@
       <div class="admin-panel-head"><div><span class="eyebrow">CATALOG</span><h2>Produk yang Diatur</h2></div><button id="refreshGames" class="ghost">Refresh</button></div>
       <div id="gameAdminList" class="admin-product-list"></div>
     </section>
+    </div>
   </section>
 </main>
 
 <div id="vipPickerModal" class="vip-picker-modal" hidden>
   <section class="vip-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="vipPickerTitle">
-    <div class="vip-picker-head"><div><span class="eyebrow">KATALOG VIPAYMENT</span><h3 id="vipPickerTitle">Pilih Produk</h3></div><button id="closeVipPicker" class="vip-picker-close" type="button" aria-label="Tutup">×</button></div>
+    <div class="vip-picker-head"><div><span class="eyebrow">KATALOG PANELPEDIA</span><h3 id="vipPickerTitle">Pilih Produk</h3></div><button id="closeVipPicker" class="vip-picker-close" type="button" aria-label="Tutup">×</button></div>
     <div class="vip-picker-search"><input id="vipPickerSearch" type="search" placeholder="Cari MLBB, VIU, iQIYI, Alight Motion..."></div>
     <div id="vipPickerStatus" class="vip-picker-status">Memuat daftar produk...</div>
     <div id="vipPickerList" class="vip-picker-list"></div>
@@ -79,6 +90,6 @@
 </div>
 
 <script src="config.js"></script>
-<script src="admin-games.js?v=20.3"></script>
+<script src="admin-games.js?v=20.7"></script>
 </body>
 </html>
