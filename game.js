@@ -1,6 +1,7 @@
 (()=>{
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const plainText=v=>{const doc=new DOMParser().parseFromString(String(v??''),'text/html');return (doc.body.textContent||'').replace(/\s+/g,' ').trim();};
 const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
 const fallbackImage='https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg';
 let services=[],catalog=[],selectedService=null,currentCategory='games';
@@ -53,23 +54,60 @@ function selectService(code){
   selectedService=services.find(x=>x.code===code)||null;
   document.querySelectorAll('.service-option').forEach(x=>x.classList.toggle('selected',x.dataset.code===code));
   $('#selectedServiceName').textContent=selectedService?.name||'Pilih produk';
-  $('#selectedServiceDescription').textContent=selectedService?.description||'Isi data tujuan dengan benar.';
+  $('#selectedServiceDescription').textContent=plainText(selectedService?.description)||'Isi data tujuan dengan benar.';
   $('#gameSellPrice').textContent=rupiah(displayPrice(selectedService));
   $('#submitGameOrder').disabled=!selectedService;
+}
+
+function configureTargetFields(game){
+  const category=categoryOf(game), name=String(game).toLowerCase();
+  const target=$('#gameTarget'), zone=$('#gameZone'), zoneLabel=$('#zoneLabel'), nick=$('#checkNicknameBtn');
+  let title='Masukkan Data Tujuan', hint='Pastikan data tujuan sudah benar.', targetLabel='User ID / ID tujuan', targetPlaceholder='Masukkan ID', zoneLabelText='Zone / Server', zonePlaceholder='Kosongkan jika tidak ada', showZone=true, showNick=category==='games';
+
+  if(category==='streaming'){
+    title='Masukkan Data Akun'; hint='Akun, link invite, atau kode akan diproses sesuai ketentuan produk.';
+    targetLabel=name.includes('iqiyi')||name.includes('alight')||name.includes('spotify')?'Nomor / Email tujuan':'Email tujuan';
+    targetPlaceholder=targetLabel.includes('Nomor')?'Masukkan nomor atau email':'Masukkan email aktif'; showZone=false; showNick=false;
+  }else if(category==='voucher'){
+    title='Masukkan Data Tujuan'; hint='Masukkan email atau nomor tujuan yang aktif.';
+    targetLabel='Email / Nomor tujuan'; targetPlaceholder='Masukkan email atau nomor'; showZone=false; showNick=false;
+  }else if(category==='lainnya'){
+    targetLabel='Data tujuan'; targetPlaceholder='Masukkan data tujuan'; showZone=false; showNick=false;
+  }else if(name.includes('mobile legends')){
+    targetLabel='User ID'; targetPlaceholder='Contoh: 5363266446'; zoneLabelText='Zone ID'; zonePlaceholder='Contoh: 2685';
+  }else if(name.includes('free fire')){
+    targetLabel='Player ID'; targetPlaceholder='Masukkan Player ID'; showZone=false;
+  }else if(name.includes('genshin')){
+    targetLabel='UID'; targetPlaceholder='Masukkan UID'; zoneLabelText='Server'; zonePlaceholder='Pilih/isi server';
+  }
+
+  $('#targetSectionTitle').textContent=title; $('#targetSectionHint').textContent=hint;
+  $('#targetLabelText').textContent=targetLabel; target.placeholder=targetPlaceholder;
+  $('#zoneLabelText').textContent=zoneLabelText; zone.placeholder=zonePlaceholder;
+  zoneLabel.hidden=!showZone; zone.required=false; nick.hidden=!showNick;
+  $('#detailEyebrow').textContent=category==='streaming'?'PRODUK DIGITAL OTOMATIS':category==='voucher'?'VOUCHER OTOMATIS':'TOP UP OTOMATIS';
 }
 
 function initDetail(){
   const game=new URLSearchParams(location.search).get('game')||'';
   if(!game){location.href='topup-game.html';return;}
+  configureTargetFields(game);
   loadData().then(()=>{
     const rows=services.filter(x=>x.game===game).sort((a,b)=>displayPrice(a)-displayPrice(b));
     const c=conf(game), title=c.display_name||game;
     document.title=`${title} — KivoPay`; $('#detailGameName').textContent=title; $('#detailGameImage').src=c.image_url||fallbackImage;
-    $('#detailGameSummary').textContent=`${rows.length} produk tersedia. Harga sudah termasuk keuntungan KivoPay.`;
+    $('#detailGameImage').onerror=()=>{$('#detailGameImage').src=fallbackImage;};
+    $('#detailGameSummary').textContent=`${rows.length} produk tersedia. Pilih paket terbaik untuk kebutuhanmu.`;
     $('#serviceGrid').innerHTML=rows.length?rows.map(s=>`<button type="button" class="service-option" data-code="${esc(s.code)}"><span>${esc(s.name)}</span><strong>${rupiah(displayPrice(s))}</strong></button>`).join(''):'<p>Produk sedang tidak tersedia.</p>';
     document.querySelectorAll('.service-option').forEach(b=>b.onclick=()=>selectService(b.dataset.code));
-    if(rows[0]) selectService(rows[0].code);
   }).catch(e=>$('#serviceGrid').innerHTML=`<p>${esc(e.message)}</p>`);
+
+  const storageKey='kivopay_target_'+encodeURIComponent(game);
+  try{const saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved){$('#gameTarget').value=saved.target||'';$('#gameZone').value=saved.zone||'';}}catch{}
+  $('#saveTargetBtn').onclick=()=>{
+    localStorage.setItem(storageKey,JSON.stringify({target:$('#gameTarget').value.trim(),zone:$('#gameZone').value.trim()}));
+    $('#nicknameResult').textContent='✓ Data tujuan berhasil disimpan di perangkat ini.';
+  };
 
   $('#checkNicknameBtn').onclick=async()=>{
     const target=$('#gameTarget').value.trim(),zone=$('#gameZone').value.trim();
@@ -82,14 +120,16 @@ function initDetail(){
 
   $('#gameOrderForm').onsubmit=async e=>{
     e.preventDefault(); if(!selectedService)return;
-    const btn=$('#submitGameOrder'); btn.disabled=true; btn.textContent='Membuat QRIS...'; $('#gameFormMessage').textContent='';
+    const target=$('#gameTarget').value.trim(), customerName=$('#gameCustomerName').value.trim(), contact=$('#gameCustomerContact').value.trim();
+    if(!target){$('#gameFormMessage').textContent='Data tujuan wajib diisi.';$('#gameTarget').focus();return;}
+    if(!customerName||!contact){$('#gameFormMessage').textContent='Lengkapi nama dan kontak pembeli.';return;}
+    const btn=$('#submitGameOrder'); btn.disabled=true; btn.querySelector('span').textContent='Membuat QRIS...'; $('#gameFormMessage').textContent='';
     try{
-      const d=await jsonFetch('/api/create-game-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service:selectedService.code,target:$('#gameTarget').value.trim(),zone:$('#gameZone').value.trim(),customer_name:$('#gameCustomerName').value.trim(),customer_contact:$('#gameCustomerContact').value.trim()})});
+      const d=await jsonFetch('/api/create-game-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service:selectedService.code,target,zone:$('#gameZone').value.trim(),customer_name:customerName,customer_contact:contact})});
       sessionStorage.setItem('kivopay_game_payment_'+d.order.invoice,JSON.stringify(d.order)); location.href='payment-game.html?invoice='+encodeURIComponent(d.order.invoice);
-    }catch(err){$('#gameFormMessage').textContent=err.message;btn.disabled=false;btn.textContent='Lanjut Bayar QRIS';}
+    }catch(err){$('#gameFormMessage').textContent=err.message;btn.disabled=false;btn.querySelector('span').textContent='Lanjut Bayar QRIS';}
   };
 }
-
 if($('#gameGrid')) initCatalog();
 if($('#gameOrderForm')) initDetail();
 })();
