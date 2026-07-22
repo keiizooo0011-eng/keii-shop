@@ -2800,3 +2800,6 @@ body.admin-body .kivo-control-host{top:20px;right:24px}
 /* V18 — Auto delivery stock states */
 .store-buy:disabled{opacity:.55;cursor:not-allowed;filter:grayscale(.25)}
 .checkout-auto-note{display:block;margin-top:10px;text-align:center;opacity:.72;line-height:1.5}
+
+/* V19 — dedicated checkout page for APK Premium & Sewa Bot */
+.payment-delivery-result{margin-top:24px}.payment-delivery-result .delivery-receipt-actions a{min-height:42px;box-sizing:border-box}.payment-qris-panel .secondary-btn.full{margin-top:12px}

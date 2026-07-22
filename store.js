@@ -520,7 +520,15 @@
               : "Respons server pembayaran tidak valid. Silakan coba lagi.");
           }
           if (!response.ok) throw new Error(data.error || "Gagal membuat pembayaran.");
-          showPayment(data);
+          const invoice = data?.order?.invoice;
+          if (!invoice) throw new Error("Invoice pembayaran tidak ditemukan.");
+          try {
+            localStorage.setItem("kivopay_last_order_invoice", invoice);
+            const history = JSON.parse(localStorage.getItem("kivopay_order_invoices") || "[]");
+            localStorage.setItem("kivopay_order_invoices", JSON.stringify([invoice, ...history.filter(x => x !== invoice)].slice(0, 50)));
+            sessionStorage.setItem("kivopay_payment_" + invoice, JSON.stringify(data));
+          } catch (_) {}
+          location.href = "payment-order.html?invoice=" + encodeURIComponent(invoice);
         } catch (e) {
           alert(e.message);
           submit.disabled = false;

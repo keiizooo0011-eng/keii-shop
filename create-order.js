@@ -1,4 +1,3 @@
-
 import { adminClient, createSanpayQris, uniqueFee, invoiceId, publicOrder } from "./_lib.js";
 
 export default async function handler(req, res) {
@@ -25,8 +24,6 @@ export default async function handler(req, res) {
     const variantName = String(variant.name || "Paket utama");
     const baseAmount = Number(variant.price ?? product.price);
 
-    // Cek stok varian lebih dulu. Jika stok lama belum diberi nama varian yang sama,
-    // gunakan stok tersedia milik produk agar angka stok kartu dan checkout tetap sinkron.
     const { count: exactCount, error: exactError } = await db.from("stock_items")
       .select("id", { count:"exact", head:true })
       .eq("product_id", product.id).eq("variant_name", variantName).eq("status","available");
@@ -55,17 +52,21 @@ export default async function handler(req, res) {
     }).select("*").single();
     if (oe) throw oe;
 
-    // Kunci satu stok khusus untuk invoice ini sebelum QRIS dibuat.
-    const reserved = await db.rpc("reserve_order_stock", { p_order_id: order.id });
-    if (reserved.error) {
-      await db.from("orders").update({status:"cancelled",updated_at:new Date().toISOString()}).eq("id",order.id);
-      const msg = String(reserved.error.message || "");
-      if (msg.includes("STOCK_EMPTY")) return res.status(409).json({error:"Stok paket ini baru saja habis."});
-      throw reserved.error;
-    }
-
     try {
+      // Engine QRIS disamakan dengan flow Robux: buat QRIS dahulu,
+      // kemudian reserve satu stok sebelum hasil checkout dikirim ke browser.
       const payment = await createSanpayQris(paymentAmount, invoice, `Order ${product.name} - ${variantName}`);
+
+      const reserved = await db.rpc("reserve_order_stock", { p_order_id: order.id });
+      if (reserved.error) {
+        const msg = String(reserved.error.message || "");
+        await db.from("orders").update({
+          status:"cancelled", payment_raw:{error:msg}, updated_at:new Date().toISOString()
+        }).eq("id",order.id);
+        if (msg.includes("STOCK_EMPTY")) return res.status(409).json({error:"Stok paket ini baru saja habis."});
+        throw reserved.error;
+      }
+
       const { error: ue } = await db.from("orders").update({
         payment_reference:payment.transactionId,
         qr_content:payment.qrContent || null,
@@ -75,12 +76,16 @@ export default async function handler(req, res) {
       if (ue) throw ue;
 
       return res.status(200).json({
-        order:publicOrder({...order,payment_amount:paymentAmount}),
-        qr_content:payment.qrContent, qr_image:payment.qrImage, expires_at:expiresAt
+        order:publicOrder({...order, qr_content:payment.qrContent, qr_image:payment.qrImage}),
+        qr_content:payment.qrContent,
+        qr_image:payment.qrImage,
+        expires_at:expiresAt
       });
     } catch (e) {
-      await db.rpc("release_order_stock", { p_order_id: order.id });
-      await db.from("orders").update({status:"cancelled",payment_raw:{error:e.message},updated_at:new Date().toISOString()}).eq("id",order.id);
+      try { await db.rpc("release_order_stock", { p_order_id: order.id }); } catch {}
+      await db.from("orders").update({
+        status:"cancelled", payment_raw:{error:e.message}, updated_at:new Date().toISOString()
+      }).eq("id",order.id);
       throw e;
     }
   } catch (e) {
