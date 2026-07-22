@@ -2803,3 +2803,4 @@ body.admin-body .kivo-control-host{top:20px;right:24px}
 
 /* V19 — dedicated checkout page for APK Premium & Sewa Bot */
 .payment-delivery-result{margin-top:24px}.payment-delivery-result .delivery-receipt-actions a{min-height:42px;box-sizing:border-box}.payment-qris-panel .secondary-btn.full{margin-top:12px}
+.store-game-link{display:inline-flex;align-items:center;justify-content:center;padding:.72rem 1rem;border-radius:999px;background:linear-gradient(135deg,#7857ff,#a84dff);color:#fff;text-decoration:none;font-weight:700}.admin-game-nav-link{display:inline-flex;align-items:center;padding:.75rem 1rem;border-radius:12px;text-decoration:none;color:inherit;background:rgba(124,92,255,.12)}
