@@ -1,1 +1,84 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Game Top Up — KivoPay</title><link rel="stylesheet" href="style.css?v=20"><link rel="stylesheet" href="admin.css?v=20"><link rel="stylesheet" href="game.css?v=20"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body class="admin-body"><main class="admin-shell"><header class="admin-top"><div><span class="eyebrow">VIPAYMENT CATALOG</span><h1>Kelola Game Top Up</h1></div><div class="admin-actions"><a href="admin.html">← Dashboard</a><a href="topup-game.html">Lihat Halaman</a></div></header><section id="gameAdminAuth" class="admin-panel"><p>Memeriksa akses admin...</p></section><section id="gameAdminPanel" class="admin-grid" hidden><section class="admin-panel"><div class="admin-panel-head"><div><span class="eyebrow">GAME MANAGER</span><h2>Tambah / Edit Game</h2></div></div><form id="gameCatalogForm" class="product-form"><input id="gameCatalogId" type="hidden"><label>Brand persis dari VIPayment</label><input id="vipBrand" required placeholder="Contoh: Mobile Legends B"><label>Nama tampilan</label><input id="displayName" required placeholder="Mobile Legends"><label>Foto game</label><div class="image-uploader"><img id="gameImagePreview" src="https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg" alt="Preview"><input id="gameImage" type="file" accept="image/*"></div><div class="form-two"><div><label>Urutan</label><input id="gameSort" type="number" value="0"></div><label class="switch-row"><input id="gameActive" type="checkbox" checked> Aktif</label></div><div class="form-actions"><button type="submit">Simpan Game</button><button id="cancelGameEdit" type="button" class="ghost" hidden>Batal</button></div><div id="gameAdminMessage" class="admin-message"></div></form></section><section class="admin-panel"><div class="admin-panel-head"><div><span class="eyebrow">CATALOG</span><h2>Game yang Diatur</h2></div><button id="refreshGames" class="ghost">Refresh</button></div><div id="gameAdminList" class="admin-product-list"></div></section></section></main><script src="config.js"></script><script src="admin-games.js?v=20"></script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Game Top Up — KivoPay</title>
+  <link rel="stylesheet" href="style.css?v=20.3">
+  <link rel="stylesheet" href="admin.css?v=20.3">
+  <link rel="stylesheet" href="game.css?v=20.3">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .vip-picker-button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:0 18px;border:1px solid rgba(168,134,255,.42);border-radius:16px;background:#14111c;color:#f7f3ff;font:inherit;text-align:left;cursor:pointer}
+    .vip-picker-button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vip-picker-button small{color:#a89db7;white-space:nowrap}
+    .vip-picker-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.vip-chip{padding:6px 10px;border-radius:999px;background:rgba(125,77,255,.14);border:1px solid rgba(154,112,255,.28);font-size:12px;color:#c9b6ff}
+    .vip-picker-modal[hidden]{display:none}.vip-picker-modal{position:fixed;inset:0;z-index:9999;background:rgba(2,0,8,.78);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:14px}
+    .vip-picker-sheet{width:min(680px,100%);max-height:88vh;background:#15111d;border:1px solid rgba(169,129,255,.34);border-radius:24px 24px 18px 18px;overflow:hidden;box-shadow:0 -20px 80px rgba(0,0,0,.52)}
+    .vip-picker-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 12px}.vip-picker-head h3{margin:0;font-size:22px}.vip-picker-close{border:0;background:transparent;color:#fff;font-size:28px;cursor:pointer}
+    .vip-picker-search{padding:0 18px 14px}.vip-picker-search input{width:100%;height:50px;border-radius:14px;border:1px solid rgba(172,142,255,.3);background:#0e0b14;color:#fff;padding:0 15px;font:inherit}
+    .vip-picker-status{padding:0 18px 10px;color:#a99eb6;font-size:13px}.vip-picker-list{overflow:auto;max-height:64vh;padding:0 10px 16px}
+    .vip-option{width:100%;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:14px 12px;border:0;border-bottom:1px solid rgba(255,255,255,.07);background:transparent;color:#fff;text-align:left;cursor:pointer}.vip-option:hover,.vip-option.active{background:rgba(126,77,255,.13);border-radius:13px}.vip-option strong{display:block;font-size:16px}.vip-option span{display:block;color:#9e93aa;font-size:12px;margin-top:4px}.vip-option em{font-style:normal;color:#9e7cff;font-size:18px}.vip-option.configured em{color:#59d889}
+    .vip-empty{padding:30px 18px;text-align:center;color:#9f95aa}
+    @media(min-width:800px){.vip-picker-modal{align-items:center}.vip-picker-sheet{border-radius:24px}}
+  </style>
+</head>
+<body class="admin-body">
+<main class="admin-shell">
+  <header class="admin-top">
+    <div><span class="eyebrow">VIPAYMENT CATALOG</span><h1>Kelola Game Top Up</h1></div>
+    <div class="admin-actions"><a href="admin.html">← Dashboard</a><a href="topup-game.html">Lihat Halaman</a></div>
+  </header>
+
+  <section id="gameAdminAuth" class="admin-panel"><p>Memeriksa akses admin...</p></section>
+
+  <section id="gameAdminPanel" class="admin-grid" hidden>
+    <section class="admin-panel">
+      <div class="admin-panel-head"><div><span class="eyebrow">GAME MANAGER</span><h2>Tambah / Edit Game</h2></div></div>
+      <form id="gameCatalogForm" class="product-form">
+        <input id="gameCatalogId" type="hidden">
+        <input id="vipBrand" type="hidden" required>
+
+        <label>Pilih produk dari VIPayment</label>
+        <button id="openVipPicker" class="vip-picker-button" type="button">
+          <span id="vipPickerLabel">Pilih produk VIPayment</span><small>Ketuk untuk memilih ▾</small>
+        </button>
+        <div id="vipPickerMeta" class="vip-picker-meta" hidden></div>
+
+        <label>Nama tampilan</label>
+        <input id="displayName" required placeholder="Otomatis terisi, masih bisa diedit">
+
+        <label>Foto produk</label>
+        <div class="image-uploader">
+          <img id="gameImagePreview" src="https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg" alt="Preview">
+          <input id="gameImage" type="file" accept="image/*">
+        </div>
+
+        <div class="form-two">
+          <div><label>Urutan</label><input id="gameSort" type="number" value="0"></div>
+          <label class="switch-row"><input id="gameActive" type="checkbox" checked> Aktif</label>
+        </div>
+        <div class="form-actions"><button type="submit">Simpan Game</button><button id="cancelGameEdit" type="button" class="ghost" hidden>Batal</button></div>
+        <div id="gameAdminMessage" class="admin-message"></div>
+      </form>
+    </section>
+
+    <section class="admin-panel">
+      <div class="admin-panel-head"><div><span class="eyebrow">CATALOG</span><h2>Produk yang Diatur</h2></div><button id="refreshGames" class="ghost">Refresh</button></div>
+      <div id="gameAdminList" class="admin-product-list"></div>
+    </section>
+  </section>
+</main>
+
+<div id="vipPickerModal" class="vip-picker-modal" hidden>
+  <section class="vip-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="vipPickerTitle">
+    <div class="vip-picker-head"><div><span class="eyebrow">KATALOG VIPAYMENT</span><h3 id="vipPickerTitle">Pilih Produk</h3></div><button id="closeVipPicker" class="vip-picker-close" type="button" aria-label="Tutup">×</button></div>
+    <div class="vip-picker-search"><input id="vipPickerSearch" type="search" placeholder="Cari MLBB, VIU, iQIYI, Alight Motion..."></div>
+    <div id="vipPickerStatus" class="vip-picker-status">Memuat daftar produk...</div>
+    <div id="vipPickerList" class="vip-picker-list"></div>
+  </section>
+</div>
+
+<script src="config.js"></script>
+<script src="admin-games.js?v=20.3"></script>
+</body>
+</html>
