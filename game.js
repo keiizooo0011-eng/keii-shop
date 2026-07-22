@@ -1,18 +1,95 @@
 (()=>{
-const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])), rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
-let services=[],catalog=[],selectedGame='';
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
 const fallbackImage='https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg';
-async function jsonFetch(url,opt){const r=await fetch(url,opt);const t=await r.text();let d={};try{d=t?JSON.parse(t):{};}catch{throw new Error('Respons server tidak valid.');}if(!r.ok)throw new Error(d.error||'Terjadi kesalahan.');return d;}
-async function load(){const [srv,cat]=await Promise.all([jsonFetch('/api/game-services'),jsonFetch('/api/game-catalog').catch(()=>({games:[]}))]);services=srv.services||[];catalog=cat.games||[];renderGames();}
-function gameNames(){return [...new Set(services.map(x=>x.game).filter(Boolean))].sort();}
+let services=[],catalog=[],selectedService=null,currentCategory='games';
+
+async function jsonFetch(url,opt){
+  const r=await fetch(url,opt); const t=await r.text(); let d={};
+  try{d=t?JSON.parse(t):{};}catch{throw new Error('Respons server tidak valid.');}
+  if(!r.ok) throw new Error(d.error||'Terjadi kesalahan.'); return d;
+}
 function conf(name){return catalog.find(x=>String(x.vip_brand).toLowerCase()===String(name).toLowerCase())||{};}
-function renderGames(){const q=$('#gameSearch').value.trim().toLowerCase();const names=gameNames().filter(n=>n.toLowerCase().includes(q));$('#gameGrid').innerHTML=names.length?names.map((n,i)=>{const c=conf(n);return `<button class="game-card" data-game="${esc(n)}"><img src="${esc(c.image_url||fallbackImage)}" alt="${esc(c.display_name||n)}"><strong>${esc(c.display_name||n)}</strong><span>${services.filter(s=>s.game===n).length} paket</span></button>`}).join(''):'<p>Tidak ada game ditemukan.</p>';document.querySelectorAll('[data-game]').forEach(b=>b.onclick=()=>openGame(b.dataset.game));}
-function sellPrice(cost){return Number(cost)+Math.max(500,Math.ceil(Number(cost)*0.05));}
-function openGame(name){selectedGame=name;const c=conf(name);$('#selectedGameName').textContent=c.display_name||name;$('#selectedGameImage').src=c.image_url||fallbackImage;const rows=services.filter(x=>x.game===name).sort((a,b)=>a.price-b.price);$('#gameService').innerHTML=rows.map(x=>`<option value="${esc(x.code)}" data-cost="${x.price}">${esc(x.name)} — ${rupiah(sellPrice(x.price))}</option>`).join('');$('#gameCheckout').hidden=false;$('#gameCheckout').scrollIntoView({behavior:'smooth',block:'start'});updatePrice();}
-function selected(){return services.find(x=>x.code===$('#gameService').value);}
-function updatePrice(){const s=selected();$('#gameSellPrice').textContent=rupiah(sellPrice(s?.price||0));$('#selectedGameInfo').textContent=s?.description||'Isi data tujuan dengan benar.';}
-$('#gameSearch').addEventListener('input',renderGames);$('#gameService').addEventListener('change',updatePrice);$('#closeGameCheckout').onclick=()=>$('#gameCheckout').hidden=true;
-$('#checkNicknameBtn').onclick=async()=>{const s=selected(),target=$('#gameTarget').value.trim(),zone=$('#gameZone').value.trim();if(!target)return $('#nicknameResult').textContent='Isi ID dulu.';$('#nicknameResult').textContent='Mengecek nickname...';try{const d=await jsonFetch('/api/game-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:s?.code,target,zone})});$('#nicknameResult').textContent='✓ '+(d.nickname||'ID ditemukan');}catch(e){$('#nicknameResult').textContent='⚠ '+e.message;}};
-$('#gameOrderForm').onsubmit=async e=>{e.preventDefault();const btn=$('#submitGameOrder');btn.disabled=true;btn.textContent='Membuat QRIS...';$('#gameFormMessage').textContent='';try{const d=await jsonFetch('/api/create-game-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service:$('#gameService').value,target:$('#gameTarget').value.trim(),zone:$('#gameZone').value.trim(),customer_name:$('#gameCustomerName').value.trim(),customer_contact:$('#gameCustomerContact').value.trim()})});sessionStorage.setItem('kivopay_game_payment_'+d.order.invoice,JSON.stringify(d.order));location.href='payment-game.html?invoice='+encodeURIComponent(d.order.invoice);}catch(err){$('#gameFormMessage').textContent=err.message;btn.disabled=false;btn.textContent='Buat QRIS';}};
-load().catch(e=>$('#gameGrid').innerHTML=`<p>${esc(e.message)}</p>`);
+function gameNames(){return [...new Set(services.map(x=>x.game).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));}
+function categoryOf(name){
+  const n=String(name).toLowerCase();
+  const streaming=['iqiyi','netflix','spotify','youtube','viu','vidio','wetv','disney','prime video','hbo','canva','capcut','alight motion','bstation','vision+','mola','loklok'];
+  const voucher=['voucher','gift card','steam wallet','google play','itunes','playstation','xbox','garena shells','razergold','wallet'];
+  const games=['mobile legends','free fire','genshin','valorant','pubg','honor of kings','roblox','ace racer','tower of fantasy','zenless','honkai','call of duty','arena breakout','point blank','fc mobile','efootball','clash','minecraft','zepeto','afk journey','age of empires'];
+  if(streaming.some(k=>n.includes(k))) return 'streaming';
+  if(voucher.some(k=>n.includes(k))) return 'voucher';
+  if(games.some(k=>n.includes(k))) return 'games';
+  return 'lainnya';
+}
+function displayPrice(s){return Number(s?.sell_price ?? (Number(s?.price||0)+(Number(s?.price||0)<10000?2000:3000)));}
+
+async function loadData(){
+  const [srv,cat]=await Promise.all([jsonFetch('/api/game-services'),jsonFetch('/api/game-catalog').catch(()=>({games:[]}))]);
+  services=srv.services||[]; catalog=cat.games||[];
+}
+
+function renderCatalog(){
+  const grid=$('#gameGrid'); if(!grid) return;
+  const q=$('#gameSearch').value.trim().toLowerCase();
+  const names=gameNames().filter(n=>categoryOf(n)===currentCategory && n.toLowerCase().includes(q));
+  const titles={games:['KATALOG GAME','Game Populer'],streaming:['HIBURAN','Streaming Premium'],voucher:['VOUCHER DIGITAL','Voucher'],lainnya:['PRODUK DIGITAL','Lainnya']};
+  $('#categoryEyebrow').textContent=titles[currentCategory][0]; $('#categoryTitle').textContent=titles[currentCategory][1];
+  grid.innerHTML=names.length?names.map(n=>{
+    const c=conf(n), count=services.filter(s=>s.game===n).length, title=c.display_name||n;
+    return `<a class="vip-card" href="game-detail.html?game=${encodeURIComponent(n)}"><img src="${esc(c.image_url||fallbackImage)}" alt="${esc(title)}"><span class="vip-card-title">${esc(title)}</span><small>${count} paket</small></a>`;
+  }).join(''):'<div class="empty-catalog">Belum ada produk di kategori ini.</div>';
+}
+
+function initCatalog(){
+  document.querySelectorAll('.category-tab').forEach(btn=>btn.addEventListener('click',()=>{
+    currentCategory=btn.dataset.category; document.querySelectorAll('.category-tab').forEach(x=>x.classList.toggle('active',x===btn)); renderCatalog();
+  }));
+  $('#gameSearch').addEventListener('input',renderCatalog);
+  loadData().then(renderCatalog).catch(e=>$('#gameGrid').innerHTML=`<div class="empty-catalog">${esc(e.message)}</div>`);
+}
+
+function selectService(code){
+  selectedService=services.find(x=>x.code===code)||null;
+  document.querySelectorAll('.service-option').forEach(x=>x.classList.toggle('selected',x.dataset.code===code));
+  $('#selectedServiceName').textContent=selectedService?.name||'Pilih produk';
+  $('#selectedServiceDescription').textContent=selectedService?.description||'Isi data tujuan dengan benar.';
+  $('#gameSellPrice').textContent=rupiah(displayPrice(selectedService));
+  $('#submitGameOrder').disabled=!selectedService;
+}
+
+function initDetail(){
+  const game=new URLSearchParams(location.search).get('game')||'';
+  if(!game){location.href='topup-game.html';return;}
+  loadData().then(()=>{
+    const rows=services.filter(x=>x.game===game).sort((a,b)=>displayPrice(a)-displayPrice(b));
+    const c=conf(game), title=c.display_name||game;
+    document.title=`${title} — KivoPay`; $('#detailGameName').textContent=title; $('#detailGameImage').src=c.image_url||fallbackImage;
+    $('#detailGameSummary').textContent=`${rows.length} produk tersedia. Harga sudah termasuk keuntungan KivoPay.`;
+    $('#serviceGrid').innerHTML=rows.length?rows.map(s=>`<button type="button" class="service-option" data-code="${esc(s.code)}"><span>${esc(s.name)}</span><strong>${rupiah(displayPrice(s))}</strong></button>`).join(''):'<p>Produk sedang tidak tersedia.</p>';
+    document.querySelectorAll('.service-option').forEach(b=>b.onclick=()=>selectService(b.dataset.code));
+    if(rows[0]) selectService(rows[0].code);
+  }).catch(e=>$('#serviceGrid').innerHTML=`<p>${esc(e.message)}</p>`);
+
+  $('#checkNicknameBtn').onclick=async()=>{
+    const target=$('#gameTarget').value.trim(),zone=$('#gameZone').value.trim();
+    if(!selectedService)return $('#nicknameResult').textContent='Pilih produk terlebih dahulu.';
+    if(!target)return $('#nicknameResult').textContent='Isi ID terlebih dahulu.';
+    $('#nicknameResult').textContent='Mengecek nickname...';
+    try{const d=await jsonFetch('/api/game-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:selectedService.code,target,zone})});$('#nicknameResult').textContent='✓ '+(d.nickname||'ID ditemukan');}
+    catch(e){$('#nicknameResult').textContent='⚠ '+e.message;}
+  };
+
+  $('#gameOrderForm').onsubmit=async e=>{
+    e.preventDefault(); if(!selectedService)return;
+    const btn=$('#submitGameOrder'); btn.disabled=true; btn.textContent='Membuat QRIS...'; $('#gameFormMessage').textContent='';
+    try{
+      const d=await jsonFetch('/api/create-game-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service:selectedService.code,target:$('#gameTarget').value.trim(),zone:$('#gameZone').value.trim(),customer_name:$('#gameCustomerName').value.trim(),customer_contact:$('#gameCustomerContact').value.trim()})});
+      sessionStorage.setItem('kivopay_game_payment_'+d.order.invoice,JSON.stringify(d.order)); location.href='payment-game.html?invoice='+encodeURIComponent(d.order.invoice);
+    }catch(err){$('#gameFormMessage').textContent=err.message;btn.disabled=false;btn.textContent='Lanjut Bayar QRIS';}
+  };
+}
+
+if($('#gameGrid')) initCatalog();
+if($('#gameOrderForm')) initDetail();
 })();

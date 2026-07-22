@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Detail Produk — KivoPay</title>
+  <link rel="stylesheet" href="style.css?v=20.1">
+  <link rel="stylesheet" href="game.css?v=20.1">
+</head>
+<body class="game-page detail-page">
+<header class="game-head">
+  <a href="topup-game.html" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
+  <a href="topup-game.html" class="game-back">← Katalog</a>
+</header>
+<main class="game-shell detail-shell">
+  <section class="detail-hero">
+    <img id="detailGameImage" alt="Foto produk">
+    <div>
+      <span class="eyebrow">TOP UP OTOMATIS</span>
+      <h1 id="detailGameName">Memuat...</h1>
+      <p id="detailGameSummary">Pilih paket dan isi data tujuan dengan benar.</p>
+    </div>
+  </section>
+
+  <form id="gameOrderForm" class="detail-layout">
+    <div class="detail-main">
+      <section class="detail-card">
+        <div class="step-title"><span>1</span><div><h2>Masukkan Data Tujuan</h2><p>Pastikan ID dan server sudah benar.</p></div></div>
+        <div class="game-two">
+          <label>User ID / ID tujuan<input id="gameTarget" required placeholder="Masukkan ID"></label>
+          <label>Zone / Server<input id="gameZone" placeholder="Kosongkan jika tidak ada"></label>
+        </div>
+        <button id="checkNicknameBtn" class="secondary-btn nickname-btn" type="button">Cek Nickname</button>
+        <div id="nicknameResult" class="nickname-result"></div>
+      </section>
+
+      <section class="detail-card">
+        <div class="step-title"><span>2</span><div><h2>Pilih Produk</h2><p>Pilih nominal atau paket yang ingin dibeli.</p></div></div>
+        <div id="serviceGrid" class="service-grid"><p>Memuat paket...</p></div>
+      </section>
+
+      <section class="detail-card">
+        <div class="step-title"><span>3</span><div><h2>Data Pembeli</h2><p>Dipakai untuk informasi status transaksi.</p></div></div>
+        <div class="game-two">
+          <label>Nama pembeli<input id="gameCustomerName" required placeholder="Nama kamu"></label>
+          <label>WhatsApp / Telegram<input id="gameCustomerContact" required placeholder="08xxx / @username"></label>
+        </div>
+      </section>
+    </div>
+
+    <aside class="checkout-summary">
+      <span class="eyebrow">RINGKASAN</span>
+      <h2 id="selectedServiceName">Pilih produk</h2>
+      <p id="selectedServiceDescription">Belum ada produk yang dipilih.</p>
+      <div class="summary-line"><span>Harga produk</span><strong id="gameSellPrice">Rp0</strong></div>
+      <div class="profit-note">Harga sudah termasuk biaya layanan KivoPay.</div>
+      <button id="submitGameOrder" type="submit" disabled>Lanjut Bayar QRIS</button>
+      <div id="gameFormMessage" class="admin-message"></div>
+    </aside>
+  </form>
+</main>
+<script src="game.js?v=20.1"></script>
+</body>
+</html>
