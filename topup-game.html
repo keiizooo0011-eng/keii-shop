@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Top Up & Produk Digital — KivoPay</title>
   <link rel="stylesheet" href="style.css?v=20.2">
-  <link rel="stylesheet" href="game.css?v=26.0">
+  <link rel="stylesheet" href="game.css?v=27.0">
 </head>
-<body class="game-page">
+<body class="game-page catalog-dashboard">
+<div id="catalogLoader" class="page-loader"><div class="loader-logo">K</div><div class="loader-track"><span></span></div><strong>Silakan Tunggu</strong><p>Sedang Menyiapkan Katalog...</p></div>
+<div class="ambient-particles" aria-hidden="true"></div>
 <header class="game-head">
   <a href="index.html" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
   <nav class="catalog-head-actions" aria-label="Navigasi katalog">
@@ -42,6 +44,12 @@
     </div>
   </section>
 
+  <section class="live-stats" aria-label="Statistik layanan">
+    <article><span>🔥</span><div><strong data-counter="1283">0</strong><small>Top Up Hari Ini</small></div></article>
+    <article><span>⚡</span><div><strong>Otomatis</strong><small>Proses 24/7</small></div></article>
+    <article><span>★</span><div><strong data-counter="49" data-decimal="true">0</strong><small>Rating Pengguna</small></div></article>
+  </section>
+
   <nav id="categoryTabs" class="category-tabs" aria-label="Kategori produk">
     <button class="category-tab active" data-category="games">Games</button>
     <button class="category-tab" data-category="streaming">Streaming</button>
@@ -63,6 +71,6 @@
     <div id="gameGrid" class="vip-grid"><p class="catalog-loading">Memuat katalog...</p></div>
   </section>
 </main>
-<script src="game.js?v=25.0"></script>
+<script src="game.js?v=27.0"></script>
 </body>
 </html>

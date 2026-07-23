@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Detail Produk — KivoPay</title>
   <link rel="stylesheet" href="style.css?v=20.2">
-  <link rel="stylesheet" href="game.css?v=25.0">
+  <link rel="stylesheet" href="game.css?v=27.0">
 </head>
 <body class="game-page detail-page">
+<div id="detailLoader" class="page-loader"><div class="loader-logo">K</div><div class="loader-track"><span></span></div><strong>Tunggu Sebentar</strong><p>Sedang Memuat Halaman Produk...</p></div>
+<div class="ambient-particles" aria-hidden="true"></div>
 <header class="game-head game-detail-nav">
   <a href="topup-game.html" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
   <nav class="game-nav-actions" aria-label="Navigasi produk">
@@ -16,6 +18,9 @@
   </nav>
 </header>
 <main class="game-shell detail-shell">
+  <nav class="order-progress" aria-label="Tahapan pemesanan">
+    <span class="active"><b>1</b>Data</span><i></i><span><b>2</b>Produk</span><i></i><span><b>3</b>Pembayaran</span><i></i><span><b>4</b>Berhasil</span>
+  </nav>
   <section class="detail-hero">
     <img id="detailGameImage" alt="Foto produk">
     <div>
@@ -85,6 +90,6 @@
   </div>
 </dialog>
 
-<script src="game.js?v=25.0"></script>
+<script src="game.js?v=27.0"></script>
 </body>
 </html>
