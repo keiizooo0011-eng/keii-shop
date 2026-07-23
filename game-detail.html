@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Detail Produk — KivoPay</title>
   <link rel="stylesheet" href="style.css?v=20.2">
-  <link rel="stylesheet" href="game.css?v=24.1">
+  <link rel="stylesheet" href="game.css?v=25.0">
 </head>
 <body class="game-page detail-page">
 <header class="game-head game-detail-nav">
@@ -62,6 +62,29 @@
     </aside>
   </form>
 </main>
-<script src="game.js?v=24.1"></script>
+
+<dialog id="orderConfirmDialog" class="order-confirm-dialog">
+  <button id="closeOrderConfirm" class="order-confirm-close" type="button" aria-label="Tutup">×</button>
+  <div class="order-confirm-head">
+    <span class="order-confirm-icon">🛍️</span>
+    <div>
+      <span class="eyebrow">KONFIRMASI PESANAN</span>
+      <h2>Pastikan datanya sudah benar</h2>
+      <p>Pesanan yang sudah diproses tidak dapat dibatalkan jika data tujuan salah.</p>
+    </div>
+  </div>
+  <div id="orderConfirmDetails" class="order-confirm-details"></div>
+  <div class="order-confirm-total">
+    <span>Total pembayaran</span>
+    <strong id="orderConfirmTotal">Rp0</strong>
+  </div>
+  <div class="order-confirm-warning">⚠ Periksa kembali User ID, Zone ID, server, email, atau data tujuan lainnya.</div>
+  <div class="order-confirm-actions">
+    <button id="cancelOrderConfirm" class="order-cancel-btn" type="button">Kembali</button>
+    <button id="confirmOrderBtn" class="order-confirm-btn" type="button"><span>Ya, Buat Pesanan</span><b>→</b></button>
+  </div>
+</dialog>
+
+<script src="game.js?v=25.0"></script>
 </body>
 </html>
