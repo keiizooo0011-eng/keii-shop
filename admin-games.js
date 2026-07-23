@@ -10,8 +10,8 @@ const searchCache=new Map();
 
 async function jsonFetch(url,opts={}){
   const r=await fetch(url,opts);const text=await r.text();let data={};
-  try{data=text?JSON.parse(text):{};}catch{throw new Error('Respons PanelPedia tidak valid.');}
-  if(!r.ok)throw new Error(data.error||'Gagal mengambil daftar PanelPedia.');
+  try{data=text?JSON.parse(text):{};}catch{throw new Error('Respons VIPayment tidak valid.');}
+  if(!r.ok)throw new Error(data.error||'Gagal mengambil katalog VIPayment.');
   return data;
 }
 function normalizeName(v){return String(v||'').trim();}
@@ -53,7 +53,7 @@ async function upload(file){
 async function load(){
   const {data,error}=await sb.from('game_catalog').select('*').order('sort_order');
   if(error)throw error;rows=data||[];
-  $('#gameAdminList').innerHTML=rows.length?rows.map(x=>`<article class="admin-product-item"><img src="${esc(x.image_url||fallback)}"><div><strong>${esc(x.display_name)}</strong><span>${esc(x.vip_brand)} • Urutan ${x.sort_order} • ${x.is_active?'Aktif':'Nonaktif'}</span></div><div class="admin-item-actions"><button data-edit="${x.id}" class="ghost">Edit</button><button data-delete="${x.id}" class="ghost-danger">Hapus</button></div></article>`).join(''):'<p>Belum ada pengaturan foto. Pilih produk PanelPedia di formulir atas.</p>';
+  $('#gameAdminList').innerHTML=rows.length?rows.map(x=>`<article class="admin-product-item"><img src="${esc(x.image_url||fallback)}"><div><strong>${esc(x.display_name)}</strong><span>${esc(x.vip_brand)} • Urutan ${x.sort_order} • ${x.is_active?'Aktif':'Nonaktif'}</span></div><div class="admin-item-actions"><button data-edit="${x.id}" class="ghost">Edit</button><button data-delete="${x.id}" class="ghost-danger">Hapus</button></div></article>`).join(''):'<p>Belum ada pengaturan foto. Pilih produk VIPayment di formulir atas.</p>';
   document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>edit(b.dataset.edit));
   document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>del(b.dataset.delete));
 }
@@ -82,7 +82,7 @@ async function searchVipProducts(query){
   setPickerStatus('Mencari produk...','loading');
   $('#vipPickerList').innerHTML='<div class="vip-loading"><span></span><p>Mengambil hasil yang cocok...</p></div>';
   try{
-    const data=await jsonFetch(`/api/game-services?game=${encodeURIComponent(q)}&limit=20`,{signal:activeController.signal});
+    const data=await jsonFetch(`/api/game-services?search=${encodeURIComponent(q)}&limit=80`,{signal:activeController.signal});
     const products=groupServices(data.services||[]).slice(0,20);
     searchCache.set(key,products);
     setPickerStatus(products.length?`${products.length} produk ditemukan.`:'Tidak ada hasil.');
@@ -90,7 +90,7 @@ async function searchVipProducts(query){
   }catch(err){
     if(err.name==='AbortError')return;
     setPickerStatus(err.message,'error');
-    showPickerMessage('Pencarian gagal. Coba lagi atau cek whitelist IP PanelPedia.','error');
+    showPickerMessage('Pencarian gagal. Coba lagi atau cek koneksi gateway VIPayment.','error');
   }finally{activeController=null;}
 }
 function chooseVip(brand,products=[]){
@@ -122,7 +122,7 @@ function edit(id){
   scrollTo({top:0,behavior:'smooth'});
 }
 function reset(){
-  $('#gameCatalogForm').reset();$('#gameCatalogId').value='';$('#vipBrand').value='';$('#vipPickerLabel').textContent='Pilih produk PanelPedia';
+  $('#gameCatalogForm').reset();$('#gameCatalogId').value='';$('#vipBrand').value='';$('#vipPickerLabel').textContent='Pilih produk VIPayment';
   $('#vipPickerMeta').hidden=true;$('#gameActive').checked=true;$('#gameImagePreview').src=fallback;currentImage='';selectedVip=null;$('#cancelGameEdit').hidden=true;
 }
 async function del(id){if(!confirm('Hapus pengaturan produk ini?'))return;const {error}=await sb.from('game_catalog').delete().eq('id',id);if(error)return alert(error.message);await load();}
@@ -138,7 +138,7 @@ $('#gameImage').onchange=e=>{const f=e.target.files[0];if(f)$('#gameImagePreview
 $('#cancelGameEdit').onclick=reset;$('#refreshGames').onclick=async()=>{searchCache.clear();await load();};$('#refreshProvider').onclick=loadProvider;
 $('#gameCatalogForm').onsubmit=async e=>{
   e.preventDefault();const msg=$('#gameAdminMessage');
-  if(!$('#vipBrand').value.trim()){msg.textContent='Pilih produk PanelPedia terlebih dahulu.';openPicker();return;}
+  if(!$('#vipBrand').value.trim()){msg.textContent='Pilih produk VIPayment terlebih dahulu.';openPicker();return;}
   msg.textContent='Menyimpan...';
   try{
     const image_url=await upload($('#gameImage').files[0]);

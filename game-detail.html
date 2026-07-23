@@ -5,13 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Detail Produk — KivoPay</title>
   <link rel="stylesheet" href="style.css?v=20.2">
-  <link rel="stylesheet" href="game.css?v=20.2">
+  <link rel="stylesheet" href="game.css?v=22.0">
 </head>
 <body class="game-page detail-page">
-<header class="game-head">
+<header class="game-head game-detail-nav">
   <a href="topup-game.html" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
-  <a href="topup-game.html" class="game-back">← Katalog</a>
-<a href="riwayat-game.html">Riwayat</a></header>
+  <nav class="game-nav-actions" aria-label="Navigasi produk">
+    <a href="topup-game.html" class="game-nav-btn game-back"><span aria-hidden="true">‹</span><b>Katalog</b></a>
+    <a href="riwayat-game.html" class="game-nav-btn history-link"><span aria-hidden="true">☷</span><b>Riwayat</b></a>
+  </nav>
+</header>
 <main class="game-shell detail-shell">
   <section class="detail-hero">
     <img id="detailGameImage" alt="Foto produk">
@@ -42,7 +45,7 @@
         <div id="serviceGrid" class="service-grid"><p>Memuat paket...</p></div>
       </section>
 
-      <section class="detail-card buyer-card">
+      <section id="buyerCard" class="detail-card buyer-card">
         <div class="step-title"><span>3</span><div><h2>Data Pembeli</h2><p>Dipakai untuk informasi status transaksi.</p></div></div>
         <div class="buyer-fields">
           <label class="field-control"><span>Nama pembeli</span><input id="gameCustomerName" required placeholder="Masukkan nama kamu" autocomplete="name"></label>
@@ -62,6 +65,6 @@
     </aside>
   </form>
 </main>
-<script src="game.js?v=20.2"></script>
+<script src="game.js?v=22.0"></script>
 </body>
 </html>

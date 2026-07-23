@@ -79,6 +79,11 @@ function applyServiceInputRules(service){
     else{targetLabel='User ID / Player ID';showZone=/zone|server|data_zone|user id dan server/.test(name+' '+desc);}
   }
   $('#targetLabelText').textContent=targetLabel;target.placeholder=targetPlaceholder;$('#zoneLabelText').textContent=zoneText;zone.placeholder=zonePlaceholder;zoneLabel.hidden=!showZone;nick.hidden=!showNick;
+  const buyerCard=$('#buyerCard'), buyerName=$('#gameCustomerName'), buyerContact=$('#gameCustomerContact');
+  const simpleStreaming=category==='streaming';
+  if(buyerCard) buyerCard.hidden=simpleStreaming;
+  if(buyerName) buyerName.required=!simpleStreaming;
+  if(buyerContact) buyerContact.required=!simpleStreaming;
 }
 
 function configureTargetFields(game){
@@ -107,6 +112,11 @@ function configureTargetFields(game){
   $('#targetLabelText').textContent=targetLabel; target.placeholder=targetPlaceholder;
   $('#zoneLabelText').textContent=zoneLabelText; zone.placeholder=zonePlaceholder;
   zoneLabel.hidden=!showZone; zone.required=false; nick.hidden=!showNick;
+  const buyerCard=$('#buyerCard'), buyerName=$('#gameCustomerName'), buyerContact=$('#gameCustomerContact');
+  const simpleStreaming=category==='streaming';
+  if(buyerCard) buyerCard.hidden=simpleStreaming;
+  if(buyerName) buyerName.required=!simpleStreaming;
+  if(buyerContact) buyerContact.required=!simpleStreaming;
   $('#detailEyebrow').textContent=category==='streaming'?'PRODUK DIGITAL OTOMATIS':category==='voucher'?'VOUCHER OTOMATIS':'TOP UP OTOMATIS';
 }
 
@@ -142,9 +152,12 @@ function initDetail(){
 
   $('#gameOrderForm').onsubmit=async e=>{
     e.preventDefault(); if(!selectedService)return;
-    const target=$('#gameTarget').value.trim(), customerName=$('#gameCustomerName').value.trim(), contact=$('#gameCustomerContact').value.trim();
-    if(!target){$('#gameFormMessage').textContent='Data tujuan wajib diisi.';$('#gameTarget').focus();return;}
-    if(!customerName||!contact){$('#gameFormMessage').textContent='Lengkapi nama dan kontak pembeli.';return;}
+    const target=$('#gameTarget').value.trim();
+    const isStreaming=categoryOf(selectedService?.game||'')==='streaming';
+    const customerName=isStreaming?'Pelanggan KivoPay':$('#gameCustomerName').value.trim();
+    const contact=isStreaming?target:$('#gameCustomerContact').value.trim();
+    if(!target){$('#gameFormMessage').textContent=isStreaming?'Email/nomor tujuan wajib diisi.':'Data tujuan wajib diisi.';$('#gameTarget').focus();return;}
+    if(!isStreaming&&(!customerName||!contact)){$('#gameFormMessage').textContent='Lengkapi nama dan kontak pembeli.';return;}
     const btn=$('#submitGameOrder'); btn.disabled=true; btn.querySelector('span').textContent='Membuat QRIS...'; $('#gameFormMessage').textContent='';
     try{
       const d=await jsonFetch('/api/create-game-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service:selectedService.code,target,zone:$('#gameZone').value.trim(),customer_name:customerName,customer_contact:contact})});

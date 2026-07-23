@@ -70,3 +70,35 @@ body.admin-light{background:#f4f5f8;color:#17131e}.admin-light .glow{opacity:.12
 body.kivo-light.admin-body{background:#f4f5fb;color:#171a22}body.kivo-light .admin-shell,body.kivo-light .admin-topbar,body.kivo-light .admin-sidebar{background:#fff!important;border-color:#e3e6ee!important}body.kivo-light .admin-nav button,body.kivo-light .admin-topbar p,body.kivo-light .admin-panel p{color:#697080}body.kivo-light input,body.kivo-light select,body.kivo-light textarea{background:#f7f8fb!important;color:#171a22!important;border-color:#dde1ea!important}
 
 .stock-import-preview{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid rgba(124,58,237,.3);border-radius:13px;background:rgba(124,58,237,.08)}.stock-import-preview span{font-weight:800;color:#ddd6fe}.stock-import-preview small{color:#aaa2b9;text-align:right}@media(max-width:620px){.stock-import-preview{align-items:flex-start;flex-direction:column}.stock-import-preview small{text-align:left}}
+
+/* V21 — game order monitor */
+.game-order-center{margin-top:22px}.game-order-toolbar{display:grid;grid-template-columns:1fr 210px;gap:10px;margin-bottom:14px}.game-order-toolbar input,.game-order-toolbar select{min-height:48px}.game-order-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}.game-order-stats span{padding:9px 12px;border-radius:12px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.22)}.admin-game-order-list{display:grid;gap:14px}.admin-game-order-card{padding:17px;border-radius:19px;border:1px solid rgba(139,92,246,.2);background:#110d18}.game-order-head{display:flex;justify-content:space-between;gap:12px;padding-bottom:13px;border-bottom:1px solid rgba(255,255,255,.07)}.game-order-head small{color:#a99eb6}.game-order-head h3{margin:6px 0;font-size:17px}.game-order-head p{margin:0;color:#a99eb6}.game-order-info{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:13px 0}.game-order-info>div{padding:11px;border-radius:12px;background:rgba(255,255,255,.035);overflow-wrap:anywhere}.game-order-info small{display:block;color:#94899f;margin-bottom:4px}.admin-game-order-card details{margin:10px 0}.admin-game-order-card summary{cursor:pointer;font-weight:800;color:#c4b5fd}.admin-order-log{padding:11px 13px;margin-top:8px;border-radius:12px;background:#09070d}.admin-order-log p{margin:7px 0}.admin-order-note{display:grid;grid-template-columns:1fr auto;gap:8px}.admin-order-note textarea{min-height:56px}.admin-order-note button{min-width:145px}.admin-light .admin-game-order-card{background:#fff;border-color:#e6deef}.admin-light .game-order-info>div,.admin-light .admin-order-log{background:#f7f4fa}@media(max-width:800px){.game-order-info{grid-template-columns:1fr 1fr}}@media(max-width:620px){.game-order-toolbar{grid-template-columns:1fr}.game-order-head{display:block}.game-order-head .history-status{margin-top:10px}.game-order-info{grid-template-columns:1fr}.admin-order-note{grid-template-columns:1fr}.admin-order-note button{width:100%}}
+
+/* V22 — VIPayment picker + order monitor responsive repair */
+[hidden]{display:none!important}
+.game-order-center{margin-top:24px;overflow:hidden}
+.game-order-toolbar{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px;margin:16px 0}
+.game-order-toolbar input,.game-order-toolbar select{width:100%;min-height:48px;box-sizing:border-box;border:1px solid rgba(142,103,255,.28);border-radius:14px;background:#0e0b15;color:#fff;padding:0 14px;font:inherit;outline:none}
+.game-order-toolbar input:focus,.game-order-toolbar select:focus{border-color:#8b65ff;box-shadow:0 0 0 4px rgba(118,87,244,.12)}
+.game-order-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.game-order-stats span{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);color:#a89fb6}
+.game-order-stats b{font-size:1.15rem;color:#fff}
+.admin-game-order-list{display:grid;gap:14px}
+.admin-game-order-card{padding:18px;border-radius:20px;border:1px solid rgba(143,104,255,.22);background:linear-gradient(145deg,#15111e,#0e0b14);box-shadow:0 14px 36px rgba(0,0,0,.18);overflow:hidden}
+.game-order-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.game-order-head small{display:block;color:#9b90aa;font-weight:750;overflow-wrap:anywhere}
+.game-order-head h3{margin:7px 0 5px;font-size:1.12rem;line-height:1.35}
+.game-order-head p{margin:0;color:#aaa1b8;font-size:.9rem}
+.game-order-info{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:16px 0}
+.game-order-info>div{padding:12px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);min-width:0}
+.game-order-info small{display:block;color:#90869d;margin-bottom:5px}
+.game-order-info strong{display:block;overflow-wrap:anywhere;line-height:1.35}
+.admin-game-order-card details{border-radius:14px;border:1px solid rgba(139,92,246,.18);background:rgba(139,92,246,.055);overflow:hidden}
+.admin-game-order-card summary{cursor:pointer;padding:12px 14px;font-weight:800;color:#cfbdff}
+.admin-order-log{padding:0 14px 13px}.admin-order-log p{margin:8px 0;color:#bbb1c7;line-height:1.45}
+.admin-order-note{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px}
+.admin-order-note textarea{width:100%;min-height:48px;box-sizing:border-box;resize:vertical;border:1px solid rgba(145,103,255,.25);border-radius:12px;background:#0d0a13;color:#fff;padding:11px 12px;font:inherit}
+.admin-order-note button{align-self:stretch;border:0;border-radius:12px;padding:0 16px;background:linear-gradient(135deg,#6f4cf5,#a13df0);color:#fff;font-weight:850}
+.vip-picker-status.error,.vip-error{color:#ff9aaa}.vip-picker-status{line-height:1.45}
+@media(max-width:760px){.game-order-toolbar{grid-template-columns:1fr}.game-order-stats{grid-template-columns:1fr 1fr}.game-order-head{display:block}.game-order-head .history-status{margin-top:10px}.game-order-info{grid-template-columns:1fr 1fr}.admin-order-note{grid-template-columns:1fr}.admin-order-note button{min-height:44px}.admin-game-order-card{padding:15px}}
+@media(max-width:430px){.game-order-info{grid-template-columns:1fr}.game-order-stats{grid-template-columns:1fr 1fr}.game-order-center{padding-left:13px!important;padding-right:13px!important}.game-order-head h3{font-size:1rem}}
