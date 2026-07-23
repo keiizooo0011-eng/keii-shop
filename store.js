@@ -391,8 +391,8 @@
           <div class="store-grid catalog-category-grid">${items.map(productCard).join("")}</div>
         </section>` : "";
       root.innerHTML = products.length
-        ? `${categorySection("sewa-bot", "Sewa Bot", "Pilih paket bot sesuai kebutuhan dan durasi penggunaanmu.", "🤖", botProducts)}
-           ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "✨", apkProducts)}`
+        ? `${categorySection("sewa-bot", "Sewa Bot", "Pilih paket bot sesuai kebutuhan dan durasi penggunaanmu.", "BOT", botProducts)}
+           ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "APP", apkProducts)}`
         : `<div class="store-empty">Belum ada produk aktif. Tambahkan dari Admin Panel.</div>`;
       document.querySelectorAll(".store-buy").forEach(btn => {
         btn.onclick = () => openCheckout(btn.dataset.productId);
@@ -440,8 +440,8 @@
           </div>
           <div class="product-detail-content">
             <div class="product-info-strip">
-              <span><b>⚡</b><small>Proses</small><strong>Cepat</strong></span>
-              <span><b>🔒</b><small>Pembayaran</small><strong>Aman</strong></span>
+              <span><b class="mini-line-icon">AUTO</b><small>Proses</small><strong>Cepat</strong></span>
+              <span><b class="mini-line-icon">QRIS</b><small>Pembayaran</small><strong>Aman</strong></span>
               <span><b>📦</b><small>Pengiriman</small><strong>Otomatis</strong></span>
             </div>
             <section class="product-description-box product-description-v2">
