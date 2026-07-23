@@ -2907,3 +2907,5 @@ body.admin-body .kivo-control-host{top:20px;right:24px}
   .support-agent-card{padding:16px}
   .support-agent-card>button{min-height:52px;font-size:13px}
 }
+/* Support ticket fallback */
+.support-ticket-fallback{margin-top:18px;padding:17px;border:1px solid rgba(167,139,250,.24);border-radius:18px;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(255,255,255,.025))}.support-ticket-fallback[hidden]{display:none}.support-ticket-fallback small,.support-ticket-fallback strong,.support-ticket-fallback p{display:block}.support-ticket-fallback small{color:#b9a2ff;font-size:8px;letter-spacing:.16em;font-weight:850}.support-ticket-fallback strong{margin-top:7px;font-size:15px}.support-ticket-fallback p{margin:7px 0 12px}.support-ticket-fallback a{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-radius:13px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;text-decoration:none;font-size:12px;font-weight:850}

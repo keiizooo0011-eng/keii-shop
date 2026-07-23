@@ -1653,6 +1653,7 @@ async function initKivoSupport(){
   const note=document.querySelector("#supportConfigNote");
   const list=document.querySelector("#supportAgentList");
   const summary=document.querySelector("#floatingCsSummary");
+  const ticketFallback=document.querySelector("#supportTicketFallback");
   const fallback=[
     {id:"cs-1",name:"CS 1",channel:"whatsapp",contact:cfg.csWhatsapp||"",status:"online"},
     {id:"cs-2",name:"CS 2",channel:"telegram",contact:cfg.csTelegram||"",status:"offline"}
@@ -1670,7 +1671,8 @@ async function initKivoSupport(){
     }
   }catch(e){console.warn("CS settings fallback",e)}
   const active=agents.filter(a=>a.status==="online").length;
-  if(summary) summary.innerHTML=`<i class="cs-dot ${active?'online':'offline'}"></i> ${active?`${active} CS sedang online`:"Seluruh CS sedang offline"}`;
+  if(summary) summary.innerHTML=`<i class="cs-dot ${active?'online':'offline'}"></i> ${active?`${active} CS sedang online`:"Tiket bantuan tersedia"}`;
+  if(ticketFallback) ticketFallback.hidden=active>0;
   if(list){
     list.innerHTML=agents.map((a,i)=>{
       const online=a.status==="online";

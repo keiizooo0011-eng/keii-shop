@@ -54,6 +54,7 @@
         <button data-admin-page-btn="moderation">💬 Moderasi</button>
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
         <button data-admin-page-btn="customer-service">Customer Service</button>
+        <button data-admin-page-btn="support-tickets">Tiket Bantuan <span id="supportTicketBadge" class="admin-nav-badge" hidden>0</span></button>
       </nav>
 
       <div class="admin-page active" data-admin-page="overview">
@@ -261,6 +262,19 @@
           <div id="csSettingsMessage" class="admin-message"></div>
         </section>
       </div>
+
+      <div class="admin-page" data-admin-page="support-tickets">
+        <section class="admin-panel support-ticket-admin">
+          <div class="admin-panel-head"><div><span class="eyebrow">KIVOPAY HELPDESK</span><h2>Tiket Bantuan Pelanggan</h2><p class="muted">Kelola laporan yang masuk saat Customer Service offline atau ketika pelanggan membutuhkan dokumentasi kendala.</p></div><button id="refreshSupportTickets" class="ghost" type="button">Refresh</button></div>
+          <div class="support-mode-panel">
+            <div><small>MODE BALASAN SAAT SEMUA CS OFFLINE</small><h3>Manual atau Template Otomatis</h3><p>Template otomatis hanya mengirim respons awal. Admin tetap dapat mengambil alih dan membalas secara manual kapan saja.</p></div>
+            <div class="support-mode-controls"><label><input type="radio" name="supportReplyMode" value="manual"> Manual</label><label><input type="radio" name="supportReplyMode" value="template"> Template Otomatis</label><label class="switch-row"><input id="autoReplyOffline" type="checkbox"> Aktifkan saat seluruh CS offline</label><button id="saveSupportMode" type="button">Simpan Mode Balasan</button></div>
+          </div>
+          <div class="support-template-editor"><div class="admin-panel-head"><div><span class="eyebrow">RESPONSE TEMPLATE</span><h3>Template Customer Service</h3></div></div><div class="support-template-grid"><label>Salam pembuka<textarea data-template-key="greeting" rows="3"></textarea></label><label>Penanganan kendala<textarea data-template-key="handling" rows="3"></textarea></label><label>Masalah sedang diproses<textarea data-template-key="processing" rows="3"></textarea></label><label>Kendala selesai<textarea data-template-key="solved" rows="3"></textarea></label><label>Pesan penutup<textarea data-template-key="closing" rows="3"></textarea></label></div><button id="saveSupportTemplates" type="button">Simpan Semua Template</button><div id="supportSettingsMessage" class="admin-message"></div></div>
+          <div class="support-ticket-toolbar"><input id="supportTicketSearch" placeholder="Cari nomor tiket, invoice, nama, atau ID transaksi"><select id="supportTicketStatus"><option value="">Semua status</option><option value="baru">Baru</option><option value="menunggu_data">Menunggu Data</option><option value="sedang_diperiksa">Sedang Diperiksa</option><option value="sedang_diproses">Sedang Diproses</option><option value="selesai">Selesai</option><option value="ditutup">Ditutup</option></select></div>
+          <div class="support-admin-layout"><div id="supportTicketListAdmin" class="support-ticket-list-admin"></div><div id="supportTicketDetailAdmin" class="support-ticket-detail-admin"><div class="support-admin-empty">Pilih tiket untuk melihat detail percakapan.</div></div></div>
+        </section>
+      </div>
       <div class="admin-page" data-admin-page="orders">
       <section class="admin-panel orders-panel">
         <div class="admin-panel-head">
@@ -275,7 +289,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=18.1.1"></script>
+  <script src="admin.js?v=19.0.0"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 </body>
