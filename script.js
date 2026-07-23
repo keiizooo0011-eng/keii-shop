@@ -1682,7 +1682,16 @@ async function initKivoSupport(){
       let url="";
       if(a.channel==="telegram"){const raw=String(a.contact||"").trim();url=raw.startsWith("http")?raw:`https://t.me/${raw.replace(/^@/,"")}`}
       else {const num=String(a.contact||"").replace(/\D/g,"");url=num?`https://wa.me/${num}?text=${encodeURIComponent(cfg.csMessage||"Halo KivoPay, saya membutuhkan bantuan.")}`:""}
-      if(url) window.open(url,"_blank","noopener,noreferrer"); else if(note) note.textContent="Kontak Customer Service belum dikonfigurasi.";
+      if(url){
+        close();
+        const link=document.createElement("a");
+        link.href=url;
+        link.target="_blank";
+        link.rel="noopener noreferrer";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else if(note) note.textContent="Kontak Customer Service belum dikonfigurasi.";
     });
   }
   document.querySelectorAll("[data-open-support]").forEach(btn=>btn.addEventListener("click",open));

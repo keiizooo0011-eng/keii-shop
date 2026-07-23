@@ -484,8 +484,17 @@
 })();
 
 
-// V16.6.8 modular admin navigation and theme
+// V16.6.9 modular admin navigation, theme, and Customer Service manager
 (() => {
+  const $ = selector => document.querySelector(selector);
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]));
+  const uid = () => (window.crypto?.randomUUID?.() || `cs-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  const setMessage = (el, text, type="") => {
+    if (!el) return;
+    el.textContent = text;
+    el.className = `admin-message ${type}`.trim();
+  };
+
   const buttons=[...document.querySelectorAll('[data-admin-page-btn]')];
   const pages=[...document.querySelectorAll('[data-admin-page]')];
   function openPage(name){
@@ -502,32 +511,113 @@
   function applyTheme(theme){
     document.body.classList.toggle('admin-light',theme==='light');
     document.documentElement.style.colorScheme=theme;
-    if(toggle) toggle.textContent=theme==='light'?'🌙 Mode Malam':'☀️ Mode Siang';
+    if(toggle) toggle.textContent=theme==='light'?'Mode Malam':'Mode Siang';
     localStorage.setItem('kivopay_admin_theme',theme);
   }
   applyTheme(localStorage.getItem('kivopay_admin_theme')||'dark');
   toggle?.addEventListener('click',()=>applyTheme(document.body.classList.contains('admin-light')?'dark':'light'));
 
-
-  const CS_SETTING_KEY="customer_service_agents";
+  const cfg=window.KIVOPAY_CONFIG||{};
+  const configured=cfg.supabaseUrl && cfg.supabaseAnonKey && !String(cfg.supabaseUrl).startsWith('ISI_') && !String(cfg.supabaseAnonKey).startsWith('ISI_');
+  const csDb=configured && window.supabase ? window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey) : null;
+  const CS_SETTING_KEY='customer_service_agents';
   const defaultCsAgents=()=>[
-    {id:crypto.randomUUID(),name:"CS 1",channel:"whatsapp",contact:(window.KIVOPAY_CONFIG||{}).csWhatsapp||"",status:"online"},
-    {id:crypto.randomUUID(),name:"CS 2",channel:"telegram",contact:(window.KIVOPAY_CONFIG||{}).csTelegram||"",status:"offline"}
+    {id:uid(),name:'CS 1',channel:'whatsapp',contact:cfg.csWhatsapp||'',status:'online'},
+    {id:uid(),name:'CS 2',channel:'telegram',contact:cfg.csTelegram||'',status:'offline'}
   ];
   let csAgents=[];
-  function renderCsEditors(){
-    const root=$("#csAgentEditorList"); if(!root)return;
-    root.innerHTML=csAgents.map((a,i)=>`<article class="cs-agent-editor" data-cs-id="${esc(a.id)}"><div class="cs-editor-head"><div class="cs-editor-avatar"><span data-kivo-icon="headphones"></span></div><div><small>CUSTOMER SERVICE ${i+1}</small><strong>${esc(a.name||`CS ${i+1}`)}</strong></div><label class="cs-status-switch"><input type="checkbox" data-cs-status ${a.status==="online"?"checked":""}><span></span><b>${a.status==="online"?"Online":"Offline"}</b></label></div><div class="cs-editor-grid"><label>Nama tampilan<input data-cs-name value="${esc(a.name||"")}" placeholder="Contoh: CS 1"></label><label>Saluran<select data-cs-channel><option value="whatsapp" ${a.channel==="whatsapp"?"selected":""}>WhatsApp</option><option value="telegram" ${a.channel==="telegram"?"selected":""}>Telegram</option></select></label><label class="cs-contact-field">Nomor / username<input data-cs-contact value="${esc(a.contact||"")}" placeholder="628xxx atau @username"></label></div><button type="button" class="ghost-danger cs-remove-agent" ${csAgents.length<=1?"disabled":""}>Hapus CS</button></article>`).join("");
-    root.querySelectorAll("[data-cs-status]").forEach(input=>input.onchange=()=>{const card=input.closest(".cs-agent-editor");const a=csAgents.find(x=>x.id===card.dataset.csId);a.status=input.checked?"online":"offline";card.querySelector(".cs-status-switch b").textContent=input.checked?"Online":"Offline"});
-    root.querySelectorAll(".cs-remove-agent").forEach(btn=>btn.onclick=()=>{const id=btn.closest(".cs-agent-editor").dataset.csId;csAgents=csAgents.filter(x=>x.id!==id);renderCsEditors()});
-  }
-  async function loadCsSettings(){
-    if(!$("#csAgentEditorList"))return;
-    try{const {data,error}=await sb.from("site_settings").select("value").eq("key",CS_SETTING_KEY).maybeSingle();if(error)throw error;csAgents=Array.isArray(data?.value)&&data.value.length?data.value:defaultCsAgents()}catch(e){csAgents=defaultCsAgents();msg($("#csSettingsMessage"),"Tabel site_settings belum siap. Jalankan file supabase_customer_service_settings.sql.","error")}
-    renderCsEditors();
-  }
-  $("#addCsAgentBtn")?.addEventListener("click",()=>{csAgents.push({id:crypto.randomUUID(),name:`CS ${csAgents.length+1}`,channel:"whatsapp",contact:"",status:"offline"});renderCsEditors()});
-  $("#csSettingsForm")?.addEventListener("submit",async e=>{e.preventDefault();const cards=[...document.querySelectorAll(".cs-agent-editor")];csAgents=cards.map((card,i)=>({id:card.dataset.csId||crypto.randomUUID(),name:card.querySelector("[data-cs-name]").value.trim()||`CS ${i+1}`,channel:card.querySelector("[data-cs-channel]").value,contact:card.querySelector("[data-cs-contact]").value.trim(),status:card.querySelector("[data-cs-status]").checked?"online":"offline"}));const btn=$("#saveCsSettingsBtn");btn.disabled=true;msg($("#csSettingsMessage"),"Menyimpan pengaturan...");try{const {error}=await sb.from("site_settings").upsert({key:CS_SETTING_KEY,value:csAgents,updated_at:new Date().toISOString()},{onConflict:"key"});if(error)throw error;msg($("#csSettingsMessage"),"Pengaturan Customer Service berhasil diperbarui.","success");renderCsEditors()}catch(err){msg($("#csSettingsMessage"),err.message,"error")}finally{btn.disabled=false}});
-  document.addEventListener("DOMContentLoaded",loadCsSettings);
 
+  function collectCsEditors(){
+    csAgents=[...document.querySelectorAll('.cs-agent-editor')].map((card,i)=>({
+      id:card.dataset.csId||uid(),
+      name:card.querySelector('[data-cs-name]')?.value.trim()||`CS ${i+1}`,
+      channel:card.querySelector('[data-cs-channel]')?.value||'whatsapp',
+      contact:card.querySelector('[data-cs-contact]')?.value.trim()||'',
+      status:card.querySelector('[data-cs-status]')?.checked?'online':'offline'
+    }));
+  }
+
+  function renderCsEditors(){
+    const root=$('#csAgentEditorList');
+    if(!root) return;
+    root.innerHTML=csAgents.map((a,i)=>`<article class="cs-agent-editor" data-cs-id="${esc(a.id)}">
+      <div class="cs-editor-head">
+        <div class="cs-editor-avatar"><span data-kivo-icon="headphones"></span></div>
+        <div><small>CUSTOMER SERVICE ${i+1}</small><strong>${esc(a.name||`CS ${i+1}`)}</strong></div>
+        <label class="cs-status-switch"><input type="checkbox" data-cs-status ${a.status==='online'?'checked':''}><span></span><b>${a.status==='online'?'Online':'Offline'}</b></label>
+      </div>
+      <div class="cs-editor-grid">
+        <label>Nama tampilan<input data-cs-name value="${esc(a.name||'')}" placeholder="Contoh: CS 1"></label>
+        <label>Saluran<select data-cs-channel><option value="whatsapp" ${a.channel==='whatsapp'?'selected':''}>WhatsApp</option><option value="telegram" ${a.channel==='telegram'?'selected':''}>Telegram</option></select></label>
+        <label class="cs-contact-field">Nomor / username<input data-cs-contact value="${esc(a.contact||'')}" placeholder="628xxx, @username, atau URL Telegram"></label>
+      </div>
+      <button type="button" class="ghost-danger cs-remove-agent" ${csAgents.length<=1?'disabled':''}>Hapus Customer Service</button>
+    </article>`).join('');
+
+    root.querySelectorAll('[data-cs-status]').forEach(input=>input.addEventListener('change',()=>{
+      const card=input.closest('.cs-agent-editor');
+      const label=card?.querySelector('.cs-status-switch b');
+      if(label) label.textContent=input.checked?'Online':'Offline';
+    }));
+    root.querySelectorAll('.cs-remove-agent').forEach(btn=>btn.addEventListener('click',()=>{
+      collectCsEditors();
+      const id=btn.closest('.cs-agent-editor')?.dataset.csId;
+      csAgents=csAgents.filter(x=>x.id!==id);
+      renderCsEditors();
+    }));
+    window.KivoIcons?.refresh?.();
+  }
+
+  async function loadCsSettings(){
+    const root=$('#csAgentEditorList');
+    if(!root) return;
+    root.innerHTML='<div class="cs-admin-loading"><span></span><p>Memuat pengaturan Customer Service...</p></div>';
+    if(!csDb){
+      csAgents=defaultCsAgents();
+      renderCsEditors();
+      setMessage($('#csSettingsMessage'),'Supabase belum dikonfigurasi. Data sementara tetap dapat diedit, tetapi belum bisa disimpan ke website.','error');
+      return;
+    }
+    try{
+      const {data,error}=await csDb.from('site_settings').select('value').eq('key',CS_SETTING_KEY).maybeSingle();
+      if(error) throw error;
+      csAgents=Array.isArray(data?.value)&&data.value.length?data.value:defaultCsAgents();
+      renderCsEditors();
+    }catch(error){
+      csAgents=defaultCsAgents();
+      renderCsEditors();
+      setMessage($('#csSettingsMessage'),'Pengaturan CS belum tersedia. Jalankan supabase_customer_service_settings.sql satu kali, lalu muat ulang halaman.','error');
+      console.error('Load CS settings failed:',error);
+    }
+  }
+
+  $('#addCsAgentBtn')?.addEventListener('click',()=>{
+    collectCsEditors();
+    csAgents.push({id:uid(),name:`CS ${csAgents.length+1}`,channel:'whatsapp',contact:'',status:'offline'});
+    renderCsEditors();
+    document.querySelector('.cs-agent-editor:last-child')?.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  $('#csSettingsForm')?.addEventListener('submit',async event=>{
+    event.preventDefault();
+    collectCsEditors();
+    const button=$('#saveCsSettingsBtn');
+    if(button) button.disabled=true;
+    setMessage($('#csSettingsMessage'),'Menyimpan pengaturan Customer Service...');
+    try{
+      if(!csDb) throw new Error('Supabase belum dikonfigurasi di config.js.');
+      const {error}=await csDb.from('site_settings').upsert({key:CS_SETTING_KEY,value:csAgents,updated_at:new Date().toISOString()},{onConflict:'key'});
+      if(error) throw error;
+      setMessage($('#csSettingsMessage'),'Pengaturan berhasil disimpan dan akan tampil di halaman utama.','success');
+      renderCsEditors();
+    }catch(error){
+      setMessage($('#csSettingsMessage'),error.message||'Pengaturan gagal disimpan.','error');
+      console.error('Save CS settings failed:',error);
+    }finally{
+      if(button) button.disabled=false;
+    }
+  });
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadCsSettings,{once:true});
+  else loadCsSettings();
 })();
