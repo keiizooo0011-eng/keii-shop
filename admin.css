@@ -135,3 +135,34 @@ body.kivo-light.admin-body{background:#f4f5fb;color:#171a22}body.kivo-light .adm
 
 /* Customer Service Manager */
 .cs-admin-panel{position:relative;overflow:hidden}.cs-admin-guidance{display:flex;align-items:flex-start;gap:12px;margin:16px 0 22px;padding:15px;border:1px solid rgba(167,139,250,.18);border-radius:16px;background:rgba(124,58,237,.07)}.cs-admin-guidance>span{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:12px;background:rgba(139,92,246,.15);color:#c4b5fd}.cs-admin-guidance svg{width:20px}.cs-admin-guidance p{margin:0;color:var(--muted);font-size:12px;line-height:1.65}.cs-agent-editor-list{display:grid;gap:14px}.cs-agent-editor{padding:18px;border:1px solid rgba(167,139,250,.14);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(124,58,237,.035))}.cs-editor-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}.cs-editor-avatar{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:linear-gradient(145deg,#8b5cf6,#5b21b6);color:#fff}.cs-editor-avatar svg{width:23px}.cs-editor-head>div:nth-child(2){flex:1}.cs-editor-head small,.cs-editor-head strong{display:block}.cs-editor-head small{color:#a78bfa;font-size:9px;letter-spacing:.13em}.cs-editor-head strong{margin-top:4px}.cs-status-switch{display:flex!important;align-items:center;gap:8px;cursor:pointer}.cs-status-switch input{position:absolute;opacity:0}.cs-status-switch span{position:relative;width:43px;height:24px;border-radius:999px;background:#34303d;transition:.25s}.cs-status-switch span:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#8b8791;transition:.25s}.cs-status-switch input:checked+span{background:rgba(34,197,94,.25);box-shadow:inset 0 0 0 1px rgba(34,197,94,.35)}.cs-status-switch input:checked+span:after{left:22px;background:#22c55e;box-shadow:0 0 12px rgba(34,197,94,.8)}.cs-status-switch b{font-size:11px}.cs-editor-grid{display:grid;grid-template-columns:1fr .7fr 1.2fr;gap:12px}.cs-editor-grid label{margin:0}.cs-editor-grid input,.cs-editor-grid select{margin-top:7px}.cs-remove-agent{margin-top:13px}.cs-admin-actions{display:flex;justify-content:space-between;gap:12px;margin-top:18px}.cs-admin-actions button{min-height:44px}@media(max-width:720px){.cs-editor-head{align-items:flex-start}.cs-status-switch{margin-left:auto}.cs-editor-grid{grid-template-columns:1fr}.cs-admin-actions{flex-direction:column-reverse}.cs-admin-actions button{width:100%}}
+
+/* Customer Service Manager mobile refinement v18.2 */
+.cs-settings-form{display:grid;gap:18px}
+.cs-agent-editor{padding:22px;border-radius:24px;box-shadow:0 18px 45px rgba(3,2,10,.22)}
+.cs-editor-head{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(167,139,250,.12)}
+.cs-editor-avatar{width:52px;height:52px;border-radius:17px;box-shadow:0 12px 28px rgba(109,40,217,.28)}
+.cs-editor-head strong{font-size:18px}
+.cs-editor-grid{grid-template-columns:1fr 1fr;gap:16px}
+.cs-editor-grid label{display:grid;gap:8px;color:#d8d2e3;font-size:13px;font-weight:750}
+.cs-editor-grid label:first-child,.cs-editor-grid label:last-child{grid-column:1/-1}
+.cs-editor-grid input,.cs-editor-grid select{width:100%;min-height:54px;margin:0!important;padding:0 16px!important;border:1px solid rgba(167,139,250,.2)!important;border-radius:15px!important;background:rgba(8,6,15,.88)!important;color:#fff!important;font-size:16px!important;line-height:1.2;outline:none;transition:.2s}
+.cs-editor-grid input:focus,.cs-editor-grid select:focus{border-color:#9f72ff!important;box-shadow:0 0 0 4px rgba(139,92,246,.12)!important;background:rgba(14,10,25,.98)!important}
+.cs-editor-grid input::placeholder{color:#746d80}
+.cs-status-switch{padding:8px 10px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(255,255,255,.025)}
+.cs-status-switch b{min-width:48px;font-size:12px}
+.cs-remove-agent{min-height:46px;padding:0 18px;border-radius:14px!important;font-size:13px!important}
+.cs-admin-actions{position:sticky;bottom:10px;z-index:5;padding:12px;border:1px solid rgba(167,139,250,.14);border-radius:20px;background:rgba(10,7,17,.9);backdrop-filter:blur(16px);box-shadow:0 18px 50px rgba(3,2,10,.35)}
+.cs-admin-actions button{min-height:52px!important;border-radius:15px!important;font-size:14px!important;font-weight:850!important}
+#saveCsSettingsBtn{background:linear-gradient(135deg,#9b68ff,#6d28d9)!important;color:#fff!important;box-shadow:0 12px 28px rgba(109,40,217,.3)}
+#addCsAgentBtn{border:1px solid rgba(167,139,250,.25)!important;background:rgba(139,92,246,.07)!important;color:#eee7ff!important}
+@media(max-width:720px){
+  .cs-admin-panel{padding:18px!important}
+  .cs-agent-editor{padding:18px}
+  .cs-editor-grid{grid-template-columns:1fr;gap:14px}
+  .cs-editor-grid label:first-child,.cs-editor-grid label:last-child{grid-column:auto}
+  .cs-editor-grid input,.cs-editor-grid select{min-height:58px;font-size:16px!important;padding:0 17px!important}
+  .cs-editor-head{align-items:center}
+  .cs-status-switch{margin-left:auto;flex:0 0 auto}
+  .cs-admin-actions{flex-direction:column;bottom:8px}
+  .cs-admin-actions button{width:100%;min-height:56px!important}
+}

@@ -1684,13 +1684,8 @@ async function initKivoSupport(){
       else {const num=String(a.contact||"").replace(/\D/g,"");url=num?`https://wa.me/${num}?text=${encodeURIComponent(cfg.csMessage||"Halo KivoPay, saya membutuhkan bantuan.")}`:""}
       if(url){
         close();
-        const link=document.createElement("a");
-        link.href=url;
-        link.target="_blank";
-        link.rel="noopener noreferrer";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        // Pindah langsung ke aplikasi WhatsApp/Telegram agar URL tidak muncul sebagai popup di website.
+        window.setTimeout(()=>window.location.assign(url),120);
       } else if(note) note.textContent="Kontak Customer Service belum dikonfigurasi.";
     });
   }
