@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Detail Produk — KivoPay</title>
   <link rel="stylesheet" href="style.css?v=20.2">
-  <link rel="stylesheet" href="game.css?v=22.0">
+  <link rel="stylesheet" href="game.css?v=24.1">
 </head>
 <body class="game-page detail-page">
 <header class="game-head game-detail-nav">
@@ -29,10 +29,7 @@
     <div class="detail-main">
       <section class="detail-card target-card">
         <div class="step-title"><span>1</span><div><h2 id="targetSectionTitle">Masukkan Data Tujuan</h2><p id="targetSectionHint">Pastikan data tujuan sudah benar.</p></div></div>
-        <div id="targetFields" class="target-fields">
-          <label class="field-control" id="targetLabel"><span id="targetLabelText">User ID / ID tujuan</span><input id="gameTarget" required placeholder="Masukkan ID" autocomplete="off"></label>
-          <label class="field-control" id="zoneLabel"><span id="zoneLabelText">Zone / Server</span><input id="gameZone" placeholder="Kosongkan jika tidak ada" autocomplete="off"></label>
-        </div>
+        <div id="targetFields" class="target-fields dynamic-target-fields"><p>Memuat konfigurasi form...</p></div>
         <div class="target-actions">
           <button id="saveTargetBtn" class="save-id-btn" type="button">Simpan Data</button>
           <button id="checkNicknameBtn" class="secondary-btn nickname-btn" type="button">Cek Nickname</button>
@@ -65,6 +62,6 @@
     </aside>
   </form>
 </main>
-<script src="game.js?v=22.0"></script>
+<script src="game.js?v=24.1"></script>
 </body>
 </html>

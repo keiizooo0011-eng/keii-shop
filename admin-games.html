@@ -63,6 +63,16 @@
           <input id="gameImage" type="file" accept="image/*">
         </div>
 
+        <section class="form-builder-card">
+          <div class="form-builder-head">
+            <div><span class="eyebrow">FORM PEMBELIAN</span><h3>Konfigurasi Data Tujuan</h3><p>Atur sendiri field yang harus diisi pembeli untuk produk ini.</p></div>
+            <button id="addFormField" type="button" class="ghost">+ Tambah Field</button>
+          </div>
+          <div class="form-builder-help">Mapping VIPayment: <b>data_no</b> untuk ID/email utama, <b>data_zone</b> untuk zone/server/password, dan <b>post_additional_data</b> untuk data tambahan.</div>
+          <div id="formBuilderList" class="form-builder-list"></div>
+          <div class="form-preview-wrap"><small>Preview</small><div id="formBuilderPreview" class="form-builder-preview"></div></div>
+        </section>
+
         <div class="form-two">
           <div><label>Urutan</label><input id="gameSort" type="number" value="0"></div>
           <label class="switch-row"><input id="gameActive" type="checkbox" checked> Aktif</label>
@@ -97,6 +107,6 @@
 </div>
 
 <script src="config.js"></script>
-<script src="admin-games.js?v=22.0"></script>
+<script src="admin-games.js?v=24.1"></script>
 </body>
 </html>

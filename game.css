@@ -32,3 +32,6 @@
   .history-info-grid strong{text-align:right}
   .history-detail-btn{min-height:48px}
 }
+
+/* KivoPay V24 dynamic target fields */
+.dynamic-target-fields{display:grid;gap:14px}.dynamic-field-help{display:block;margin-top:7px;color:#978da3;font-size:12px;line-height:1.45}.dynamic-field-control select,.dynamic-field-control textarea{width:100%;min-height:74px;border:1px solid rgba(151,108,255,.34);border-radius:18px;background:#0d0a13;color:#f5efff;padding:16px 20px;font:inherit;outline:none}.dynamic-field-control select{min-height:72px}.dynamic-field-control textarea:focus,.dynamic-field-control select:focus{border-color:#8d5cff;box-shadow:0 0 0 3px rgba(127,75,255,.12)}
