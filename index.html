@@ -332,8 +332,20 @@
     </div>
   </div>
 
-  <button type="button" class="floating-support floating-support-v2" data-open-support aria-label="Hubungi Customer Service"><span class="support-icon-ring"><i data-kivo-icon="message-circle"></i></span><div><small>CUSTOMER SERVICE</small><strong>Butuh bantuan?</strong><em>Online dan siap membantu</em></div><b data-kivo-icon="chevron-right"></b></button>
-  <div id="supportPopup" class="support-popup" aria-hidden="true"><div class="support-popup-card"><button class="support-popup-close" type="button" aria-label="Tutup">×</button><span class="eyebrow">KIVOPAY SUPPORT</span><h3>Ada yang bisa dibantu?</h3><p>Pilih layanan Customer Service. Sertakan invoice jika kendalanya terkait pesanan.</p><button type="button" data-support-channel="whatsapp">WhatsApp CS</button><button type="button" data-support-channel="telegram">Telegram CS</button><small id="supportConfigNote"></small></div></div>
+  <button type="button" class="floating-cs-agent" data-open-support aria-label="Buka layanan Customer Service">
+    <span class="cs-agent-avatar" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M19 29v-5c0-8 5-14 13-14s13 6 13 14v5"/><circle cx="32" cy="25" r="10"/><path d="M14 52c2-10 9-15 18-15s16 5 18 15"/><path d="M15 27v8c0 4 3 7 7 7h2M49 27v8c0 4-3 7-7 7h-2"/><rect x="9" y="25" width="8" height="14" rx="4"/><rect x="47" y="25" width="8" height="14" rx="4"/></svg></span>
+    <span class="cs-agent-copy"><small>CUSTOMER SERVICE</small><strong>Hubungi tim bantuan</strong><em id="floatingCsSummary"><i class="cs-dot online"></i> Memuat status layanan...</em></span>
+    <span class="cs-agent-arrow" data-kivo-icon="chevron-right"></span>
+  </button>
+  <div id="supportPopup" class="support-popup support-drawer" aria-hidden="true">
+    <div class="support-popup-card support-team-card">
+      <button class="support-popup-close" type="button" aria-label="Tutup">×</button>
+      <div class="support-team-head"><span class="support-team-avatar"><svg viewBox="0 0 64 64"><path d="M19 29v-5c0-8 5-14 13-14s13 6 13 14v5"/><circle cx="32" cy="25" r="10"/><path d="M14 52c2-10 9-15 18-15s16 5 18 15"/><path d="M15 27v8c0 4 3 7 7 7h2M49 27v8c0 4-3 7-7 7h-2"/></svg></span><div><span class="eyebrow">KIVOPAY SUPPORT CENTER</span><h3>Pilih Customer Service</h3><p>Status di bawah diperbarui oleh admin sesuai jam operasional tim.</p></div></div>
+      <div id="supportAgentList" class="support-agent-list"><div class="support-agent-skeleton"></div><div class="support-agent-skeleton"></div></div>
+      <p class="support-hours-note">Periksa indikator status untuk mengetahui ketersediaan tim sebelum menghubungi Customer Service.</p>
+      <small id="supportConfigNote"></small>
+    </div>
+  </div>
 
   <div id="modal" class="modal">
     <div class="panel">
@@ -347,7 +359,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="config.js"></script>
   <script src="store.js?v=16.5.4"></script>
-  <script src="script.js?v=16.5.1"></script>
+  <script src="script.js?v=18.1.0"></script>
   <script src="ui-system.js?v=17.1.0"></script>
   <script src="home-premium.js?v=18.0.0"></script>
 </body>

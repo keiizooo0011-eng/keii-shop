@@ -507,4 +507,27 @@
   }
   applyTheme(localStorage.getItem('kivopay_admin_theme')||'dark');
   toggle?.addEventListener('click',()=>applyTheme(document.body.classList.contains('admin-light')?'dark':'light'));
+
+
+  const CS_SETTING_KEY="customer_service_agents";
+  const defaultCsAgents=()=>[
+    {id:crypto.randomUUID(),name:"CS 1",channel:"whatsapp",contact:(window.KIVOPAY_CONFIG||{}).csWhatsapp||"",status:"online"},
+    {id:crypto.randomUUID(),name:"CS 2",channel:"telegram",contact:(window.KIVOPAY_CONFIG||{}).csTelegram||"",status:"offline"}
+  ];
+  let csAgents=[];
+  function renderCsEditors(){
+    const root=$("#csAgentEditorList"); if(!root)return;
+    root.innerHTML=csAgents.map((a,i)=>`<article class="cs-agent-editor" data-cs-id="${esc(a.id)}"><div class="cs-editor-head"><div class="cs-editor-avatar"><span data-kivo-icon="headphones"></span></div><div><small>CUSTOMER SERVICE ${i+1}</small><strong>${esc(a.name||`CS ${i+1}`)}</strong></div><label class="cs-status-switch"><input type="checkbox" data-cs-status ${a.status==="online"?"checked":""}><span></span><b>${a.status==="online"?"Online":"Offline"}</b></label></div><div class="cs-editor-grid"><label>Nama tampilan<input data-cs-name value="${esc(a.name||"")}" placeholder="Contoh: CS 1"></label><label>Saluran<select data-cs-channel><option value="whatsapp" ${a.channel==="whatsapp"?"selected":""}>WhatsApp</option><option value="telegram" ${a.channel==="telegram"?"selected":""}>Telegram</option></select></label><label class="cs-contact-field">Nomor / username<input data-cs-contact value="${esc(a.contact||"")}" placeholder="628xxx atau @username"></label></div><button type="button" class="ghost-danger cs-remove-agent" ${csAgents.length<=1?"disabled":""}>Hapus CS</button></article>`).join("");
+    root.querySelectorAll("[data-cs-status]").forEach(input=>input.onchange=()=>{const card=input.closest(".cs-agent-editor");const a=csAgents.find(x=>x.id===card.dataset.csId);a.status=input.checked?"online":"offline";card.querySelector(".cs-status-switch b").textContent=input.checked?"Online":"Offline"});
+    root.querySelectorAll(".cs-remove-agent").forEach(btn=>btn.onclick=()=>{const id=btn.closest(".cs-agent-editor").dataset.csId;csAgents=csAgents.filter(x=>x.id!==id);renderCsEditors()});
+  }
+  async function loadCsSettings(){
+    if(!$("#csAgentEditorList"))return;
+    try{const {data,error}=await sb.from("site_settings").select("value").eq("key",CS_SETTING_KEY).maybeSingle();if(error)throw error;csAgents=Array.isArray(data?.value)&&data.value.length?data.value:defaultCsAgents()}catch(e){csAgents=defaultCsAgents();msg($("#csSettingsMessage"),"Tabel site_settings belum siap. Jalankan file supabase_customer_service_settings.sql.","error")}
+    renderCsEditors();
+  }
+  $("#addCsAgentBtn")?.addEventListener("click",()=>{csAgents.push({id:crypto.randomUUID(),name:`CS ${csAgents.length+1}`,channel:"whatsapp",contact:"",status:"offline"});renderCsEditors()});
+  $("#csSettingsForm")?.addEventListener("submit",async e=>{e.preventDefault();const cards=[...document.querySelectorAll(".cs-agent-editor")];csAgents=cards.map((card,i)=>({id:card.dataset.csId||crypto.randomUUID(),name:card.querySelector("[data-cs-name]").value.trim()||`CS ${i+1}`,channel:card.querySelector("[data-cs-channel]").value,contact:card.querySelector("[data-cs-contact]").value.trim(),status:card.querySelector("[data-cs-status]").checked?"online":"offline"}));const btn=$("#saveCsSettingsBtn");btn.disabled=true;msg($("#csSettingsMessage"),"Menyimpan pengaturan...");try{const {error}=await sb.from("site_settings").upsert({key:CS_SETTING_KEY,value:csAgents,updated_at:new Date().toISOString()},{onConflict:"key"});if(error)throw error;msg($("#csSettingsMessage"),"Pengaturan Customer Service berhasil diperbarui.","success");renderCsEditors()}catch(err){msg($("#csSettingsMessage"),err.message,"error")}finally{btn.disabled=false}});
+  document.addEventListener("DOMContentLoaded",loadCsSettings);
+
 })();

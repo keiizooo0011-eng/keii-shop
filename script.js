@@ -1647,32 +1647,47 @@ function initHorizontalToolSelector(){
 document.addEventListener("DOMContentLoaded",initHorizontalToolSelector);
 
 
-function initKivoSupport(){
+async function initKivoSupport(){
   const cfg=window.KIVOPAY_CONFIG||{};
   const popup=document.querySelector("#supportPopup");
   const note=document.querySelector("#supportConfigNote");
-  const open=()=>{ if(!popup)return; popup.classList.add("open"); popup.setAttribute("aria-hidden","false"); };
-  const close=()=>{ if(!popup)return; popup.classList.remove("open"); popup.setAttribute("aria-hidden","true"); };
+  const list=document.querySelector("#supportAgentList");
+  const summary=document.querySelector("#floatingCsSummary");
+  const fallback=[
+    {id:"cs-1",name:"CS 1",channel:"whatsapp",contact:cfg.csWhatsapp||"",status:"online"},
+    {id:"cs-2",name:"CS 2",channel:"telegram",contact:cfg.csTelegram||"",status:"offline"}
+  ];
+  let agents=fallback;
+  const open=()=>{if(!popup)return;popup.classList.add("open");popup.setAttribute("aria-hidden","false");document.body.classList.add("support-open")};
+  const close=()=>{if(!popup)return;popup.classList.remove("open");popup.setAttribute("aria-hidden","true");document.body.classList.remove("support-open")};
+  const normalize=row=>Array.isArray(row?.value)?row.value:[];
+  try{
+    const c=window.KIVOPAY_CONFIG||{};
+    if(window.supabase&&c.supabaseUrl&&c.supabaseAnonKey){
+      const client=window.supabase.createClient(c.supabaseUrl,c.supabaseAnonKey);
+      const {data,error}=await client.from("site_settings").select("value").eq("key","customer_service_agents").maybeSingle();
+      if(!error&&normalize(data).length) agents=normalize(data);
+    }
+  }catch(e){console.warn("CS settings fallback",e)}
+  const active=agents.filter(a=>a.status==="online").length;
+  if(summary) summary.innerHTML=`<i class="cs-dot ${active?'online':'offline'}"></i> ${active?`${active} CS sedang online`:"Seluruh CS sedang offline"}`;
+  if(list){
+    list.innerHTML=agents.map((a,i)=>{
+      const online=a.status==="online";
+      const label=a.channel==="telegram"?"Telegram":"WhatsApp";
+      return `<article class="support-agent-card ${online?'is-online':'is-offline'}"><div class="support-agent-person"><span><svg viewBox="0 0 64 64"><circle cx="32" cy="24" r="10"/><path d="M14 53c2-11 9-16 18-16s16 5 18 16"/><path d="M18 29v-5c0-8 6-14 14-14s14 6 14 14v5"/></svg></span><div><small>CUSTOMER SERVICE ${i+1}</small><strong>${String(a.name||`CS ${i+1}`).replace(/[<>]/g,'')}</strong><em><i class="cs-dot ${online?'online':'offline'}"></i>${online?'Online':'Offline'}</em></div></div><button type="button" data-agent-index="${i}" ${online&&a.contact?'':'disabled'}>${online?'Hubungi via '+label:'Sedang tidak tersedia'}<b data-kivo-icon="chevron-right"></b></button></article>`
+    }).join("");
+    list.querySelectorAll("[data-agent-index]").forEach(btn=>btn.onclick=()=>{
+      const a=agents[Number(btn.dataset.agentIndex)]; if(!a||a.status!=="online") return;
+      let url="";
+      if(a.channel==="telegram"){const raw=String(a.contact||"").trim();url=raw.startsWith("http")?raw:`https://t.me/${raw.replace(/^@/,"")}`}
+      else {const num=String(a.contact||"").replace(/\D/g,"");url=num?`https://wa.me/${num}?text=${encodeURIComponent(cfg.csMessage||"Halo KivoPay, saya membutuhkan bantuan.")}`:""}
+      if(url) window.open(url,"_blank","noopener,noreferrer"); else if(note) note.textContent="Kontak Customer Service belum dikonfigurasi.";
+    });
+  }
   document.querySelectorAll("[data-open-support]").forEach(btn=>btn.addEventListener("click",open));
   popup?.querySelector(".support-popup-close")?.addEventListener("click",close);
   popup?.addEventListener("click",e=>{if(e.target===popup)close()});
-  document.querySelectorAll("[data-support-channel]").forEach(btn=>btn.addEventListener("click",()=>{
-    const channel=btn.dataset.supportChannel;
-    let url="";
-    if(channel==="whatsapp" && cfg.csWhatsapp){
-      const number=String(cfg.csWhatsapp).replace(/\D/g,"");
-      url=`https://wa.me/${number}?text=${encodeURIComponent(cfg.csMessage||"Halo KivoPay, saya membutuhkan bantuan.")}`;
-    }
-    if(channel==="telegram" && cfg.csTelegram){
-      const raw=String(cfg.csTelegram).trim();
-      url=raw.startsWith("http")?raw:`https://t.me/${raw.replace(/^@/,"")}`;
-    }
-    if(!url){
-      if(note) note.textContent=`Kontak ${channel==="whatsapp"?"WhatsApp":"Telegram"} belum diisi di config.js.`;
-      open();
-      return;
-    }
-    window.open(url,"_blank","noopener,noreferrer");
-  }));
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 }
 document.addEventListener("DOMContentLoaded",initKivoSupport);

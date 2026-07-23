@@ -53,6 +53,7 @@
         <a class="admin-game-nav-link" href="admin-games.html">🎮 Game Top Up</a>
         <button data-admin-page-btn="moderation">💬 Moderasi</button>
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
+        <button data-admin-page-btn="customer-service">Customer Service</button>
       </nav>
 
       <div class="admin-page active" data-admin-page="overview">
@@ -248,6 +249,18 @@
 
       </div>
 
+
+      <div class="admin-page" data-admin-page="customer-service">
+        <section class="admin-panel cs-admin-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">CUSTOMER SERVICE MANAGER</span><h2>Kelola Tim Customer Service</h2><p class="muted">Atur kontak dan ketersediaan CS yang ditampilkan pada halaman utama.</p></div><div class="admin-live"><i></i><span>Sinkron ke website</span></div></div>
+          <div class="cs-admin-guidance"><span data-kivo-icon="clock"></span><p>Gunakan indikator status untuk membantu pelanggan memahami ketersediaan layanan dan estimasi waktu terbaik untuk menghubungi tim Customer Service.</p></div>
+          <form id="csSettingsForm" class="cs-settings-form">
+            <div id="csAgentEditorList" class="cs-agent-editor-list"></div>
+            <div class="cs-admin-actions"><button type="button" id="addCsAgentBtn" class="ghost">Tambah Customer Service</button><button type="submit" id="saveCsSettingsBtn">Simpan Pengaturan CS</button></div>
+          </form>
+          <div id="csSettingsMessage" class="admin-message"></div>
+        </section>
+      </div>
       <div class="admin-page" data-admin-page="orders">
       <section class="admin-panel orders-panel">
         <div class="admin-panel-head">
@@ -262,7 +275,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=16.6.8"></script>
+  <script src="admin.js?v=18.1.0"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 </body>
