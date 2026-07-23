@@ -28,24 +28,33 @@
     </nav>
   </header>
 
-  <main class="chat-page-main">
-    <section class="chat-page-hero">
-      <div>
-        <span class="eyebrow">KIVOPAY COMMUNITY</span>
-        <h1>Ruang obrolan</h1>
-        <p>Ngobrol, berbagi pengalaman, dan bertanya dengan pengguna KivoPay lainnya secara realtime.</p>
-      </div>
-      <span class="chat-live"><i></i> Live</span>
-    </section>
-
-    <section class="community-panel chat-panel chat-page-panel">
-      <div class="community-panel-head chat-page-panel-head">
-        <div>
-          <span class="eyebrow">GLOBAL CHAT</span>
-          <h2>Komunitas KivoPay</h2>
-          <p class="chat-subtitle">Jaga obrolan tetap nyaman dan jangan bagikan data pribadi.</p>
+  <main class="chat-page-main chat-page-main-v2">
+    <section class="chat-page-shell">
+      <div class="chat-page-hero chat-page-hero-v2">
+        <a class="chat-back-link" href="index.html#home" aria-label="Kembali ke beranda">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6 6-6-6 6-6"/></svg>
+          <span>Kembali</span>
+        </a>
+        <div class="chat-title-wrap">
+          <span class="chat-page-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/><path d="M8 9h8M8 13h5"/></svg></span>
+          <div>
+            <span class="eyebrow">KIVOPAY COMMUNITY</span>
+            <h1>Ruang Obrolan</h1>
+            <p>Tempat berbagi pengalaman, bertanya, dan terhubung dengan pengguna KivoPay lainnya.</p>
+          </div>
         </div>
+        <span class="chat-live chat-live-v2"><i></i><span>Komunitas Aktif</span></span>
       </div>
+
+      <section class="community-panel chat-panel chat-page-panel chat-page-panel-v2">
+        <div class="community-panel-head chat-page-panel-head chat-page-panel-head-v2">
+          <div>
+            <span class="eyebrow">GLOBAL CHAT</span>
+            <h2>Obrolan Komunitas</h2>
+            <p class="chat-subtitle">Gunakan nama panggilan dan jaga percakapan tetap nyaman.</p>
+          </div>
+          <div class="chat-safety"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span>Ruang aman</span></div>
+        </div>
 
       <div id="chatMessages" class="chat-messages chat-page-messages">
         <div class="community-empty">Memuat chat...</div>
@@ -56,12 +65,19 @@
           <span class="chat-self-avatar">K</span>
           <input id="chatNickname" maxlength="28" placeholder="Nama panggilan" required>
         </div>
-        <div class="chat-compose">
-          <input id="chatInput" maxlength="280" placeholder="Tulis pesan..." required autocomplete="off">
-          <button type="submit" aria-label="Kirim pesan"><span>Kirim</span><b>➤</b></button>
+        <div class="chat-compose chat-compose-v2">
+          <div class="chat-input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+            <input id="chatInput" maxlength="280" placeholder="Tulis pesan untuk komunitas..." required autocomplete="off">
+          </div>
+          <button class="chat-send-v2" type="submit" aria-label="Kirim pesan">
+            <span>Kirim</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          </button>
         </div>
-        <small>Jaga bahasa dan jangan membagikan password, token, atau data pribadi.</small>
+        <div class="chat-form-foot"><small>Jangan membagikan password, token, PIN, atau data pribadi.</small><span id="chatCounter">Maks. 280 karakter</span></div>
       </form>
+      </section>
     </section>
   </main>
 
