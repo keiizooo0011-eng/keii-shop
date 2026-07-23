@@ -191,12 +191,16 @@ function adminMask(k,v){return /password|pass|pin|backup|security|kode/i.test(St
 function adminFormData(o){const e=Object.entries(o.form_data||{});return e.length?`<div class="admin-order-formdata">${e.map(([k,v])=>`<div><small>${esc(k.replace(/_/g,' '))}</small><strong>${esc(adminMask(k,v))}</strong></div>`).join('')}</div>`:'';}
 function adminDate(v){return v?new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'}).format(new Date(v)):'-';}
 function renderGameOrders(){
-  const q=($('#adminGameOrderSearch')?.value||'').toLowerCase(),st=$('#adminGameOrderStatus')?.value||'all';
-  const visible=gameOrders.filter(o=>(st==='all'||o.status===st)&&[o.invoice,o.game_name,o.service_name,o.target,o.zone,o.vip_trxid,o.customer_contact].join(' ').toLowerCase().includes(q));
-  const completed=gameOrders.filter(o=>o.status==='completed').length,processing=gameOrders.filter(o=>o.status==='processing').length,pending=gameOrders.filter(o=>o.status==='pending').length;
-  $('#adminGameOrderStats').innerHTML=`<span>Total <b>${gameOrders.length}</b></span><span>Pending <b>${pending}</b></span><span>Proses <b>${processing}</b></span><span>Berhasil <b>${completed}</b></span>`;
-  $('#adminGameOrderList').innerHTML=visible.length?visible.map(o=>`<article class="admin-game-order-card"><div class="game-order-head"><div><small>${esc(o.invoice)}</small><h3>${esc(o.game_name)} — ${esc(o.service_name)}</h3><p>${esc(o.customer_name||'-')} • ${esc(o.customer_contact||'-')}</p></div><span class="history-status ${esc(o.status)}">${esc(adminStatusLabel(o.status))}</span></div><div class="game-order-info"><div><small>Tujuan</small><strong>${esc(o.target||'-')}${o.zone?` / ${esc(o.zone)}`:''}</strong></div><div><small>ID Trx VIPayment</small><strong>${esc(o.vip_trxid||'Belum tersedia')}</strong></div><div><small>Total Bayar</small><strong>${formatPrice(o.payment_amount)}</strong></div><div><small>Dibuat</small><strong>${esc(adminDate(o.created_at))}</strong></div></div>${adminFormData(o)}<details><summary>Lihat log proses</summary><div class="admin-order-log"><p><b>QRIS dibuat:</b> ${esc(adminDate(o.created_at))}</p><p><b>Pembayaran:</b> ${esc(o.paid_at?adminDate(o.paid_at):'Belum diterima')}</p><p><b>Status provider:</b> ${esc(o.vip_status||'-')}</p><p><b>Catatan:</b> ${esc(o.note||'-')}</p><p><b>Selesai:</b> ${esc(o.completed_at?adminDate(o.completed_at):'-')}</p></div></details><div class="admin-order-note"><textarea data-game-note="${esc(o.id)}" placeholder="Catatan admin...">${esc(o.note||'')}</textarea><button type="button" data-save-game-note="${esc(o.id)}">Simpan Catatan</button></div></article>`).join(''):'<p>Tidak ada order yang cocok.</p>';
-  document.querySelectorAll('[data-save-game-note]').forEach(b=>b.onclick=()=>saveGameOrderNote(b.dataset.saveGameNote));
+  const completed=gameOrders.filter(o=>o.status==='completed').length;
+  const processing=gameOrders.filter(o=>o.status==='processing').length;
+  const pending=gameOrders.filter(o=>['pending','paid'].includes(o.status)).length;
+  const failed=gameOrders.filter(o=>['failed','expired'].includes(o.status)).length;
+  const stats=$('#adminGameOrderStats');
+  if(stats)stats.innerHTML=`<span><i>Semua</i><b>${gameOrders.length}</b></span><span><i>Menunggu</i><b>${pending}</b></span><span><i>Diproses</i><b>${processing}</b></span><span><i>Berhasil</i><b>${completed}</b></span>`;
+  const total=$('#historyLaunchTotal');if(total)total.textContent=gameOrders.length;
+  const box=$('#adminGameOrderList');if(!box)return;
+  const latest=gameOrders.slice(0,3);
+  box.innerHTML=latest.length?`<div class="history-preview-head"><strong>Transaksi terbaru</strong><a href="admin-game-history.html">Lihat semuanya →</a></div><div class="history-preview-grid">${latest.map(o=>`<a class="history-preview-item" href="admin-game-history.html?q=${encodeURIComponent(o.invoice||'')}"><div><small>${esc(o.invoice||'-')}</small><strong>${esc(o.game_name||'Produk')} — ${esc(o.service_name||'-')}</strong><p>${esc(o.target||'-')}${o.zone?` / ${esc(o.zone)}`:''}</p></div><span class="history-status ${esc(o.status)}">${esc(adminStatusLabel(o.status))}</span></a>`).join('')}</div>`:'<div class="history-preview-empty">Belum ada transaksi top up game.</div>';
 }
 async function loadGameOrders(){
   const box=$('#adminGameOrderList');if(!box)return;box.innerHTML='<p>Memuat order game...</p>';
@@ -205,6 +209,6 @@ async function loadGameOrders(){
 async function saveGameOrderNote(id){const el=document.querySelector(`[data-game-note="${CSS.escape(id)}"]`);try{const {data:{session}}=await sb.auth.getSession();await jsonFetch('/api/admin-game-orders',{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session?.access_token||''}`},body:JSON.stringify({id,note:el?.value||''})});await loadGameOrders();}catch(err){alert(err.message);}}
 
 $('#addFormField').onclick=()=>{formSchema=schemaFromEditor();formSchema.push(defaultField());renderFormBuilder();};renderFormBuilder();
-$('#refreshGameOrders').onclick=loadGameOrders;$('#adminGameOrderSearch').oninput=renderGameOrders;$('#adminGameOrderStatus').onchange=renderGameOrders;
+$('#refreshGameOrders').onclick=loadGameOrders;
 auth();
 })();

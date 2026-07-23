@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin Game Top Up — KivoPay</title>
   <link rel="stylesheet" href="style.css?v=20.7">
-  <link rel="stylesheet" href="admin.css?v=20.7">
+  <link rel="stylesheet" href="admin.css?v=25.0">
   <link rel="stylesheet" href="game.css?v=20.7">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -88,11 +88,23 @@
     </section>
     </div>
 
-    <section class="admin-panel game-order-center">
-      <div class="admin-panel-head"><div><span class="eyebrow">ORDER MONITOR</span><h2>Riwayat Game & Produk Digital</h2></div><button id="refreshGameOrders" class="ghost" type="button">Refresh</button></div>
-      <div class="game-order-toolbar"><input id="adminGameOrderSearch" type="search" placeholder="Cari invoice, tujuan, layanan, ID trx..."><select id="adminGameOrderStatus"><option value="all">Semua status</option><option value="pending">Pending</option><option value="processing">Diproses</option><option value="completed">Berhasil</option><option value="failed">Gagal</option><option value="expired">Kedaluwarsa</option></select></div>
-      <div id="adminGameOrderStats" class="game-order-stats"></div>
-      <div id="adminGameOrderList" class="admin-game-order-list"><p>Memuat order...</p></div>
+    <section class="admin-panel admin-history-launcher">
+      <div class="history-launch-glow"></div>
+      <div class="history-launch-copy">
+        <span class="eyebrow">ORDER CONTROL CENTER</span>
+        <h2>Riwayat & Log Top Up Game</h2>
+        <p>Pantau seluruh transaksi, status pembayaran, ID transaksi VIPayment, data tujuan, dan log proses dalam halaman khusus yang lebih nyaman.</p>
+        <div id="adminGameOrderStats" class="game-order-stats history-launch-stats"><span>Memuat ringkasan...</span></div>
+        <div class="history-launch-actions">
+          <a class="history-primary-button" href="admin-game-history.html"><span class="history-button-icon">↗</span><span><b>Buka Riwayat & Log Top Up</b><small>Lihat seluruh transaksi di halaman khusus</small></span></a>
+          <button id="refreshGameOrders" class="history-refresh-button" type="button">↻ Perbarui Ringkasan</button>
+        </div>
+      </div>
+      <div class="history-launch-visual" aria-hidden="true">
+        <div class="history-orbit orbit-one"></div><div class="history-orbit orbit-two"></div>
+        <div class="history-visual-card"><span>LIVE MONITOR</span><strong id="historyLaunchTotal">0</strong><small>Total transaksi tersimpan</small></div>
+      </div>
+      <div id="adminGameOrderList" class="history-latest-preview"><p>Memuat transaksi terbaru...</p></div>
     </section>
   </section>
 </main>
@@ -107,6 +119,6 @@
 </div>
 
 <script src="config.js"></script>
-<script src="admin-games.js?v=24.1"></script>
+<script src="admin-games.js?v=25.0"></script>
 </body>
 </html>

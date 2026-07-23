@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Riwayat & Log Top Up Game — KivoPay Admin</title>
+  <link rel="stylesheet" href="style.css?v=25.0">
+  <link rel="stylesheet" href="admin.css?v=25.0">
+  <link rel="stylesheet" href="game.css?v=25.0">
+  <link rel="stylesheet" href="admin-game-history.css?v=25.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="admin-body history-admin-body">
+<div class="history-bg-particles" aria-hidden="true"></div>
+<main class="history-admin-shell">
+  <header class="history-page-top">
+    <div class="history-title-wrap">
+      <a class="history-back-button" href="admin-games.html">← <span>Kembali</span></a>
+      <div><span class="eyebrow">KIVOPAY ORDER CONTROL</span><h1>Riwayat & Log Top Up</h1><p>Semua transaksi game dan produk digital dalam satu halaman.</p></div>
+    </div>
+    <div class="history-page-actions"><button id="refreshHistory" type="button">↻ Refresh Data</button><a href="topup-game.html">Lihat Katalog ↗</a></div>
+  </header>
+
+  <section id="historyAuth" class="history-auth-card"><div class="history-loader-ring"></div><p>Memeriksa akses admin...</p></section>
+
+  <section id="historyPanel" hidden>
+    <section class="history-hero-panel">
+      <div><span class="eyebrow">LIVE TRANSACTION MONITOR</span><h2>Pantau transaksi tanpa kehilangan detail.</h2><p>Cari invoice, periksa status, lihat ID transaksi provider, data tujuan, timeline pembayaran, dan catatan admin.</p></div>
+      <div class="history-live-badge"><i></i><span>LIVE DATA</span></div>
+    </section>
+
+    <section id="historyStats" class="history-stat-grid"></section>
+
+    <section class="history-control-panel">
+      <label class="history-search-box"><span>⌕</span><input id="historySearch" type="search" placeholder="Cari invoice, nama game, tujuan, ID transaksi..."></label>
+      <select id="historyStatus"><option value="all">Semua status</option><option value="pending">Menunggu pembayaran</option><option value="paid">Sudah dibayar</option><option value="processing">Sedang diproses</option><option value="completed">Berhasil</option><option value="failed">Gagal</option><option value="expired">Kedaluwarsa</option></select>
+      <select id="historySort"><option value="newest">Terbaru</option><option value="oldest">Terlama</option><option value="highest">Nominal terbesar</option><option value="lowest">Nominal terkecil</option></select>
+    </section>
+
+    <div id="historyResultInfo" class="history-result-info">Memuat transaksi...</div>
+    <section id="historyList" class="history-order-list"><div class="history-loading-state"><div class="history-loader-ring"></div><h3>Menyiapkan riwayat transaksi...</h3></div></section>
+  </section>
+</main>
+<div id="historyToast" class="history-toast" role="status"></div>
+<script src="config.js"></script>
+<script src="admin-game-history.js?v=25.0"></script>
+</body>
+</html>
