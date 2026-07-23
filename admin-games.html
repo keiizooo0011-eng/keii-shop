@@ -26,7 +26,7 @@
 <body class="admin-body">
 <main class="admin-shell">
   <header class="admin-top">
-    <div><span class="eyebrow">PANELPEDIA CATALOG</span><h1>Kelola Game Top Up</h1></div>
+    <div><span class="eyebrow">VIPAYMENT CATALOG</span><h1>Kelola Game Top Up</h1></div>
     <div class="admin-actions"><a href="admin.html">← Dashboard</a><a href="topup-game.html">Lihat Halaman</a></div>
   </header>
 
@@ -35,7 +35,7 @@
   <section id="gameAdminPanel" hidden>
     <section class="admin-panel provider-card">
       <div class="admin-panel-head">
-        <div><span class="eyebrow">PROVIDER PANELPEDIA</span><h2>Status API & Saldo</h2></div>
+        <div><span class="eyebrow">PROVIDER VIPAYMENT</span><h2>Status API & Saldo</h2></div>
         <button id="refreshProvider" class="ghost" type="button">Tes Koneksi</button>
       </div>
       <div id="providerProfile" class="provider-profile"><p>Memuat koneksi PanelPedia...</p></div>
@@ -48,9 +48,9 @@
         <input id="gameCatalogId" type="hidden">
         <input id="vipBrand" type="hidden" required>
 
-        <label>Pilih produk dari PanelPedia</label>
+        <label>Pilih produk dari VIPayment</label>
         <button id="openVipPicker" class="vip-picker-button" type="button">
-          <span id="vipPickerLabel">Pilih produk PanelPedia</span><small>Ketuk untuk memilih ▾</small>
+          <span id="vipPickerLabel">Pilih produk VIPayment</span><small>Ketuk untuk memilih ▾</small>
         </button>
         <div id="vipPickerMeta" class="vip-picker-meta" hidden></div>
 
@@ -77,12 +77,19 @@
       <div id="gameAdminList" class="admin-product-list"></div>
     </section>
     </div>
+
+    <section class="admin-panel game-order-center">
+      <div class="admin-panel-head"><div><span class="eyebrow">ORDER MONITOR</span><h2>Riwayat Game & Produk Digital</h2></div><button id="refreshGameOrders" class="ghost" type="button">Refresh</button></div>
+      <div class="game-order-toolbar"><input id="adminGameOrderSearch" type="search" placeholder="Cari invoice, tujuan, layanan, ID trx..."><select id="adminGameOrderStatus"><option value="all">Semua status</option><option value="pending">Pending</option><option value="processing">Diproses</option><option value="completed">Berhasil</option><option value="failed">Gagal</option><option value="expired">Kedaluwarsa</option></select></div>
+      <div id="adminGameOrderStats" class="game-order-stats"></div>
+      <div id="adminGameOrderList" class="admin-game-order-list"><p>Memuat order...</p></div>
+    </section>
   </section>
 </main>
 
 <div id="vipPickerModal" class="vip-picker-modal" hidden>
   <section class="vip-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="vipPickerTitle">
-    <div class="vip-picker-head"><div><span class="eyebrow">KATALOG PANELPEDIA</span><h3 id="vipPickerTitle">Pilih Produk</h3></div><button id="closeVipPicker" class="vip-picker-close" type="button" aria-label="Tutup">×</button></div>
+    <div class="vip-picker-head"><div><span class="eyebrow">KATALOG VIPAYMENT</span><h3 id="vipPickerTitle">Pilih Produk</h3></div><button id="closeVipPicker" class="vip-picker-close" type="button" aria-label="Tutup">×</button></div>
     <div class="vip-picker-search"><input id="vipPickerSearch" type="search" placeholder="Cari MLBB, VIU, iQIYI, Alight Motion..."></div>
     <div id="vipPickerStatus" class="vip-picker-status">Memuat daftar produk...</div>
     <div id="vipPickerList" class="vip-picker-list"></div>

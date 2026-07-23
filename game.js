@@ -57,6 +57,28 @@ function selectService(code){
   $('#selectedServiceDescription').textContent=plainText(selectedService?.description)||'Isi data tujuan dengan benar.';
   $('#gameSellPrice').textContent=rupiah(displayPrice(selectedService));
   $('#submitGameOrder').disabled=!selectedService;
+  if(selectedService) applyServiceInputRules(selectedService);
+}
+
+function applyServiceInputRules(service){
+  const game=String(service?.game||'').toLowerCase(), name=String(service?.name||'').toLowerCase(), desc=plainText(service?.description).toLowerCase();
+  const category=categoryOf(service?.game||''), target=$('#gameTarget'), zone=$('#gameZone'), zoneLabel=$('#zoneLabel'), nick=$('#checkNicknameBtn');
+  let targetLabel='User ID / ID tujuan', targetPlaceholder='Masukkan ID tujuan', zoneText='Zone / Server', zonePlaceholder='Masukkan zone/server', showZone=false, showNick=false;
+  if(category==='streaming'){
+    showNick=false; showZone=false;
+    if(/nomor|phone|whatsapp|wa/.test(name+' '+desc)){targetLabel='Nomor / Email tujuan';targetPlaceholder='Masukkan nomor atau email aktif';}
+    else if(/username|user name|akun/.test(name+' '+desc)){targetLabel='Email / Username akun';targetPlaceholder='Masukkan email atau username';}
+    else if(/link|invite/.test(name+' '+desc)){targetLabel='Email / Link invite';targetPlaceholder='Masukkan email atau link invite';}
+    else{targetLabel='Email tujuan';targetPlaceholder='Masukkan email aktif';}
+  }else if(category==='voucher'){targetLabel='Email / Nomor tujuan';targetPlaceholder='Masukkan email atau nomor aktif';}
+  else if(category==='games'){
+    showNick=true;
+    if(game.includes('mobile legends')){targetLabel='User ID';zoneText='Zone ID';showZone=true;}
+    else if(game.includes('genshin')){targetLabel='UID';zoneText='Server';showZone=true;}
+    else if(game.includes('free fire')){targetLabel='Player ID';}
+    else{targetLabel='User ID / Player ID';showZone=/zone|server|data_zone|user id dan server/.test(name+' '+desc);}
+  }
+  $('#targetLabelText').textContent=targetLabel;target.placeholder=targetPlaceholder;$('#zoneLabelText').textContent=zoneText;zone.placeholder=zonePlaceholder;zoneLabel.hidden=!showZone;nick.hidden=!showNick;
 }
 
 function configureTargetFields(game){
@@ -126,7 +148,10 @@ function initDetail(){
     const btn=$('#submitGameOrder'); btn.disabled=true; btn.querySelector('span').textContent='Membuat QRIS...'; $('#gameFormMessage').textContent='';
     try{
       const d=await jsonFetch('/api/create-game-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service:selectedService.code,target,zone:$('#gameZone').value.trim(),customer_name:customerName,customer_contact:contact})});
-      sessionStorage.setItem('kivopay_game_payment_'+d.order.invoice,JSON.stringify(d.order)); location.href='payment-game.html?invoice='+encodeURIComponent(d.order.invoice);
+      sessionStorage.setItem('kivopay_game_payment_'+d.order.invoice,JSON.stringify(d.order));
+      let history=[];try{history=JSON.parse(localStorage.getItem('kivopay_game_invoices')||'[]')}catch{}
+      history=[d.order.invoice,...history.filter(x=>x!==d.order.invoice)].slice(0,100);localStorage.setItem('kivopay_game_invoices',JSON.stringify(history));
+      location.href='payment-game.html?invoice='+encodeURIComponent(d.order.invoice);
     }catch(err){$('#gameFormMessage').textContent=err.message;btn.disabled=false;btn.querySelector('span').textContent='Lanjut Bayar QRIS';}
   };
 }

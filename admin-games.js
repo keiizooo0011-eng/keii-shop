@@ -5,7 +5,7 @@ const ADMIN='8ea33b7c-1b1f-4fe6-a157-ae38595eef42';
 const fallback='https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg';
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-let rows=[],selectedVip=null,currentImage='',searchTimer=null,activeController=null;
+let rows=[],selectedVip=null,currentImage='',searchTimer=null,activeController=null,gameOrders=[];
 const searchCache=new Map();
 
 async function jsonFetch(url,opts={}){
@@ -34,21 +34,12 @@ function showPickerMessage(text,kind='empty'){$('#vipPickerList').innerHTML=`<di
 async function auth(){
   const {data:{user}}=await sb.auth.getUser();
   if(!user||user.id!==ADMIN){$('#gameAdminAuth').innerHTML='<p>Akses ditolak. Login melalui dashboard admin terlebih dahulu.</p>';return;}
-  $('#gameAdminAuth').hidden=true;$('#gameAdminPanel').hidden=false;await Promise.all([load(),loadProvider()]);
+  $('#gameAdminAuth').hidden=true;$('#gameAdminPanel').hidden=false;await Promise.all([load(),loadProvider(),loadGameOrders()]);
 }
 
 async function loadProvider(){
-  const box=$('#providerProfile');
-  if(!box)return;
-  box.innerHTML='<p>Memeriksa koneksi PanelPedia...</p>';
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    const data=await jsonFetch('/api/panelpedia-profile',{headers:{Authorization:`Bearer ${session?.access_token||''}`}});
-    const p=data.profile||{};
-    box.innerHTML=`<div class="provider-stat"><small>Status</small><strong class="provider-online">● Terhubung</strong></div><div class="provider-stat"><small>Username</small><strong>${esc(p.username||'-')}</strong></div><div class="provider-stat"><small>Saldo Provider</small><strong>${formatPrice(p.balance||0)}</strong></div><div class="provider-stat"><small>Role Harga</small><strong>${esc(p.role||'-')}</strong></div>`;
-  }catch(err){
-    box.innerHTML=`<div class="provider-stat"><small>Status</small><strong class="provider-offline">● Terputus</strong></div><div class="provider-stat" style="grid-column:span 3"><small>Pesan</small><strong>${esc(err.message)}</strong></div>`;
-  }
+  const box=$('#providerProfile');if(!box)return;box.innerHTML='<p>Memeriksa koneksi VIPayment...</p>';
+  try{const data=await jsonFetch('/api/game-services?limit=1');const count=Number(data.total||data.services?.length||0);box.innerHTML=`<div class="provider-stat"><small>Status</small><strong class="provider-online">● Terhubung</strong></div><div class="provider-stat"><small>Gateway</small><strong>VIPayment VPS</strong></div><div class="provider-stat"><small>Layanan terbaca</small><strong>${count||'Aktif'}</strong></div><div class="provider-stat"><small>Mode</small><strong>Otomatis</strong></div>`;}catch(err){box.innerHTML=`<div class="provider-stat"><small>Status</small><strong class="provider-offline">● Terputus</strong></div><div class="provider-stat" style="grid-column:span 3"><small>Pesan</small><strong>${esc(err.message)}</strong></div>`;}
 }
 
 async function upload(file){
@@ -158,5 +149,22 @@ $('#gameCatalogForm').onsubmit=async e=>{
     msg.textContent='Tersimpan ✓';reset();await load();
   }catch(err){msg.textContent=err.message;}
 };
+function adminStatusLabel(s){return({pending:'Menunggu Bayar',paid:'Sudah Bayar',processing:'Diproses',completed:'Berhasil',failed:'Gagal',expired:'Kedaluwarsa'})[s]||s;}
+function adminDate(v){return v?new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'}).format(new Date(v)):'-';}
+function renderGameOrders(){
+  const q=($('#adminGameOrderSearch')?.value||'').toLowerCase(),st=$('#adminGameOrderStatus')?.value||'all';
+  const visible=gameOrders.filter(o=>(st==='all'||o.status===st)&&[o.invoice,o.game_name,o.service_name,o.target,o.zone,o.vip_trxid,o.customer_contact].join(' ').toLowerCase().includes(q));
+  const completed=gameOrders.filter(o=>o.status==='completed').length,processing=gameOrders.filter(o=>o.status==='processing').length,pending=gameOrders.filter(o=>o.status==='pending').length;
+  $('#adminGameOrderStats').innerHTML=`<span>Total <b>${gameOrders.length}</b></span><span>Pending <b>${pending}</b></span><span>Proses <b>${processing}</b></span><span>Berhasil <b>${completed}</b></span>`;
+  $('#adminGameOrderList').innerHTML=visible.length?visible.map(o=>`<article class="admin-game-order-card"><div class="game-order-head"><div><small>${esc(o.invoice)}</small><h3>${esc(o.game_name)} — ${esc(o.service_name)}</h3><p>${esc(o.customer_name||'-')} • ${esc(o.customer_contact||'-')}</p></div><span class="history-status ${esc(o.status)}">${esc(adminStatusLabel(o.status))}</span></div><div class="game-order-info"><div><small>Tujuan</small><strong>${esc(o.target||'-')}${o.zone?` (${esc(o.zone)})`:''}</strong></div><div><small>ID Trx VIPayment</small><strong>${esc(o.vip_trxid||'Belum tersedia')}</strong></div><div><small>Total Bayar</small><strong>${formatPrice(o.payment_amount)}</strong></div><div><small>Dibuat</small><strong>${esc(adminDate(o.created_at))}</strong></div></div><details><summary>Lihat log proses</summary><div class="admin-order-log"><p><b>QRIS dibuat:</b> ${esc(adminDate(o.created_at))}</p><p><b>Pembayaran:</b> ${esc(o.paid_at?adminDate(o.paid_at):'Belum diterima')}</p><p><b>Status provider:</b> ${esc(o.vip_status||'-')}</p><p><b>Catatan:</b> ${esc(o.note||'-')}</p><p><b>Selesai:</b> ${esc(o.completed_at?adminDate(o.completed_at):'-')}</p></div></details><div class="admin-order-note"><textarea data-game-note="${esc(o.id)}" placeholder="Catatan admin...">${esc(o.note||'')}</textarea><button type="button" data-save-game-note="${esc(o.id)}">Simpan Catatan</button></div></article>`).join(''):'<p>Tidak ada order yang cocok.</p>';
+  document.querySelectorAll('[data-save-game-note]').forEach(b=>b.onclick=()=>saveGameOrderNote(b.dataset.saveGameNote));
+}
+async function loadGameOrders(){
+  const box=$('#adminGameOrderList');if(!box)return;box.innerHTML='<p>Memuat order game...</p>';
+  try{const {data:{session}}=await sb.auth.getSession();const data=await jsonFetch('/api/admin-game-orders?limit=150',{headers:{Authorization:`Bearer ${session?.access_token||''}`}});gameOrders=data.orders||[];renderGameOrders();}catch(err){box.innerHTML=`<p>${esc(err.message)}</p>`;}
+}
+async function saveGameOrderNote(id){const el=document.querySelector(`[data-game-note="${CSS.escape(id)}"]`);try{const {data:{session}}=await sb.auth.getSession();await jsonFetch('/api/admin-game-orders',{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session?.access_token||''}`},body:JSON.stringify({id,note:el?.value||''})});await loadGameOrders();}catch(err){alert(err.message);}}
+
+$('#refreshGameOrders').onclick=loadGameOrders;$('#adminGameOrderSearch').oninput=renderGameOrders;$('#adminGameOrderStatus').onchange=renderGameOrders;
 auth();
 })();
