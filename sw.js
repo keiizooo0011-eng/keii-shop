@@ -1,4 +1,4 @@
-const CACHE='kivopay-v21-register-fix';
+const CACHE='kivopay-v24-register-final-fix';
 const CORE=['./','index.html','style.css','script.js','manifest.webmanifest'];
 
 self.addEventListener('install', event => {
