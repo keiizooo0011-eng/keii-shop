@@ -1,2 +1,139 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0712"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Daftar — KivoPay</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="auth.css?v=20260724-register-final-fix"></head><body><div class="auth-aurora a"></div><div class="auth-aurora b"></div><main class="auth-shell"><a class="auth-brand" href="index.html"><span>K</span><strong>KivoPay</strong></a><section class="auth-card"><div class="auth-head"><small>KIVOPAY ACCOUNT</small><h1>Buat akun KivoPay.</h1><p>Daftar sekali untuk menyimpan riwayat transaksi dan tiket bantuan dalam satu akun.</p></div><form id="registerForm" class="auth-form"><label>Nama lengkap<input id="fullName" type="text" autocomplete="name" placeholder="Nama lengkap" minlength="2" required></label><label>Username<input id="username" type="text" autocomplete="username" placeholder="username" pattern="[A-Za-z0-9_]{3,20}" required></label><label>Email<input id="email" type="email" autocomplete="email" placeholder="nama@email.com" required></label><label>Kata sandi<div class="password-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" minlength="6" required><button type="button" data-toggle-password>Lihat</button></div></label><label>Ulangi kata sandi<div class="password-wrap"><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Ulangi kata sandi" minlength="6" required><button type="button" data-toggle-password>Lihat</button></div></label><label class="remember"><input id="terms" type="checkbox" required> Saya menyetujui ketentuan penggunaan KivoPay.</label><button class="auth-submit" type="submit"><span>Daftar Sekarang</span></button><p id="message" class="auth-message" style="display:none"></p></form><div class="auth-divider"><span>Sudah punya akun?</span></div><a class="auth-secondary" href="login.html">Masuk ke akun</a></section><p class="auth-foot">Setelah mendaftar, akun dapat digunakan untuk mengakses layanan dan dashboard KivoPay.</p></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js?v=20260724-register-final-fix"></script><script src="register.js?v=20260724-register-final-fix"></script>
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0712"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Daftar — KivoPay</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="auth.css?v=20260724-inline-final"></head><body><div class="auth-aurora a"></div><div class="auth-aurora b"></div><main class="auth-shell"><a class="auth-brand" href="index.html"><span>K</span><strong>KivoPay</strong></a><section class="auth-card"><div class="auth-head"><small>KIVOPAY ACCOUNT</small><h1>Buat akun KivoPay.</h1><p>Daftar sekali untuk menyimpan riwayat transaksi dan tiket bantuan dalam satu akun.</p></div><form id="registerForm" class="auth-form"><label>Nama lengkap<input id="fullName" type="text" autocomplete="name" placeholder="Nama lengkap" minlength="2" required></label><label>Username<input id="username" type="text" autocomplete="username" placeholder="username" pattern="[A-Za-z0-9_]{3,20}" required></label><label>Email<input id="email" type="email" autocomplete="email" placeholder="nama@email.com" required></label><label>Kata sandi<div class="password-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" minlength="6" required><button type="button" data-toggle-password>Lihat</button></div></label><label>Ulangi kata sandi<div class="password-wrap"><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Ulangi kata sandi" minlength="6" required><button type="button" data-toggle-password>Lihat</button></div></label><label class="remember"><input id="terms" type="checkbox" required> Saya menyetujui ketentuan penggunaan KivoPay.</label><button class="auth-submit" type="submit"><span>Daftar Sekarang</span></button><p id="message" class="auth-message" style="display:none"></p></form><div class="auth-divider"><span>Sudah punya akun?</span></div><a class="auth-secondary" href="login.html">Masuk ke akun</a></section><p class="auth-foot">Setelah mendaftar, akun dapat digunakan untuk mengakses layanan dan dashboard KivoPay.</p></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js?v=20260724-inline-final"></script>
+<script>
+(() => {
+  'use strict';
+
+  const form = document.getElementById('registerForm');
+  const message = document.getElementById('message');
+  const submitButton = form?.querySelector('button[type="submit"]');
+  const submitLabel = submitButton?.querySelector('span');
+
+  function showMessage(text = '', type = '') {
+    if (!message) return;
+    const value = typeof text === 'string' ? text.trim() : '';
+    message.textContent = value;
+    message.className = 'auth-message' + (type ? ' ' + type : '');
+    message.style.display = value ? 'block' : 'none';
+  }
+
+  function setLoading(active) {
+    if (!submitButton) return;
+    submitButton.disabled = active;
+    if (submitLabel) {
+      submitLabel.textContent = active ? 'Sedang Membuat Akun...' : 'Daftar Sekarang';
+    }
+  }
+
+  function getErrorMessage(error) {
+    const text =
+      error?.message ||
+      error?.error_description ||
+      error?.details ||
+      error?.hint ||
+      error?.msg ||
+      '';
+
+    if (/already registered|already been registered|user already exists/i.test(text)) {
+      return 'Email tersebut sudah terdaftar. Gunakan email lain atau masuk ke akun.';
+    }
+    if (/duplicate key|username.*unique|profiles_username/i.test(text)) {
+      return 'Username sudah digunakan. Silakan pilih username lain.';
+    }
+    if (/database error saving new user/i.test(text)) {
+      return 'Database gagal membuat profil pengguna. Periksa trigger profiles di Supabase.';
+    }
+    if (/password/i.test(text) && /least|short|weak|characters/i.test(text)) {
+      return 'Kata sandi terlalu lemah. Gunakan minimal 6 karakter.';
+    }
+    if (/rate limit/i.test(text)) {
+      return 'Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.';
+    }
+    return text || 'Pendaftaran gagal. Silakan coba kembali.';
+  }
+
+  async function waitForSupabase() {
+    for (let i = 0; i < 50; i++) {
+      if (window.supabase && window.KIVOPAY_CONFIG?.supabaseUrl && window.KIVOPAY_CONFIG?.supabaseAnonKey) {
+        return window.supabase.createClient(
+          window.KIVOPAY_CONFIG.supabaseUrl,
+          window.KIVOPAY_CONFIG.supabaseAnonKey
+        );
+      }
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    throw new Error('Koneksi Supabase tidak tersedia.');
+  }
+
+  document.querySelectorAll('[data-toggle-password]').forEach(button => {
+    button.addEventListener('click', () => {
+      const input = button.parentElement?.querySelector('input');
+      if (!input) return;
+      const showing = input.type === 'password';
+      input.type = showing ? 'text' : 'password';
+      button.textContent = showing ? 'Sembunyi' : 'Lihat';
+    });
+  });
+
+  if (!form) return;
+  showMessage('');
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (submitButton?.disabled) return;
+
+    const fullName = document.getElementById('fullName')?.value.trim() || '';
+    const username = document.getElementById('username')?.value.trim().toLowerCase() || '';
+    const email = document.getElementById('email')?.value.trim().toLowerCase() || '';
+    const password = document.getElementById('password')?.value || '';
+    const confirmation = document.getElementById('confirmPassword')?.value || '';
+
+    if (!/^[a-z0-9_]{3,20}$/.test(username)) {
+      showMessage('Username harus 3–20 karakter dan hanya berisi huruf, angka, atau garis bawah.');
+      return;
+    }
+
+    if (password !== confirmation) {
+      showMessage('Kata sandi dan konfirmasi kata sandi tidak sama.');
+      return;
+    }
+
+    setLoading(true);
+    showMessage('Sedang membuat akun KivoPay...');
+
+    try {
+      const db = await waitForSupabase();
+
+      const { data, error } = await db.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            display_name: fullName,
+            username
+          }
+        }
+      });
+
+      if (error) throw error;
+      if (!data?.user) throw new Error('Akun tidak berhasil dibuat.');
+
+      if (data.session) {
+        showMessage('Akun berhasil dibuat. Membuka dashboard...', 'success');
+        setTimeout(() => location.replace('index.html?registered=1'), 900);
+      } else {
+        showMessage('Akun berhasil dibuat. Silakan masuk menggunakan akun baru.', 'success');
+        setTimeout(() => location.replace('login.html?registered=1'), 1600);
+      }
+    } catch (error) {
+      console.error('REGISTER_FINAL_ERROR', error);
+      showMessage(getErrorMessage(error));
+      setLoading(false);
+    }
+  }, true);
+})();
+</script>
+
 </body></html>

@@ -1,4 +1,4 @@
-const CACHE='kivopay-v24-register-final-fix';
+const CACHE='kivopay-v22-main-nav';
 const CORE=['./','index.html','style.css','script.js','manifest.webmanifest'];
 
 self.addEventListener('install', event => {
@@ -22,7 +22,8 @@ self.addEventListener('fetch', event => {
   const authAsset =
     /\/(login|register|forgot-password|reset-password|account)\.html$/.test(url.pathname) ||
     /\/(auth|login|register|register-kivopay-v6|account|forgot-password|reset-password)\.js$/.test(url.pathname) ||
-    /\/auth\.css$/.test(url.pathname);
+    /\/(auth|bottom-nav)\.css$/.test(url.pathname) ||
+    /\/bottom-nav\.js$/.test(url.pathname);
 
   if (authAsset) {
     event.respondWith(fetch(event.request, { cache: 'no-store' }));

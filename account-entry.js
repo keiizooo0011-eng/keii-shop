@@ -15,7 +15,7 @@
 
   const admin=await KivoAuth.isAdmin(session.user.id);
   entry.href=admin?'admin.html':'account.html';
-  if(label)label.textContent=admin?'Panel Admin':'Dashboard';
+  if(label)label.textContent=admin?'Panel Admin':'Profil';
   entry.classList.add('signed-in');
-  entry.setAttribute('aria-label',admin?'Buka panel admin':'Buka dashboard akun');
+  entry.setAttribute('aria-label',admin?'Buka panel admin':'Buka profil akun');
 })();
