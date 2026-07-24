@@ -53,7 +53,7 @@
         <a class="admin-game-nav-link" href="admin-games.html">🎮 Game Top Up</a>
         <button data-admin-page-btn="moderation">💬 Moderasi</button>
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
-        <button data-admin-page-btn="customer-service">Customer Service</button>
+        <button data-admin-page-btn="users">Akun User <span id="userCountBadge" class="admin-nav-badge" hidden>0</span></button>\n        <button data-admin-page-btn="customer-service">Customer Service</button>
         <button data-admin-page-btn="support-tickets">Tiket Bantuan <span id="supportTicketBadge" class="admin-nav-badge" hidden>0</span></button>
       </nav>
 
@@ -251,7 +251,15 @@
       </div>
 
 
-      <div class="admin-page" data-admin-page="customer-service">
+      <div class="admin-page" data-admin-page="users">
+        <section class="admin-panel user-manager-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">USER ACCESS CONTROL</span><h2>Kelola Akun Pengguna</h2><p class="muted">Pantau akun terdaftar, waktu login terakhir, username, status akun, dan tindakan administratif.</p></div><button id="refreshAdminUsers" class="ghost" type="button">Refresh Data</button></div>
+          <div class="user-manager-stats"><article><span>Total akun</span><strong id="adminUsersTotal">0</strong></article><article><span>Login 24 jam</span><strong id="adminUsersActiveToday">0</strong></article><article><span>Akun diblokir</span><strong id="adminUsersBanned">0</strong></article></div>
+          <div class="user-manager-toolbar"><input id="adminUserSearch" type="search" placeholder="Cari email, username, atau nama pengguna"><select id="adminUserFilter"><option value="">Semua akun</option><option value="active">Aktif</option><option value="banned">Diblokir</option><option value="recent">Login 24 jam</option></select></div>
+          <div id="adminUsersMessage" class="admin-message"></div><div id="adminUsersList" class="admin-users-list"><div class="admin-users-empty">Pilih menu Akun User untuk memuat data pengguna.</div></div>
+        </section>
+      </div>
+\n      <div class="admin-page" data-admin-page="customer-service">
         <section class="admin-panel cs-admin-panel">
           <div class="admin-panel-head"><div><span class="eyebrow">CUSTOMER SERVICE MANAGER</span><h2>Kelola Tim Customer Service</h2><p class="muted">Atur kontak dan ketersediaan CS yang ditampilkan pada halaman utama.</p></div><div class="admin-live"><i></i><span>Sinkron ke website</span></div></div>
           <div class="cs-admin-guidance"><span data-kivo-icon="clock"></span><p>Gunakan indikator status untuk membantu pelanggan memahami ketersediaan layanan dan estimasi waktu terbaik untuk menghubungi tim Customer Service.</p></div>
