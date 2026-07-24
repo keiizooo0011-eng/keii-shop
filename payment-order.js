@@ -64,7 +64,7 @@
 
       <div class="delivery-receipt-actions">
         <button type="button" id="copyAllDelivery">Salin Semua</button>
-        <a class="secondary-btn" href="index.html#orders">Cek Pesanan</a>
+        <a class="secondary-btn" href="riwayat-order.html?invoice=${encodeURIComponent(o.invoice||invoice)}">Lihat Riwayat Pesanan</a>
       </div>
     </section>`;
   }
@@ -112,6 +112,7 @@
     if(box&&!box.children.length){box.innerHTML=deliveryMarkup(o);bindDelivery(o);}
     const st=document.querySelector('#paymentOrderStatus'); if(st){st.className='payment-live-status completed';st.textContent='Pembayaran berhasil • Data produk terkirim otomatis';}
     const badge=document.querySelector('#orderStatusBadge');if(badge){badge.className='flow-status completed';badge.textContent='Pesanan Selesai';}
+    setTimeout(()=>{location.href='riwayat-order.html?invoice='+encodeURIComponent(o.invoice||invoice)},2600);
   }
   async function poll(){
     if(stopped)return;

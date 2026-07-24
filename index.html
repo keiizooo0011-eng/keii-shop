@@ -91,7 +91,7 @@
     <section class="kp-command-center reveal" aria-label="Pusat akun KivoPay">
       <article class="kp-dashboard-card">
         <div class="kp-card-head"><div><small>MY KIVOPAY</small><h2 id="kpDashboardGreeting">Halo, Member</h2></div><span class="kp-live-pill"><i></i>Sistem online</span></div>
-        <div class="kp-balance"><span>Pusat aktivitas akun</span><strong>KivoPay Dashboard</strong><div class="kp-actions"><a href="account.html">Buka Dashboard</a><a href="#orders">Cek Pesanan</a><a href="support-ticket.html">Pusat Bantuan</a></div></div>
+        <div class="kp-balance"><span>Pusat aktivitas akun</span><strong>KivoPay Dashboard</strong><div class="kp-actions"><a href="account.html">Buka Dashboard</a><a href="riwayat-order.html">Riwayat Pesanan</a><a href="support-ticket.html">Pusat Bantuan</a></div></div>
       </article>
       <article class="kp-dashboard-card">
         <div class="kp-card-head"><div><small>RINGKASAN</small><h2>Aktivitasmu</h2></div></div>
@@ -132,12 +132,7 @@
       </div>
     </section>
 
-    <section class="quick-access reveal" aria-label="Akses cepat">
-      <a href="topup-game.html" class="quick-card"><span data-kivo-icon="gamepad"></span><div><small>LAYANAN</small><strong>Top Up Game</strong></div><i data-kivo-icon="arrow-right"></i></a>
-      <a href="sewa-bot.html" class="quick-card"><span data-kivo-icon="bot"></span><div><small>PRODUK</small><strong>Sewa Bot</strong></div><i data-kivo-icon="arrow-right"></i></a>
-      <a href="apk-premium.html" class="quick-card"><span data-kivo-icon="gem"></span><div><small>PREMIUM</small><strong>APK Premium</strong></div><i data-kivo-icon="arrow-right"></i></a>
-      <a href="#orders" class="quick-card"><span data-kivo-icon="receipt"></span><div><small>TRANSAKSI</small><strong>Cek Pesanan</strong></div><i data-kivo-icon="arrow-right"></i></a>
-    </section>
+    
 
     <section class="promo-showcase reveal" aria-label="Promo KivoPay">
       <div class="promo-track" id="promoTrack">
@@ -154,7 +149,7 @@
       </div>
       <div class="user-dashboard-grid">
         <a href="all-products.html" class="user-dash-card user-dash-primary"><span class="dash-icon" data-kivo-icon="shopping-bag"></span><div><small>STORE</small><strong>Mulai Belanja</strong><p id="dashProductText">Memuat produk aktif...</p></div><b>→</b></a>
-        <a href="#orders" class="user-dash-card"><span class="dash-icon" data-kivo-icon="receipt"></span><div><small>PESANAN</small><strong>Cek Status Order</strong><p>Pantau invoice dan ambil produkmu.</p></div><b>→</b></a>
+        <a href="riwayat-order.html" class="user-dash-card"><span class="dash-icon" data-kivo-icon="receipt"></span><div><small>PESANAN</small><strong>Cek Status Order</strong><p>Pantau invoice dan ambil produkmu.</p></div><b>→</b></a>
         <a href="#tools" class="user-dash-card"><span class="dash-icon" data-kivo-icon="wand"></span><div><small>KIVO TOOLS</small><strong>Buka Smart Tools</strong><p>Tools praktis langsung dari browser.</p></div><b>→</b></a>
         <button type="button" class="user-dash-card" data-open-support><span class="dash-icon" data-kivo-icon="message-circle"></span><div><small>SUPPORT</small><strong>Butuh Bantuan?</strong><p>Customer Service siap membantu.</p></div><b>→</b></button>
       </div>
@@ -207,18 +202,7 @@
       <a class="all-products-cta" href="all-products.html">Buka Semua Produk <b>→</b></a>
     </section>
 
-    <section id="orders" class="section order-check reveal">
-      <div>
-        <span class="eyebrow">CEK PESANAN</span>
-        <h2>Pantau status order</h2>
-        <p class="section-subtitle">Masukkan nomor invoice yang didapat setelah checkout.</p>
-      </div>
-      <div class="order-lookup-box">
-        <input id="orderLookup" placeholder="Contoh: KIVO-ABC123">
-        <button id="orderLookupBtn">Cek Status</button>
-      </div>
-      <div id="orderLookupResult" class="order-lookup-result"></div>
-    </section>
+    
 
 
     <section id="community" class="section community-section reveal">
@@ -362,7 +346,7 @@
           <span class="footer-logo">K</span>
           <div>
             <strong>KivoPay</strong>
-            <p>Platform digital untuk APK Premium, sewa bot, dan berbagai tools praktis.</p>
+            <p>Platform layanan digital untuk top up game, Robux, aplikasi premium, dan otomasi komunitas.</p>
           </div>
         </a>
       </div>
@@ -373,7 +357,7 @@
           <a href="#home">Home</a>
           <a href="#store">Store</a>
           <a href="#tools">Tools</a>
-          <a href="#orders">Cek Pesanan</a>
+          <a href="riwayat-order.html">Riwayat Pesanan</a>
           <a href="chat.html">Ruang Obrolan</a>
         </div>
 
@@ -394,7 +378,7 @@
 
       <div class="footer-bottom">
         <p>© 2026 KivoPay. All rights reserved.</p>
-        <p>Developed by <strong>keii official</strong></p>
+        <p class="footer-credit">Dibuat dan dikelola oleh <strong>Keii Official</strong> · KivoPay Digital Services</p>
       </div>
     </div>
   </footer>
