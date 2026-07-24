@@ -93,7 +93,7 @@
       }
 
       showMessage('Akun berhasil dibuat. Membuka dashboard...', 'success');
-      setTimeout(() => location.replace('index.html?registered=1'), 700);
+      setTimeout(() => location.replace('index.html'), 700);
     } catch (error) {
       console.error('Register error:', error);
       let text = normalizeMessage(error);

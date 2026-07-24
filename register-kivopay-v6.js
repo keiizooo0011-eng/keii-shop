@@ -120,7 +120,7 @@
       if (result.data.session) {
         setMessage('Akun berhasil dibuat. Membuka dashboard...', 'success');
         setLoading(true);
-        setTimeout(() => window.location.replace('account.html?registered=1'), 900);
+        setTimeout(() => window.location.replace('index.html?registered=1'), 900);
         return;
       }
 

@@ -23,11 +23,12 @@
         if(!window.KivoAuth || !KivoAuth.db){ location.replace('login.html'); return; }
         const session=await KivoAuth.session();
         if(!session){ location.replace('login.html'); return; }
-        location.replace('account.html');
+        document.getElementById('authGateStyle')?.remove();
       }catch(error){ console.error(error); location.replace('login.html'); }
     })();
   </script>
-<link rel="stylesheet" href="bottom-nav.css?v=1.0"></head>
+  <link rel="stylesheet" href="bottom-nav.css?v=2">
+</head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
   <div class="particles" aria-hidden="true">
@@ -58,7 +59,7 @@
         <h1>Semua kebutuhan digital.<br><span>Satu pengalaman yang lebih mudah.</span></h1>
         <p class="hero-description">Top up game, APK premium, sewa bot, dan layanan digital pilihan dalam satu platform yang cepat, aman, dan praktis.</p>
         <div class="hero-row">
-          <a href="#store" class="btn primary icon-button"><span data-kivo-icon="shopping-bag"></span>Jelajahi Produk</a>
+          <a href="all-products.html" class="btn primary icon-button"><span data-kivo-icon="shopping-bag"></span>Jelajahi Produk</a>
           <a href="topup-game.html" class="btn secondary icon-button"><span data-kivo-icon="gamepad"></span>Top Up Game</a>
         </div>
         <div class="hero-trust">
@@ -77,16 +78,16 @@
 
     <section class="quick-access reveal" aria-label="Akses cepat">
       <a href="topup-game.html" class="quick-card"><span data-kivo-icon="gamepad"></span><div><small>LAYANAN</small><strong>Top Up Game</strong></div><i data-kivo-icon="arrow-right"></i></a>
-      <a href="#store" data-quick-filter="sewa-bot" class="quick-card"><span data-kivo-icon="bot"></span><div><small>PRODUK</small><strong>Sewa Bot</strong></div><i data-kivo-icon="arrow-right"></i></a>
-      <a href="#store" data-quick-filter="apk-premium" class="quick-card"><span data-kivo-icon="gem"></span><div><small>PREMIUM</small><strong>APK Premium</strong></div><i data-kivo-icon="arrow-right"></i></a>
+      <a href="sewa-bot.html" class="quick-card"><span data-kivo-icon="bot"></span><div><small>PRODUK</small><strong>Sewa Bot</strong></div><i data-kivo-icon="arrow-right"></i></a>
+      <a href="apk-premium.html" class="quick-card"><span data-kivo-icon="gem"></span><div><small>PREMIUM</small><strong>APK Premium</strong></div><i data-kivo-icon="arrow-right"></i></a>
       <a href="#orders" class="quick-card"><span data-kivo-icon="receipt"></span><div><small>TRANSAKSI</small><strong>Cek Pesanan</strong></div><i data-kivo-icon="arrow-right"></i></a>
     </section>
 
     <section class="promo-showcase reveal" aria-label="Promo KivoPay">
       <div class="promo-track" id="promoTrack">
         <article class="promo-slide active"><span class="promo-label">TOP UP OTOMATIS</span><h2>Isi game favoritmu tanpa proses yang rumit.</h2><p>Pilih nominal, bayar dengan QRIS, lalu pesanan diproses otomatis.</p><a href="topup-game.html">Mulai Top Up <i data-kivo-icon="arrow-right"></i></a></article>
-        <article class="promo-slide"><span class="promo-label">DIGITAL STORE</span><h2>Produk premium pilihan untuk kebutuhan harianmu.</h2><p>Temukan APK premium dan layanan digital dengan harga transparan.</p><a href="#store">Lihat Katalog <i data-kivo-icon="arrow-right"></i></a></article>
-        <article class="promo-slide"><span class="promo-label">SEWA BOT</span><h2>Kelola komunitas dan toko dengan lebih praktis.</h2><p>Pilih paket bot sesuai kebutuhan dan durasi penggunaan.</p><a href="#store" data-quick-filter="sewa-bot">Lihat Paket <i data-kivo-icon="arrow-right"></i></a></article>
+        <article class="promo-slide"><span class="promo-label">DIGITAL STORE</span><h2>Produk premium pilihan untuk kebutuhan harianmu.</h2><p>Temukan APK premium dan layanan digital dengan harga transparan.</p><a href="apk-premium.html">Lihat Katalog <i data-kivo-icon="arrow-right"></i></a></article>
+        <article class="promo-slide"><span class="promo-label">SEWA BOT</span><h2>Kelola komunitas dan toko dengan lebih praktis.</h2><p>Pilih paket bot sesuai kebutuhan dan durasi penggunaan.</p><a href="sewa-bot.html">Lihat Paket <i data-kivo-icon="arrow-right"></i></a></article>
       </div>
       <div class="promo-dots" id="promoDots" aria-label="Navigasi promo"></div>
     </section>
@@ -96,7 +97,7 @@
         <span class="dashboard-status"><i></i> Layanan online</span>
       </div>
       <div class="user-dashboard-grid">
-        <a href="#store" class="user-dash-card user-dash-primary"><span class="dash-icon" data-kivo-icon="shopping-bag"></span><div><small>STORE</small><strong>Mulai Belanja</strong><p id="dashProductText">Memuat produk aktif...</p></div><b>→</b></a>
+        <a href="all-products.html" class="user-dash-card user-dash-primary"><span class="dash-icon" data-kivo-icon="shopping-bag"></span><div><small>STORE</small><strong>Mulai Belanja</strong><p id="dashProductText">Memuat produk aktif...</p></div><b>→</b></a>
         <a href="#orders" class="user-dash-card"><span class="dash-icon" data-kivo-icon="receipt"></span><div><small>PESANAN</small><strong>Cek Status Order</strong><p>Pantau invoice dan ambil produkmu.</p></div><b>→</b></a>
         <a href="#tools" class="user-dash-card"><span class="dash-icon" data-kivo-icon="wand"></span><div><small>KIVO TOOLS</small><strong>Buka Smart Tools</strong><p>Tools praktis langsung dari browser.</p></div><b>→</b></a>
         <button type="button" class="user-dash-card" data-open-support><span class="dash-icon" data-kivo-icon="message-circle"></span><div><small>SUPPORT</small><strong>Butuh Bantuan?</strong><p>Customer Service siap membantu.</p></div><b>→</b></button>
@@ -128,20 +129,14 @@
 
 
     <section id="store" class="section store-section reveal">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">KIVOPAY STORE</span>
-          <h2>Katalog sesuai kebutuhanmu</h2>
-          <p class="section-subtitle">Setiap kategori dipisahkan agar produk lebih mudah ditemukan.</p>
-        </div>
-        <div class="store-filters">
-          <button class="active" data-store-filter="all">Semua</button>
-          <button data-store-filter="apk-premium">APK Premium</button>
-          <button data-store-filter="sewa-bot">Sewa Bot</button>
-          <a class="store-game-link" href="topup-game.html"> <span data-kivo-icon="gamepad"></span>Top Up Game</a>
-        </div>
+      <div class="section-head"><div><span class="eyebrow">SEMUA PRODUK</span><h2>Pilih katalog KivoPay</h2><p class="section-subtitle">Produk dipisahkan per halaman supaya lebih mudah dicari.</p></div></div>
+      <div class="home-catalog-links">
+        <a href="topup-game.html"><span>🎮</span><strong>Top Up Game & Digital</strong><small>Game, streaming, voucher, dan produk digital.</small></a>
+        <a href="robux.html"><span>◆</span><strong>Top Up Robux</strong><small>Paket Robux dengan alur khusus Roblox.</small></a>
+        <a href="apk-premium.html"><span>💎</span><strong>APK Premium</strong><small>Aplikasi premium pilihan KivoPay.</small></a>
+        <a href="sewa-bot.html"><span>🤖</span><strong>Sewa Bot</strong><small>Paket bot sesuai durasi dan kebutuhan.</small></a>
       </div>
-      <div id="storeGrid" class="store-grid"></div>
+      <a class="all-products-cta" href="all-products.html">Buka Semua Produk <b>→</b></a>
     </section>
 
     <section id="orders" class="section order-check reveal">
@@ -380,5 +375,6 @@
   <script src="ui-system.js?v=17.1.0"></script>
   <script src="home-premium.js?v=18.0.0"></script>
   <script src="account-entry.js?v=1"></script>
-<script src="bottom-nav.js?v=1.0"></script></body>
+  <script src="bottom-nav.js?v=2"></script>
+</body>
 </html>
