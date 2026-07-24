@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin-games.html
+Disallow: /admin-game-history.html
+Disallow: /api/
+
+Sitemap: https://kivopay.shop/sitemap.xml

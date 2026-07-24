@@ -1,0 +1,13 @@
+KIVOPAY V31 — DISCOVERY + SEO FOUNDATION
+
+Perubahan utama:
+- Search produk global di dashboard.
+- Promo countdown premium.
+- Kategori populer dengan animasi modern.
+- SEO title, description, canonical, Open Graph, dan JSON-LD.
+- robots.txt dan sitemap.xml untuk Google Search Console.
+- Cache Service Worker dinaikkan ke V31.
+
+Catatan:
+Countdown adalah elemen promosi tampilan dan dimulai ulang saat halaman dibuka.
+Untuk muncul di Google, upload semua file lalu daftarkan https://kivopay.shop di Google Search Console dan kirim sitemap.xml.

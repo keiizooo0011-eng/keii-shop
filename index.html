@@ -4,8 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0a0710">
-  <title>KivoPay — Digital Store & Smart Tools</title>
-  <meta name="description" content="KivoPay menyediakan Store APK Premium, Sewa Bot, dan berbagai Kivo Tools dalam satu website.">
+  <title>KivoPay — Top Up Game, Robux, APK Premium & Sewa Bot</title>
+  <meta name="description" content="KivoPay menyediakan top up game, Robux, APK premium, sewa bot, dan produk digital dengan pembayaran QRIS serta status transaksi otomatis.">
+  <link rel="canonical" href="https://kivopay.shop/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KivoPay — Layanan Digital dalam Satu Tempat">
+  <meta property="og:description" content="Top up game, Robux, APK premium, sewa bot, dan produk digital dengan proses praktis.">
+  <meta property="og:url" content="https://kivopay.shop/">
+  <meta property="og:image" content="https://kivopay.shop/icons/icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"KivoPay","url":"https://kivopay.shop/","logo":"https://kivopay.shop/icons/icon-512.png"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"KivoPay","url":"https://kivopay.shop/"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -27,7 +36,8 @@
       }catch(error){ console.error(error); location.replace('login.html'); }
     })();
   </script>
-  <link rel="stylesheet" href="bottom-nav.css?v=30">
+  <link rel="stylesheet" href="bottom-nav.css?v=31">
+  <link rel="stylesheet" href="home-engagement.css?v=31">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -73,6 +83,34 @@
         <div class="hero-logo-card"><span>K</span><strong>KivoPay</strong><small>Digital services, simplified.</small></div>
         <div class="hero-mini-card hero-mini-top"><i></i><span>System Online</span></div>
         <div class="hero-mini-card hero-mini-bottom"><b data-kivo-icon="package-check"></b><span>Auto Delivery</span></div>
+      </div>
+    </section>
+
+
+    <section class="home-search-section reveal" aria-label="Pencarian produk KivoPay">
+      <div class="home-search-card">
+        <div class="home-search-heading"><div><small>CARI LAYANAN</small><h2>Temukan produk dalam hitungan detik</h2></div><p>Ketik nama game, aplikasi, Robux, atau layanan bot yang kamu butuhkan.</p></div>
+        <form id="kivoSearchForm" class="home-search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="kivoGlobalSearch" type="search" placeholder="Cari Mobile Legends, Robux, Spotify..." autocomplete="off"><button type="submit">Cari</button></form>
+        <div class="search-suggestions"><button type="button" data-search-term="Mobile Legends">Mobile Legends</button><button type="button" data-search-term="Robux">Robux</button><button type="button" data-search-term="APK Premium">APK Premium</button><button type="button" data-search-term="Sewa Bot">Sewa Bot</button></div>
+        <div id="kivoSearchResults" class="search-results" hidden></div>
+      </div>
+    </section>
+
+    <section class="v31-section reveal" aria-label="Promo terbatas KivoPay">
+      <div class="v31-section-head"><div><small>PENAWARAN PILIHAN</small><h2>Promo yang terasa lebih hidup</h2></div><p>Area promosi khusus untuk menarik perhatian pengguna tanpa memenuhi halaman.</p></div>
+      <div class="flash-layout">
+        <article class="flash-main"><span class="flash-badge"><i></i>PROMO BERJALAN</span><h3>Top up lebih cepat, katalog lebih mudah ditemukan.</h3><p>Jelajahi kategori favoritmu sebelum waktu promosi berakhir.</p><div class="countdown"><span><strong id="dealHours">06</strong><small>JAM</small></span><span><strong id="dealMinutes">00</strong><small>MENIT</small></span><span><strong id="dealSeconds">00</strong><small>DETIK</small></span></div><a href="all-products.html">Lihat Semua Produk <b>→</b></a></article>
+        <div class="flash-side"><a class="deal-card" href="topup-game.html"><small>TOP UP GAME</small><strong>Proses otomatis</strong><span>Pilih game dan nominal favoritmu.</span><b>→</b></a><a class="deal-card" href="apk-premium.html"><small>PRODUK DIGITAL</small><strong>Premium pilihan</strong><span>Katalog terpisah agar lebih rapi.</span><b>→</b></a></div>
+      </div>
+    </section>
+
+    <section class="v31-section reveal" aria-label="Kategori populer KivoPay">
+      <div class="v31-section-head"><div><small>PALING DICARI</small><h2>Kategori favorit pengguna</h2></div><p>Shortcut visual menuju layanan utama KivoPay.</p></div>
+      <div class="popular-grid">
+        <a class="popular-card" style="--popular:#8b5cf6" href="topup-game.html"><span class="popular-icon"><svg viewBox="0 0 24 24"><path d="M8.5 7h7a5.5 5.5 0 0 1 5.2 7.3l-1.1 3.1a2.5 2.5 0 0 1-4.1 1l-1.4-1.4H9.9l-1.4 1.4a2.5 2.5 0 0 1-4.1-1l-1.1-3.1A5.5 5.5 0 0 1 8.5 7Z"/><path d="M7 11v4M5 13h4M16.5 11.8h.01M18.5 14h.01"/></svg></span><small>OTOMATIS</small><strong>Top Up Game</strong><span>Game dan produk digital dari satu katalog.</span><em>→</em></a>
+        <a class="popular-card" style="--popular:#6290ff" href="robux.html"><span class="popular-icon"><svg viewBox="0 0 24 24"><path d="m7.2 3 13.8 4.2L16.8 21 3 16.8 7.2 3Z"/><path d="m10 9 5 1.5-1.5 5-5-1.5L10 9Z"/></svg></span><small>ROBLOX</small><strong>Top Up Robux</strong><span>Halaman khusus katalog dan riwayat Robux.</span><em>→</em></a>
+        <a class="popular-card" style="--popular:#df76d4" href="apk-premium.html"><span class="popular-icon"><svg viewBox="0 0 24 24"><path d="M3 9 7 4h10l4 5-9 11L3 9Z"/><path d="m3 9 9 3 9-3M7 4l5 8 5-8M12 12v8"/></svg></span><small>PREMIUM</small><strong>APK Premium</strong><span>Aplikasi premium pilihan dalam katalog terpisah.</span><em>→</em></a>
+        <a class="popular-card" style="--popular:#42d6aa" href="sewa-bot.html"><span class="popular-icon"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M9 12h.01M15 12h.01M8 16h8M12 7V4M10 4h4M2 11v4M22 11v4"/></svg></span><small>AUTOMATION</small><strong>Sewa Bot</strong><span>Paket bot untuk grup, komunitas, dan toko.</span><em>→</em></a>
       </div>
     </section>
 
@@ -283,6 +321,8 @@
         <details><summary>Bagaimana cara menghubungi Customer Service?</summary><p>Gunakan tombol Hubungi CS atau tombol bantuan mengambang di pojok layar.</p></details>
       </div>
     </section>
+
+    <section class="v31-section seo-trust reveal" aria-label="Kepercayaan KivoPay"><article><strong>Harga transparan</strong><p>Total pembayaran tampil sebelum transaksi dilanjutkan.</p></article><article><strong>Status real-time</strong><p>Pesanan dapat dipantau dari halaman pembayaran dan riwayat.</p></article><article><strong>Katalog terstruktur</strong><p>Setiap kategori dipisahkan agar pengguna lebih cepat menemukan layanan.</p></article></section>
   </main>
 
   <footer class="site-footer">
@@ -375,6 +415,7 @@
   <script src="ui-system.js?v=17.1.0"></script>
   <script src="home-premium.js?v=18.0.0"></script>
   <script src="account-entry.js?v=1"></script>
-  <script src="bottom-nav.js?v=30"></script>
+  <script src="bottom-nav.js?v=31"></script>
+  <script src="home-engagement.js?v=31"></script>
 </body>
 </html>
