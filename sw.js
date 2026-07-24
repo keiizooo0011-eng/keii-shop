@@ -1,1 +1,17 @@
-const CACHE='kivopay-v19-payment-page';const CORE=['./','index.html','style.css','script.js','ui-system.js','robux.html','riwayat-robux.html','order-robux.html','payment-robux.html','payment-order.html','payment-order.js','manifest.webmanifest'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('index.html'))))});self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.matchAll({type:'window'}).then(ws=>ws[0]?ws[0].focus():clients.openWindow('./index.html'))) });
+const CACHE='kivopay-v20-auth-fix';const CORE=['./','index.html','style.css','script.js','ui-system.js','robux.html','riwayat-robux.html','order-robux.html','payment-robux.html','payment-order.html','payment-order.js','manifest.webmanifest'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET')return;
+  const url=new URL(e.request.url);
+  const isAuth=/\/(login|register|forgot-password|reset-password|account)\.html$/.test(url.pathname)
+    || /\/(auth|login|register|account)\.js$/.test(url.pathname)
+    || /\/auth\.css$/.test(url.pathname);
+  if(isAuth){
+    e.respondWith(fetch(e.request,{cache:'no-store'}));
+    return;
+  }
+  e.respondWith(fetch(e.request).then(r=>{
+    const copy=r.clone();
+    caches.open(CACHE).then(c=>c.put(e.request,copy));
+    return r;
+  }).catch(()=>caches.match(e.request).then(r=>r||caches.match('index.html'))));
+});
+self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.matchAll({type:'window'}).then(ws=>ws[0]?ws[0].focus():clients.openWindow('./index.html'))) });

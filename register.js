@@ -3,19 +3,39 @@
   const message = document.getElementById('message');
   const submitButton = form?.querySelector('button[type="submit"]');
 
-  function showMessage(text = '', type = '') {
-    if (!message) return;
-    message.textContent = String(text || '');
-    message.className = `auth-message${type ? ` ${type}` : ''}`;
+  function normalizeMessage(value) {
+    if (value == null) return '';
+    if (typeof value === 'string') {
+      const clean = value.trim();
+      return clean === '{}' || clean === '[object Object]' ? '' : clean;
+    }
+    if (value instanceof Error && value.message) return value.message;
+    if (typeof value === 'object') {
+      return value.message || value.error_description || value.msg || value.error ||
+        'Terjadi kesalahan saat membuat akun. Silakan coba kembali.';
+    }
+    return String(value);
   }
 
-  function readableError(error) {
-    if (!error) return 'Terjadi kesalahan saat membuat akun.';
-    if (typeof error === 'string') return error;
-    if (typeof error.message === 'string' && error.message.trim()) return error.message;
-    if (typeof error.error_description === 'string' && error.error_description.trim()) return error.error_description;
-    if (typeof error.msg === 'string' && error.msg.trim()) return error.msg;
-    return 'Terjadi kesalahan saat membuat akun. Silakan coba lagi.';
+  function showMessage(value = '', type = '') {
+    if (!message) return;
+    const text = normalizeMessage(value);
+    message.textContent = text;
+    message.className = `auth-message${type ? ` ${type}` : ''}`;
+    message.hidden = !text;
+  }
+
+  // Perlindungan tambahan terhadap script/cache lama yang menulis "{}".
+  if (message) {
+    const observer = new MutationObserver(() => {
+      const current = message.textContent.trim();
+      if (current === '{}' || current === '[object Object]') {
+        message.textContent = '';
+        message.hidden = true;
+      }
+    });
+    observer.observe(message, { childList: true, characterData: true, subtree: true });
+    showMessage('');
   }
 
   document.querySelectorAll('[data-toggle-password]').forEach(button => {
@@ -36,18 +56,13 @@
       return;
     }
 
-    const fullNameInput = document.getElementById('fullName');
-    const usernameInput = document.getElementById('username');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const fullName = document.getElementById('fullName').value.trim();
+    const username = document.getElementById('username').value.trim().toLowerCase();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
 
-    const fullName = fullNameInput.value.trim();
-    const username = usernameInput.value.trim().toLowerCase();
-    const email = emailInput.value.trim().toLowerCase();
-    const password = passwordInput.value;
-
-    if (password !== confirmPasswordInput.value) {
+    if (password !== confirmPassword) {
       showMessage('Kata sandi dan konfirmasi kata sandi tidak sama.');
       return;
     }
@@ -56,18 +71,6 @@
     showMessage('Sedang membuat akun KivoPay...');
 
     try {
-      // Cek username lebih dulu. Error RLS diabaikan karena trigger database tetap
-      // akan memvalidasi constraint username unik saat profil dibuat.
-      const usernameCheck = await KivoAuth.db
-        .from('profiles')
-        .select('user_id')
-        .eq('username', username)
-        .maybeSingle();
-
-      if (usernameCheck.data) {
-        throw new Error('Username sudah digunakan. Silakan pilih username lain.');
-      }
-
       const { data, error } = await KivoAuth.db.auth.signUp({
         email,
         password,
@@ -83,7 +86,6 @@
       if (error) throw error;
       if (!data?.user) throw new Error('Akun belum berhasil dibuat. Silakan coba lagi.');
 
-      // Profil dibuat otomatis oleh trigger Supabase. Tidak perlu upsert dari browser.
       if (!data.session) {
         showMessage('Akun berhasil dibuat. Silakan cek email untuk verifikasi sebelum masuk.', 'success');
         submitButton.disabled = false;
@@ -94,12 +96,16 @@
       setTimeout(() => location.replace('account.html'), 700);
     } catch (error) {
       console.error('Register error:', error);
-      let text = readableError(error);
+      let text = normalizeMessage(error);
+
       if (/already registered|already been registered|user already exists/i.test(text)) {
         text = 'Email tersebut sudah terdaftar. Silakan masuk menggunakan akun yang ada.';
       } else if (/password/i.test(text) && /least|short|weak/i.test(text)) {
         text = 'Kata sandi terlalu lemah. Gunakan minimal 6 karakter.';
+      } else if (!text) {
+        text = 'Pendaftaran gagal. Silakan periksa data lalu coba kembali.';
       }
+
       showMessage(text);
       submitButton.disabled = false;
     }
