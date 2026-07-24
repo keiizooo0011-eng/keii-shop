@@ -25,11 +25,47 @@
   }
   function deliveryMarkup(o){
     const fields=parseDelivery(o.delivery_content);
-    return `<section class="delivery-receipt payment-delivery-result">
-      <div class="delivery-success-icon">✓</div>
-      <div class="delivery-receipt-head"><span>PESANAN BERHASIL</span><h3>Data produk sudah dikirim otomatis</h3><p>Simpan data berikut di tempat yang aman.</p></div>
-      <div class="delivery-fields">${fields.map((f,i)=>`<div class="delivery-field"><div><span>${esc(f.label)}</span><strong class="delivery-value">${esc(f.value)}</strong></div><button type="button" data-copy="${i}">Salin</button></div>`).join('')}</div>
-      <div class="delivery-receipt-actions"><button type="button" id="copyAllDelivery">Salin Semua</button><a class="secondary-btn" href="index.html#orders">Cek Pesanan</a></div>
+    const completedAt=o.completed_at||o.updated_at||o.created_at;
+    const completedText=completedAt?new Date(completedAt).toLocaleString('id-ID',{
+      day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'
+    }):'-';
+    const total=o.payment_amount??o.amount??0;
+
+    return `<section class="delivery-receipt delivery-receipt-premium payment-delivery-result">
+      <div class="delivery-completed-top">
+        <div class="delivery-success-icon">✓</div>
+        <div class="delivery-receipt-head">
+          <span>PESANAN BERHASIL</span>
+          <h3>Produk berhasil dikirim</h3>
+          <p>Pembayaran terverifikasi dan detail produk tersedia di bawah ini.</p>
+        </div>
+        <div class="delivery-completed-status">COMPLETED</div>
+      </div>
+
+      <div class="delivery-order-meta delivery-order-meta-premium">
+        <div><span>Nomor invoice</span><strong>${esc(o.invoice||'-')}</strong></div>
+        <div><span>Waktu selesai</span><strong>${esc(completedText)}</strong></div>
+        <div><span>Produk</span><strong>${esc(o.product_name||'Produk Digital')}</strong></div>
+        <div><span>Paket</span><strong>${esc(o.variant_name||'Paket utama')}</strong></div>
+        <div class="delivery-total"><span>Total pembayaran</span><strong>${rupiah(total)}</strong></div>
+        <div><span>Status pengiriman</span><strong>Terkirim otomatis</strong></div>
+      </div>
+
+      <div class="delivery-data-title">
+        <div><span>DETAIL PRODUK</span><strong>Data yang kamu terima</strong></div>
+        <span>${fields.length} informasi</span>
+      </div>
+
+      <div class="delivery-fields">
+        ${fields.length?fields.map((f,i)=>`<div class="delivery-field"><div><span>${esc(f.label)}</span><strong class="delivery-value">${esc(f.value)}</strong></div><button type="button" data-copy="${i}">Salin</button></div>`).join(''):`<div class="delivery-empty-information">Produk berhasil diproses, tetapi tidak ada data tambahan yang perlu ditampilkan.</div>`}
+      </div>
+
+      <div class="delivery-security-note"><b>!</b><span>Simpan data ini di tempat aman dan jangan membagikannya kepada siapa pun.</span></div>
+
+      <div class="delivery-receipt-actions">
+        <button type="button" id="copyAllDelivery">Salin Semua</button>
+        <a class="secondary-btn" href="index.html#orders">Cek Pesanan</a>
+      </div>
     </section>`;
   }
   function bindDelivery(o){

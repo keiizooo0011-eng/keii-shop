@@ -124,19 +124,63 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
 
   function deliveryMarkup(order) {
     const fields = parseDeliveryContent(order.delivery_content);
+    const completedTime = order.completed_at || order.updated_at || order.created_at;
+    const formattedCompleted = completedTime
+      ? new Date(completedTime).toLocaleString("id-ID", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "-";
+    const total = order.payment_amount ?? order.amount ?? order.price ?? 0;
+
     return `
-      <section class="delivery-receipt">
-        <div class="delivery-success-icon">✓</div>
-        <div class="delivery-receipt-head">
-          <span>PESANAN BERHASIL</span>
-          <h3>Data produk sudah siap</h3>
-          <p>Simpan data ini di tempat aman dan jangan membagikannya kepada siapa pun.</p>
+      <section class="delivery-receipt delivery-receipt-premium">
+        <div class="delivery-completed-top">
+          <div class="delivery-success-icon">✓</div>
+          <div class="delivery-receipt-head">
+            <span>PESANAN BERHASIL</span>
+            <h3>Produk berhasil dikirim</h3>
+            <p>Pesanan sudah selesai dan detail produk tersedia di bawah ini.</p>
+          </div>
+          <div class="delivery-completed-status">COMPLETED</div>
         </div>
 
-        <div class="delivery-order-meta">
-          <div><span>Invoice</span><strong>${esc(order.invoice)}</strong></div>
-          <div><span>Produk</span><strong>${esc(order.product_name)}</strong></div>
-          <div><span>Paket</span><strong>${esc(order.variant_name || "Paket utama")}</strong></div>
+        <div class="delivery-order-meta delivery-order-meta-premium">
+          <div>
+            <span>Nomor invoice</span>
+            <strong>${esc(order.invoice || "-")}</strong>
+          </div>
+          <div>
+            <span>Waktu selesai</span>
+            <strong>${esc(formattedCompleted)}</strong>
+          </div>
+          <div>
+            <span>Produk</span>
+            <strong>${esc(order.product_name || "Produk Digital")}</strong>
+          </div>
+          <div>
+            <span>Paket</span>
+            <strong>${esc(order.variant_name || "Paket utama")}</strong>
+          </div>
+          <div class="delivery-total">
+            <span>Total pembayaran</span>
+            <strong>${rupiah(total)}</strong>
+          </div>
+          <div>
+            <span>Status pengiriman</span>
+            <strong>Terkirim otomatis</strong>
+          </div>
+        </div>
+
+        <div class="delivery-data-title">
+          <div>
+            <span>DETAIL PRODUK</span>
+            <strong>Data yang kamu terima</strong>
+          </div>
+          <span>${fields.length} informasi</span>
         </div>
 
         <div class="delivery-fields">
@@ -150,9 +194,14 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
               </div>
               <button type="button" data-copy-field="${index}">Salin</button>
             </div>`).join("") : `
-            <div class="delivery-field">
-              <div><span>Informasi</span><strong>Pesanan berhasil diproses.</strong></div>
+            <div class="delivery-empty-information">
+              Produk berhasil diproses, tetapi tidak ada data tambahan yang perlu ditampilkan.
             </div>`}
+        </div>
+
+        <div class="delivery-security-note">
+          <b>!</b>
+          <span>Simpan informasi produk ini dengan aman. Jangan membagikan akun, kata sandi, kode, atau tautan pribadi kepada orang lain.</span>
         </div>
 
         <div class="delivery-receipt-actions">

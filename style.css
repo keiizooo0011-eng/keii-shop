@@ -2929,3 +2929,251 @@ body.admin-body .kivo-control-host{top:20px;right:24px}
   .account-entry{align-self:flex-end;margin-top:-56px;margin-right:0;padding:9px 12px!important}
   .account-entry b{font-size:13px!important}
 }
+
+
+/* =========================================================
+   KivoPay APK Premium checkout + completed detail fix
+   Isolated patch — does not alter auth/admin/database flows.
+   ========================================================= */
+
+/* The bottom navbar previously used z-index 10000 while the product modal
+   used 9999, causing the checkout action to be covered. */
+.shop-modal{
+  z-index:20050;
+}
+
+.shop-modal.open ~ .kivo-bottom-nav,
+body:has(.shop-modal.open) .kivo-bottom-nav{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateX(-50%) translateY(120%);
+}
+
+.kivo-bottom-nav{
+  transition:opacity .22s ease,visibility .22s ease,transform .28s ease;
+}
+
+/* Keep the checkout action comfortably inside the scrollable modal. */
+.product-detail-action{
+  bottom:0;
+}
+
+.shop-panel{
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+
+/* Completed-order premium presentation */
+.delivery-receipt.delivery-receipt-premium{
+  position:relative;
+  overflow:hidden;
+  padding:24px;
+  border:1px solid rgba(134,239,172,.2);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 88% 0,rgba(34,197,94,.14),transparent 34%),
+    linear-gradient(155deg,rgba(20,15,29,.98),rgba(10,8,15,.98));
+  box-shadow:0 24px 70px rgba(0,0,0,.32);
+}
+
+.delivery-receipt-premium::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:3px;
+  background:linear-gradient(90deg,#22c55e,#86efac,#8b5cf6);
+}
+
+.delivery-completed-top{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.delivery-completed-top .delivery-success-icon{
+  flex:0 0 54px;
+  width:54px;
+  height:54px;
+  margin:0;
+  display:grid;
+  place-items:center;
+  border-radius:17px;
+  background:linear-gradient(145deg,rgba(34,197,94,.22),rgba(34,197,94,.08));
+  border:1px solid rgba(134,239,172,.28);
+  color:#86efac;
+  font-size:27px;
+  box-shadow:0 12px 30px rgba(34,197,94,.12);
+}
+
+.delivery-completed-top .delivery-receipt-head{
+  min-width:0;
+}
+
+.delivery-completed-top .delivery-receipt-head span{
+  color:#86efac;
+}
+
+.delivery-completed-top .delivery-receipt-head h3{
+  margin:5px 0 4px;
+}
+
+.delivery-completed-status{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-left:auto;
+  padding:8px 11px;
+  border-radius:999px;
+  background:rgba(34,197,94,.1);
+  border:1px solid rgba(134,239,172,.2);
+  color:#86efac;
+  white-space:nowrap;
+  font-size:10px;
+  font-weight:900;
+}
+
+.delivery-completed-status::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 0 5px rgba(34,197,94,.1);
+}
+
+.delivery-order-meta.delivery-order-meta-premium{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:0 0 16px;
+}
+
+.delivery-order-meta-premium>div{
+  min-width:0;
+  padding:13px 14px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:15px;
+  background:rgba(255,255,255,.025);
+}
+
+.delivery-order-meta-premium span{
+  display:block;
+  margin-bottom:5px;
+  color:#8f879d;
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+}
+
+.delivery-order-meta-premium strong{
+  display:block;
+  overflow-wrap:anywhere;
+  color:#f5f1fa;
+  font-size:12px;
+}
+
+.delivery-order-meta-premium .delivery-total strong{
+  color:#d8c9ff;
+  font-size:17px;
+}
+
+.delivery-data-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:18px 0 10px;
+}
+
+.delivery-data-title div span{
+  display:block;
+  color:#a78bfa;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.14em;
+}
+
+.delivery-data-title div strong{
+  display:block;
+  margin-top:4px;
+  font-size:15px;
+}
+
+.delivery-data-title>span{
+  padding:7px 9px;
+  border:1px solid rgba(167,139,250,.16);
+  border-radius:10px;
+  background:rgba(139,92,246,.07);
+  color:#bca7f8;
+  font-size:9px;
+  font-weight:800;
+}
+
+.delivery-security-note{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin:14px 0 0;
+  padding:12px 13px;
+  border:1px solid rgba(251,191,36,.14);
+  border-radius:14px;
+  background:rgba(251,191,36,.055);
+  color:#c8bd9f;
+  font-size:10px;
+  line-height:1.55;
+}
+
+.delivery-security-note b{
+  color:#facc15;
+  font-size:15px;
+}
+
+.delivery-empty-information{
+  padding:18px;
+  border:1px dashed rgba(167,139,250,.2);
+  border-radius:15px;
+  color:#aaa2b9;
+  text-align:center;
+  line-height:1.6;
+}
+
+@media(max-width:700px){
+  .shop-modal{
+    padding:0;
+  }
+
+  .shop-panel{
+    max-height:100dvh;
+    border-radius:22px 22px 0 0;
+    padding-bottom:max(26px,env(safe-area-inset-bottom));
+  }
+
+  .product-detail-v2 .product-detail-content{
+    padding-bottom:max(26px,env(safe-area-inset-bottom));
+  }
+
+  .product-detail-action{
+    bottom:0;
+    padding-bottom:max(13px,env(safe-area-inset-bottom));
+  }
+
+  .delivery-receipt.delivery-receipt-premium{
+    padding:19px 16px;
+    border-radius:20px;
+  }
+
+  .delivery-completed-top{
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+
+  .delivery-completed-status{
+    margin-left:68px;
+    margin-top:-8px;
+  }
+
+  .delivery-order-meta.delivery-order-meta-premium{
+    grid-template-columns:1fr;
+  }
+}
