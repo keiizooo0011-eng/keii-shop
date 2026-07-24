@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=33-live-orders">
+  <link rel="stylesheet" href="style.css?v=34-platform">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 
@@ -38,6 +38,7 @@
   </script>
   <link rel="stylesheet" href="bottom-nav.css?v=31">
   <link rel="stylesheet" href="home-engagement.css?v=31">
+  <link rel="stylesheet" href="kivopay-v34.css?v=34">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -86,6 +87,23 @@
       </div>
     </section>
 
+
+    <section class="kp-command-center reveal" aria-label="Pusat akun KivoPay">
+      <article class="kp-dashboard-card">
+        <div class="kp-card-head"><div><small>MY KIVOPAY</small><h2 id="kpDashboardGreeting">Halo, Member</h2></div><span class="kp-live-pill"><i></i>Sistem online</span></div>
+        <div class="kp-balance"><span>Pusat aktivitas akun</span><strong>KivoPay Dashboard</strong><div class="kp-actions"><a href="account.html">Buka Dashboard</a><a href="#orders">Cek Pesanan</a><a href="support-ticket.html">Pusat Bantuan</a></div></div>
+      </article>
+      <article class="kp-dashboard-card">
+        <div class="kp-card-head"><div><small>RINGKASAN</small><h2>Aktivitasmu</h2></div></div>
+        <div class="kp-stat-grid"><div class="kp-stat"><span>Total transaksi</span><strong id="kpTotalTransactions">0</strong><em>Semua layanan</em></div><div class="kp-stat"><span>Berhasil</span><strong id="kpCompletedTransactions">0</strong><em>Transaksi selesai</em></div><div class="kp-stat"><span>Diproses</span><strong id="kpPendingTransactions">0</strong><em>Masih berjalan</em></div><div class="kp-stat"><span>Total belanja</span><strong id="kpTotalSpending">Rp0</strong><em>Perkiraan akun</em></div></div>
+      </article>
+    </section>
+    <section class="kp-platform-grid reveal" aria-label="Layanan utama KivoPay">
+      <a class="kp-platform-item" href="all-products.html"><b>◫</b><i>→</i><small>MARKETPLACE</small><strong>Semua Produk</strong><span>Satu katalog untuk menjelajahi seluruh layanan digital.</span></a>
+      <a class="kp-platform-item" href="topup-game.html"><b>🎮</b><i>→</i><small>INSTANT</small><strong>Top Up Game</strong><span>Pilih game, nominal, lalu pantau transaksi otomatis.</span></a>
+      <a class="kp-platform-item" href="robux.html"><b>◇</b><i>→</i><small>ROBLOX</small><strong>Top Up Robux</strong><span>Alur khusus Robux yang cepat dan mudah dipahami.</span></a>
+      <a class="kp-platform-item" href="account.html"><b>◎</b><i>→</i><small>ACCOUNT</small><strong>Dashboard Saya</strong><span>Profil, riwayat, status transaksi, dan pusat bantuan.</span></a>
+    </section>
 
     <section class="home-search-section reveal" aria-label="Pencarian produk KivoPay">
       <div class="home-search-card">
@@ -430,5 +448,6 @@
   <script src="bottom-nav.js?v=31"></script>
   <script src="home-engagement.js?v=31"></script>
   <script src="order-live.js?v=33"></script>
+  <script src="platform-dashboard.js?v=34"></script>
 </body>
 </html>
