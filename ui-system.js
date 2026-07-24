@@ -47,7 +47,7 @@
       </div>
       <button class="kivo-notif-trigger" id="kivoNotifTrigger" type="button" aria-label="Notifikasi"><span>♧</span><b id="kivoNotifBadge" hidden>0</b></button>
       <button class="kivo-install-trigger" id="kivoInstallTrigger" type="button" hidden>＋ Install</button>`;
-    document.body.appendChild(host);
+    (document.querySelector('.topbar') || document.body).appendChild(host);
 
     const panel=document.createElement('div');panel.id='kivoNotifPanel';panel.className='kivo-notif-overlay';panel.setAttribute('aria-hidden','true');
     panel.innerHTML=`<section class="kivo-notif-panel">
