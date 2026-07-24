@@ -3,3 +3,7 @@
 .auth-message:empty{display:none}
 .auth-message:not(:empty){display:block;padding:12px 14px;border:1px solid rgba(255,112,151,.25);border-radius:13px;background:rgba(255,89,132,.07);line-height:1.45;word-break:break-word}
 .auth-message.success:not(:empty){border-color:rgba(85,224,154,.28);background:rgba(61,211,139,.08)}
+
+/* V37 authentication polish */
+.auth-shell,.auth-card{border-color:var(--v37-line,rgba(148,184,224,.15))!important;background:linear-gradient(145deg,rgba(16,31,52,.95),rgba(7,17,30,.95))!important;box-shadow:0 30px 90px rgba(0,0,0,.38)!important}.auth-card{border-radius:28px!important}.auth-brand span{background:linear-gradient(145deg,#4f8cff,#23d3c0)!important}.auth-card h1{letter-spacing:-.045em}.auth-card input{min-height:50px!important}.auth-card button[type="submit"]{min-height:50px!important;border-radius:14px!important;background:linear-gradient(135deg,#4f8cff,#5268ef 58%,#23d3c0)!important;box-shadow:0 14px 32px rgba(79,140,255,.23)!important}
+@media(max-width:600px){.auth-card{border-radius:23px!important;padding:24px 18px!important}}

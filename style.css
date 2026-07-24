@@ -3181,3 +3181,52 @@ body:has(.shop-modal.open) .kivo-bottom-nav{
 
 /* KivoPay Live Order Notification */
 .kivo-live-orders{position:relative;overflow:hidden}.kivo-live-orders::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(124,58,237,.1);filter:blur(70px);right:-90px;top:-100px;pointer-events:none}.kivo-live-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:22px}.kivo-live-head small{display:block;color:#a98aeb;font-size:10px;font-weight:900;letter-spacing:.16em}.kivo-live-head h2{margin:7px 0 0}.kivo-live-head p{max-width:470px;margin:0;color:#aaa1b5;line-height:1.6}.kivo-live-indicator{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;padding:10px 13px;border:1px solid rgba(134,239,172,.15);border-radius:999px;background:rgba(34,197,94,.06);color:#99e9b2;font-size:11px;font-weight:800}.kivo-live-indicator i{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.09);animation:kivoLivePulse 1.8s infinite}.kivo-live-order-list{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.kivo-live-order-card{display:flex;align-items:center;gap:13px;min-width:0;padding:16px;border:1px solid rgba(255,255,255,.075);border-radius:18px;background:linear-gradient(145deg,rgba(23,16,32,.94),rgba(12,9,18,.94));box-shadow:0 14px 36px rgba(0,0,0,.16);transition:transform .2s ease,border-color .2s ease}.kivo-live-order-card:hover{transform:translateY(-2px);border-color:rgba(154,92,255,.25)}.kivo-live-avatar{flex:0 0 43px;width:43px;height:43px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#8e4df5,#5e21c5);color:#fff;font-weight:900;box-shadow:0 9px 24px rgba(109,40,217,.2)}.kivo-live-order-main{min-width:0;flex:1}.kivo-live-order-title{display:flex;align-items:center;justify-content:space-between;gap:8px}.kivo-live-order-title strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.kivo-live-order-main p{margin:5px 0 7px;color:#b3aabb;font-size:12px}.kivo-live-order-main p b{color:#f1ebfa}.kivo-live-order-meta{display:flex;align-items:center;gap:6px;min-width:0;color:#81798c;font-size:9px}.kivo-live-order-meta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kivo-live-order-meta i{font-style:normal;color:#554c61}.kivo-live-status{flex:0 0 auto;padding:5px 7px;border-radius:999px;font-size:8px;font-weight:900}.kivo-live-status.pending{background:rgba(251,191,36,.08);color:#f1cf72}.kivo-live-status.paid,.kivo-live-status.processing{background:rgba(96,165,250,.08);color:#90bdf7}.kivo-live-status.completed{background:rgba(34,197,94,.08);color:#85df9d}.kivo-live-empty{grid-column:1/-1;text-align:center;padding:34px;border:1px dashed rgba(167,139,250,.16);border-radius:20px;color:#898191}.kivo-live-empty span{display:block;font-size:24px;color:#a98aeb}.kivo-live-empty strong{display:block;margin:9px 0 5px;color:#ddd5e8}.kivo-live-empty p{margin:0;font-size:12px}.kivo-order-toast{position:fixed;z-index:30050;left:22px;bottom:104px;width:min(390px,calc(100vw - 30px));display:flex;align-items:center;gap:13px;padding:15px 44px 15px 15px;border:1px solid rgba(134,239,172,.2);border-radius:19px;background:linear-gradient(145deg,rgba(20,15,28,.985),rgba(9,7,14,.985));box-shadow:0 25px 70px rgba(0,0,0,.48);opacity:0;visibility:hidden;transform:translateY(22px) scale(.97);transition:.32s ease;pointer-events:none}.kivo-order-toast.show{opacity:1;visibility:visible;transform:none;pointer-events:auto}.kivo-order-toast-icon{flex:0 0 45px;width:45px;height:45px;display:grid;place-items:center;border-radius:15px;background:rgba(34,197,94,.1);border:1px solid rgba(134,239,172,.2);color:#86efac;font-size:21px;font-weight:900}.kivo-order-toast div{min-width:0}.kivo-order-toast small{display:block;color:#86efac;font-size:8px;font-weight:900;letter-spacing:.13em}.kivo-order-toast strong{display:block;margin:4px 0;color:#f5f0fa;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kivo-order-toast p{margin:0;color:#9e95aa;font-size:9px;line-height:1.45}.kivo-order-toast button{position:absolute;right:9px;top:8px;width:28px;height:28px;border:0;border-radius:9px;background:transparent;color:#8d8498;font-size:18px;cursor:pointer}@keyframes kivoLivePulse{50%{opacity:.55;box-shadow:0 0 0 9px rgba(34,197,94,0)}}@media(max-width:700px){.kivo-live-head{align-items:flex-start;flex-direction:column}.kivo-live-order-list{grid-template-columns:1fr}.kivo-live-head p{font-size:12px}.kivo-order-toast{left:15px;bottom:102px}.kivo-live-order-card{padding:14px}.kivo-live-status{max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+/* ===== KivoPay V37 — premium visual polish (safe CSS-only) ===== */
+:root{
+  --v37-bg:#07101c;
+  --v37-panel:rgba(13,25,43,.86);
+  --v37-panel-strong:rgba(17,32,54,.94);
+  --v37-line:rgba(148,184,224,.15);
+  --v37-text:#f5f9ff;
+  --v37-muted:#94a8bf;
+  --v37-blue:#4f8cff;
+  --v37-cyan:#23d3c0;
+  --v37-violet:#7868ff;
+  --v37-shadow:0 24px 70px rgba(0,0,0,.32);
+}
+body{
+  background:
+    radial-gradient(circle at 8% 2%,rgba(79,140,255,.14),transparent 27%),
+    radial-gradient(circle at 93% 8%,rgba(35,211,192,.10),transparent 24%),
+    linear-gradient(180deg,#07101c 0%,#08111e 45%,#060c15 100%)!important;
+  color:var(--v37-text);
+}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.22;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 76%)}
+.topbar{border-color:var(--v37-line)!important;background:rgba(7,15,27,.78)!important;box-shadow:0 12px 45px rgba(0,0,0,.26)!important;backdrop-filter:blur(22px) saturate(135%)}
+.brand{letter-spacing:-.03em}.brand .mark{background:linear-gradient(145deg,var(--v37-blue),var(--v37-cyan))!important;box-shadow:0 10px 30px rgba(79,140,255,.28)}
+.main-nav a,.account-entry{transition:transform .2s ease,background .2s ease,border-color .2s ease,color .2s ease}.main-nav a:hover,.account-entry:hover{transform:translateY(-1px);background:rgba(255,255,255,.06)!important}
+.hero,.hero-premium,.section,.orders,.tools,.store{position:relative}
+.card,.product-card,.order-card,.history-card,.payment-card,.panel,.modal-panel,.summary-card,.checkout-card,.game-card,.service-card{
+  border-color:var(--v37-line)!important;
+  background:linear-gradient(145deg,var(--v37-panel-strong),var(--v37-panel))!important;
+  box-shadow:0 14px 38px rgba(0,0,0,.19);
+}
+.card,.product-card,.order-card,.history-card,.game-card,.service-card{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.card:hover,.product-card:hover,.order-card:hover,.history-card:hover,.game-card:hover,.service-card:hover{transform:translateY(-4px);border-color:rgba(100,168,255,.34)!important;box-shadow:0 22px 50px rgba(0,0,0,.27)}
+.btn,.run,button[type="submit"],.primary-button,.checkout-button,.pay-button{border-radius:14px!important;font-weight:800!important;letter-spacing:-.01em;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.btn.primary,.run,button[type="submit"],.primary-button,.checkout-button,.pay-button{background:linear-gradient(135deg,var(--v37-blue),#5268ef 58%,var(--v37-cyan))!important;box-shadow:0 12px 30px rgba(79,140,255,.23)!important}
+.btn:hover,.run:hover,button[type="submit"]:hover,.primary-button:hover,.checkout-button:hover,.pay-button:hover{transform:translateY(-2px);filter:brightness(1.06)}
+input,select,textarea{border-color:var(--v37-line)!important;background:rgba(4,11,20,.72)!important;color:var(--v37-text)!important;border-radius:13px!important;transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+input:focus,select:focus,textarea:focus{border-color:rgba(79,140,255,.58)!important;box-shadow:0 0 0 4px rgba(79,140,255,.10)!important;background:rgba(8,17,30,.92)!important}
+.section-title,.page-title,h1,h2,h3{letter-spacing:-.035em}.section-subtitle,.muted,.description{color:var(--v37-muted)!important}
+.status,.badge,.pill,.chip{border:1px solid var(--v37-line);backdrop-filter:blur(10px)}
+footer,.footer{border-top-color:var(--v37-line)!important;background:linear-gradient(180deg,transparent,rgba(4,10,18,.68))!important}
+@media(max-width:720px){
+  .topbar{width:calc(100% - 18px)!important;margin:9px!important;border-radius:18px!important;padding-left:13px!important;padding-right:13px!important}
+  main{overflow:hidden}
+  .hero,.hero-premium{border-radius:25px!important}
+  .card,.product-card,.order-card,.history-card,.payment-card,.panel,.summary-card,.checkout-card{border-radius:19px!important}
+  .btn,.run,button[type="submit"],.primary-button,.checkout-button,.pay-button{min-height:46px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
