@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=18.0.0">
+  <link rel="stylesheet" href="style.css?v=33-live-orders">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 
@@ -145,6 +145,18 @@
         <div><span>Stok siap</span><strong id="dashStock">—</strong></div>
         <div><span>Kategori</span><strong id="dashCategories">2</strong></div>
         <div><span>Auto delivery</span><strong>24/7</strong></div>
+      </div>
+    </section>
+
+
+    <section id="live-orders" class="section kivo-live-orders reveal" aria-label="Aktivitas pembelian terbaru KivoPay">
+      <div class="kivo-live-head">
+        <div><small>AKTIVITAS REAL-TIME</small><h2>Pembelian terbaru di KivoPay</h2></div>
+        <p>Aktivitas order asli ditampilkan dengan nama yang disamarkan untuk menjaga privasi pelanggan.</p>
+        <span class="kivo-live-indicator"><i></i><b id="kivoLiveOrderCount">Memuat aktivitas...</b></span>
+      </div>
+      <div id="kivoLiveOrderList" class="kivo-live-order-list">
+        <div class="kivo-live-empty"><span>◎</span><strong>Memuat order terbaru</strong><p>Data sedang disambungkan ke KivoPay.</p></div>
       </div>
     </section>
 
@@ -417,5 +429,6 @@
   <script src="account-entry.js?v=1"></script>
   <script src="bottom-nav.js?v=31"></script>
   <script src="home-engagement.js?v=31"></script>
+  <script src="order-live.js?v=33"></script>
 </body>
 </html>
