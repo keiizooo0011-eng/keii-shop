@@ -3492,3 +3492,111 @@ body.kivo-light{
 .hub-header-actions{display:flex;align-items:center;gap:10px}.hub-history-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border:1px solid rgba(157,116,255,.32);border-radius:15px;background:rgba(124,58,237,.12);color:#e9ddff;font-weight:800;text-decoration:none;white-space:nowrap}.hub-history-btn:hover{background:rgba(124,58,237,.22)}
 .category-store-page[data-store-category] .catalog-category-grid{display:grid}.category-store-page[data-store-category] #storeGrid>.store-grid{margin-top:0}.apk-history-page .history-hero{margin-bottom:20px}.apk-history-page .history-search-panel{margin-top:0}
 @media(max-width:700px){.hub-header{gap:10px}.hub-header-actions{gap:7px}.hub-history-btn{min-height:40px;padding:0 12px;font-size:12px;border-radius:13px}.hub-profile{padding-inline:11px;font-size:0}.hub-profile::after{content:'Kembali';font-size:12px}.category-store-page .category-store-hero{padding:24px 20px}.category-store-page .category-store-hero i{width:68px;height:68px;font-size:34px}.category-store-page .category-store-hero h1{font-size:clamp(28px,8vw,38px)}.category-store-page .section-head h2{font-size:clamp(34px,10vw,48px)}}
+
+/* ===== KivoPay V43 — APK Premium history search panel fix ===== */
+.apk-history-page .history-search-panel{
+  margin-top:18px;
+  padding:18px;
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(15,23,42,.88),rgba(9,13,24,.82));
+  box-shadow:0 18px 50px rgba(0,0,0,.2);
+}
+.apk-history-page .history-search-form{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:stretch;
+}
+.apk-history-page .history-search-form input{
+  width:100%;
+  min-width:0;
+  height:52px;
+  padding:0 17px;
+  border:1px solid rgba(148,163,184,.18)!important;
+  border-radius:15px!important;
+  background:rgba(5,8,16,.78)!important;
+  color:#f8fafc!important;
+  font:inherit;
+  font-size:14px;
+  outline:none;
+  box-sizing:border-box;
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+}
+.apk-history-page .history-search-form input::placeholder{color:#6f7a90!important}
+.apk-history-page .history-search-form input:focus{
+  border-color:rgba(139,92,246,.72)!important;
+  box-shadow:0 0 0 4px rgba(124,58,237,.13)!important;
+  background:rgba(8,12,22,.96)!important;
+}
+.apk-history-page .history-search-form button{
+  min-width:145px;
+  height:52px;
+  padding:0 20px;
+  border:0;
+  border-radius:15px;
+  background:linear-gradient(135deg,#8b5cf6,#6d28d9);
+  color:#fff;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 12px 26px rgba(109,40,217,.25);
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+.apk-history-page .history-search-form button:active{transform:scale(.98)}
+.apk-history-page .history-toolbar{
+  margin:14px 0 0;
+  padding-top:14px;
+  border-top:1px solid rgba(148,163,184,.11);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.apk-history-page .history-toolbar p{
+  margin:0;
+  color:#9ba7bd;
+  font-size:14px;
+  line-height:1.55;
+}
+.apk-history-page .history-toolbar button{
+  flex:0 0 auto;
+  min-height:40px;
+  padding:0 15px;
+  border:1px solid rgba(167,139,250,.23);
+  border-radius:12px;
+  background:rgba(124,58,237,.12);
+  color:#e9ddff;
+  font:inherit;
+  font-size:13px;
+  font-weight:800;
+}
+@media(max-width:700px){
+  .apk-history-page .history-search-panel{
+    margin-top:14px;
+    padding:14px;
+    border-radius:18px;
+  }
+  .apk-history-page .history-search-form{
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+  .apk-history-page .history-search-form input,
+  .apk-history-page .history-search-form button{
+    width:100%;
+    min-width:0;
+    height:50px;
+  }
+  .apk-history-page .history-toolbar{
+    align-items:flex-start;
+  }
+  .apk-history-page .history-toolbar p{
+    font-size:13px;
+    padding-top:7px;
+  }
+  .apk-history-page .history-toolbar button{
+    min-height:38px;
+    padding:0 13px;
+    white-space:nowrap;
+  }
+}
