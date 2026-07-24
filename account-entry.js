@@ -1,1 +1,21 @@
-(async()=>{const e=document.querySelector('#accountEntry');if(!e||!window.KivoAuth)return;const s=await KivoAuth.session();if(!s)return;const p=await KivoAuth.profile(s.user.id);e.href=(await KivoAuth.isAdmin(s.user.id))?'admin.html':'account.html';e.querySelector('b').textContent=p?.full_name?.split(' ')[0]||'Akun';e.classList.add('signed-in')})();
+(async()=>{
+  const entry=document.querySelector('#accountEntry');
+  if(!entry||!window.KivoAuth)return;
+
+  const label=entry.querySelector('b');
+  const session=await KivoAuth.session();
+
+  if(!session){
+    entry.href='login.html?next=account.html';
+    if(label)label.textContent='Masuk';
+    entry.classList.remove('signed-in');
+    entry.setAttribute('aria-label','Masuk ke akun KivoPay');
+    return;
+  }
+
+  const admin=await KivoAuth.isAdmin(session.user.id);
+  entry.href=admin?'admin.html':'account.html';
+  if(label)label.textContent=admin?'Panel Admin':'Dashboard';
+  entry.classList.add('signed-in');
+  entry.setAttribute('aria-label',admin?'Buka panel admin':'Buka dashboard akun');
+})();

@@ -2910,3 +2910,22 @@ body.admin-body .kivo-control-host{top:20px;right:24px}
 /* Support ticket fallback */
 .support-ticket-fallback{margin-top:18px;padding:17px;border:1px solid rgba(167,139,250,.24);border-radius:18px;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(255,255,255,.025))}.support-ticket-fallback[hidden]{display:none}.support-ticket-fallback small,.support-ticket-fallback strong,.support-ticket-fallback p{display:block}.support-ticket-fallback small{color:#b9a2ff;font-size:8px;letter-spacing:.16em;font-weight:850}.support-ticket-fallback strong{margin-top:7px;font-size:15px}.support-ticket-fallback p{margin:7px 0 12px}.support-ticket-fallback a{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-radius:13px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;text-decoration:none;font-size:12px;font-weight:850}
 \n.account-entry{display:inline-flex;align-items:center;gap:8px;padding:11px 14px;border:1px solid #37254d;border-radius:15px;color:#fff;text-decoration:none;background:#140d20;font-weight:750;white-space:nowrap}.account-entry span{width:20px;height:20px}.account-entry.signed-in{border-color:#7544bd;background:linear-gradient(135deg,#2a1744,#160d23)}@media(max-width:760px){.account-entry{position:absolute;right:20px;top:84px;z-index:5;padding:9px 12px}.account-entry b{font-size:13px}}
+/* Account entry: tampil sebagai tombol normal di header, bukan username melayang */
+.account-entry{
+  position:static!important;
+  right:auto!important;
+  top:auto!important;
+  min-height:44px;
+  padding:10px 15px!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(76,29,149,.12))!important;
+  border:1px solid rgba(167,139,250,.34)!important;
+  box-shadow:0 10px 30px rgba(72,31,124,.18);
+}
+.account-entry:hover{transform:translateY(-1px);border-color:rgba(196,181,253,.62)!important}
+.account-entry.signed-in{background:linear-gradient(135deg,#6d3be8,#8b3ff0)!important;border-color:transparent!important}
+@media(max-width:760px){
+  .topbar{padding-right:16px!important}
+  .account-entry{align-self:flex-end;margin-top:-56px;margin-right:0;padding:9px 12px!important}
+  .account-entry b{font-size:13px!important}
+}
