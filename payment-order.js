@@ -23,6 +23,18 @@
   function cachedPayment(){
     try{return JSON.parse(sessionStorage.getItem('kivopay_payment_'+invoice)||'null');}catch{return null;}
   }
+  function orderCategory(o){
+    const stored=localStorage.getItem('kivopay_order_category_'+(o.invoice||invoice))||'';
+    const category=String(o.category||o.product_category||stored).toLowerCase();
+    if(category==='sewa-bot'||category==='sewa_bot') return 'sewa-bot';
+    if(category==='apk-premium'||category==='apk_premium') return 'apk-premium';
+    return /sewa\s*bot|bot\s*(wa|whatsapp|telegram)/i.test(String(o.product_name||''))?'sewa-bot':'apk-premium';
+  }
+  function historyUrl(o){
+    return orderCategory(o)==='apk-premium'
+      ? 'riwayat-apk-premium.html?invoice='+encodeURIComponent(o.invoice||invoice)
+      : 'riwayat-order.html?invoice='+encodeURIComponent(o.invoice||invoice);
+  }
   function deliveryMarkup(o){
     const fields=parseDelivery(o.delivery_content);
     const completedAt=o.completed_at||o.updated_at||o.created_at;
@@ -64,7 +76,7 @@
 
       <div class="delivery-receipt-actions">
         <button type="button" id="copyAllDelivery">Salin Semua</button>
-        <a class="secondary-btn" href="riwayat-order.html?invoice=${encodeURIComponent(o.invoice||invoice)}">Lihat Riwayat Pesanan</a>
+        <a class="secondary-btn" href="${historyUrl(o)}">Lihat Riwayat Pesanan</a>
       </div>
     </section>`;
   }
@@ -112,7 +124,7 @@
     if(box&&!box.children.length){box.innerHTML=deliveryMarkup(o);bindDelivery(o);}
     const st=document.querySelector('#paymentOrderStatus'); if(st){st.className='payment-live-status completed';st.textContent='Pembayaran berhasil • Data produk terkirim otomatis';}
     const badge=document.querySelector('#orderStatusBadge');if(badge){badge.className='flow-status completed';badge.textContent='Pesanan Selesai';}
-    setTimeout(()=>{location.href='riwayat-order.html?invoice='+encodeURIComponent(o.invoice||invoice)},2600);
+    setTimeout(()=>{location.href=historyUrl(o)},2600);
   }
   async function poll(){
     if(stopped)return;

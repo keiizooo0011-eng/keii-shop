@@ -429,6 +429,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
       if (dashStock) dashStock.textContent = totalStock;
       if (dashCategories) dashCategories.textContent = categories || 2;
       if (dashProductText) dashProductText.textContent = `${products.length} produk aktif • ${totalStock} stok siap`;
+      const requestedCategory = document.body?.dataset?.storeCategory || "";
       const apkProducts = products.filter(item => item.category === "apk-premium");
       const botProducts = products.filter(item => item.category === "sewa-bot");
       const categorySection = (key, title, subtitle, icon, items) => items.length ? `
@@ -440,10 +441,15 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
           </div>
           <div class="store-grid catalog-category-grid">${items.map(productCard).join("")}</div>
         </section>` : "";
-      root.innerHTML = products.length
-        ? `${categorySection("sewa-bot", "Sewa Bot", "Pilih paket bot sesuai kebutuhan dan durasi penggunaanmu.", "BOT", botProducts)}
-           ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "APP", apkProducts)}`
-        : `<div class="store-empty">Belum ada produk aktif. Tambahkan dari Admin Panel.</div>`;
+      const requestedProducts = requestedCategory === "apk-premium" ? apkProducts : requestedCategory === "sewa-bot" ? botProducts : products;
+      root.innerHTML = requestedProducts.length
+        ? (requestedCategory === "apk-premium"
+            ? `<div class="store-grid catalog-category-grid">${apkProducts.map(productCard).join("")}</div>`
+            : requestedCategory === "sewa-bot"
+              ? `<div class="store-grid catalog-category-grid">${botProducts.map(productCard).join("")}</div>`
+              : `${categorySection("sewa-bot", "Sewa Bot", "Pilih paket bot sesuai kebutuhan dan durasi penggunaanmu.", "BOT", botProducts)}
+                 ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "APP", apkProducts)}`)
+        : `<div class="store-empty">Belum ada produk aktif pada kategori ini.</div>`;
       document.querySelectorAll(".store-buy").forEach(btn => {
         btn.onclick = () => openCheckout(btn.dataset.productId);
       });
@@ -577,6 +583,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
             const history = JSON.parse(localStorage.getItem("kivopay_order_invoices") || "[]");
             localStorage.setItem("kivopay_order_invoices", JSON.stringify([invoice, ...history.filter(x => x !== invoice)].slice(0, 50)));
             sessionStorage.setItem("kivopay_payment_" + invoice, JSON.stringify(data));
+            localStorage.setItem("kivopay_order_category_" + invoice, product.category || "apk-premium");
           } catch (_) {}
           location.href = "payment-order.html?invoice=" + encodeURIComponent(invoice);
         } catch (e) {

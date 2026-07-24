@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Riwayat APK Premium — KivoPay</title>
+  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="stylesheet" href="product-hub.css?v=42">
+  <link rel="stylesheet" href="bottom-nav.css?v=42">
+</head>
+<body class="product-hub-page apk-history-page">
+  <header class="hub-header">
+    <a href="apk-premium.html" class="brand"><span class="mark">K</span><span>KivoPay</span></a>
+    <a href="apk-premium.html" class="hub-profile">← APK Premium</a>
+  </header>
+  <main class="hub-shell order-history-shell">
+    <section class="history-hero category-store-hero">
+      <i>🧾</i>
+      <div><span>RIWAYAT TRANSAKSI</span><h1>Pesanan APK Premium</h1><p>Pesanan akunmu tampil otomatis. Kamu juga bisa mencari pesanan lain menggunakan nomor invoice.</p></div>
+    </section>
+    <section class="history-search-panel">
+      <form id="invoiceHistoryForm" class="history-search-form">
+        <input id="invoiceHistoryInput" autocomplete="off" placeholder="Masukkan invoice, contoh KIVO-ABC123">
+        <button type="submit">Cari Pesanan</button>
+      </form>
+      <div class="history-toolbar"><p id="historyMessage">Memuat riwayat APK Premium...</p><button type="button" id="refreshHistory">Muat Ulang</button></div>
+    </section>
+    <section id="orderHistoryList" class="order-history-list"></section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js?v=1"></script>
+  <script src="riwayat-apk-premium.js?v=42"></script>
+  <script src="bottom-nav.js?v=2"></script>
+</body>
+</html>
