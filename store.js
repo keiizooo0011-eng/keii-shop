@@ -1,3 +1,4 @@
+async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAuth.authHeaders(extra):extra}catch{return extra}}
 
 (() => {
   const cfg = window.KIVOPAY_CONFIG || {};

@@ -1,0 +1,1 @@
+(async()=>{const e=document.querySelector('#accountEntry');if(!e||!window.KivoAuth)return;const s=await KivoAuth.session();if(!s)return;const p=await KivoAuth.profile(s.user.id);e.href=(await KivoAuth.isAdmin(s.user.id))?'admin.html':'account.html';e.querySelector('b').textContent=p?.full_name?.split(' ')[0]||'Akun';e.classList.add('signed-in')})();
