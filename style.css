@@ -3648,3 +3648,81 @@ body.kivo-light{
   opacity: 1 !important;
   mix-blend-mode: normal !important;
 }
+
+/* ===== V47 — Responsive QRIS: never crop on small phones ===== */
+.payment-flow-grid,
+.payment-qris-panel,
+.payment-qris-panel > *,
+.payment-view,
+.game-payment-card,
+.robux-payment-card {
+  min-width: 0 !important;
+}
+
+.payment-qris-panel {
+  overflow: visible !important;
+}
+
+.qris-box,
+.qris-box.large {
+  box-sizing: border-box !important;
+  width: min(100%, 320px) !important;
+  max-width: 320px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: clamp(10px, 3vw, 16px) !important;
+  border: 0 !important;
+  border-radius: clamp(14px, 4vw, 20px) !important;
+  background: #fff !important;
+  overflow: visible !important;
+}
+
+.qris-box img,
+.qris-box canvas,
+.qris-box.large img,
+.qris-box.large canvas {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: visible !important;
+}
+
+@media (max-width: 420px) {
+  .payment-qris-panel {
+    padding: 12px !important;
+  }
+
+  .qris-box,
+  .qris-box.large {
+    width: min(100%, 286px) !important;
+    max-width: 286px !important;
+    padding: 10px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .payment-qris-panel {
+    padding: 9px !important;
+  }
+
+  .qris-box,
+  .qris-box.large {
+    width: 100% !important;
+    max-width: 260px !important;
+    padding: 8px !important;
+    border-radius: 14px !important;
+  }
+}
