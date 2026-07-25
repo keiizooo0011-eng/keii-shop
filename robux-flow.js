@@ -37,6 +37,24 @@
     </div>`;
   }
 
+
+  function openRobuxQris(o){
+    document.querySelector('#kivoQrisModal')?.remove();
+    const modal=document.createElement('div');
+    modal.id='kivoQrisModal'; modal.className='qris-modal';
+    modal.innerHTML=`<div class="qris-modal-backdrop" data-close-qris></div><section class="qris-modal-card" role="dialog" aria-modal="true"><header class="qris-modal-head"><div><span>PEMBAYARAN ROBUX</span><h2>QRIS Pembayaran</h2></div><button type="button" class="qris-modal-close" data-close-qris>×</button></header><div class="qris-modal-body"><p class="qris-modal-lead">Scan kode berikut menggunakan aplikasi bank atau e-wallet yang mendukung QRIS.</p><div id="qrisModalCode" class="qris-modal-code"></div><div class="qris-modal-tools"><button id="zoomQrisBtn">Perbesar</button><button id="downloadModalQris">Download QRIS</button></div><div class="qris-modal-total"><span>Total pembayaran</span><strong>${rupiah(o.payment_amount)}</strong><small>Bayar tepat sesuai nominal agar pesanan Robux terverifikasi otomatis.</small></div><div class="qris-modal-info"><strong>Petunjuk pembayaran</strong><ul><li>Buka aplikasi bank atau e-wallet pilihanmu.</li><li>Pilih menu Scan QRIS dan pindai kode di atas.</li><li>Pastikan username Roblox dan paket sudah benar.</li><li>Simpan invoice <b>${esc(o.invoice)}</b>.</li></ul></div></div><footer class="qris-modal-foot"><button data-close-qris>Tutup</button></footer></section>`;
+    document.body.appendChild(modal);
+    const box=modal.querySelector('#qrisModalCode');
+    if(o.qr_image) box.innerHTML=`<img src="${esc(o.qr_image)}" crossorigin="anonymous" alt="QRIS pembayaran">`;
+    else if(o.qr_content&&window.QRCode) new QRCode(box,{text:o.qr_content,width:300,height:300});
+    else box.innerHTML='<p>QRIS belum tersedia. Coba muat ulang halaman.</p>';
+    const close=()=>{modal.classList.add('closing');setTimeout(()=>modal.remove(),180)};
+    modal.querySelectorAll('[data-close-qris]').forEach(x=>x.onclick=close);
+    modal.querySelector('#zoomQrisBtn').onclick=e=>{box.classList.toggle('zoomed');e.currentTarget.textContent=box.classList.contains('zoomed')?'Ukuran Normal':'Perbesar'};
+    modal.querySelector('#downloadModalQris').onclick=()=>downloadQris(box,o.invoice);
+    requestAnimationFrame(()=>modal.classList.add('show'));
+  }
+
   async function initPayment() {
     const root = $('#paymentRobuxApp');
     if (!root) return;
@@ -47,9 +65,9 @@
 
     const render = (o) => {
       root.innerHTML = `<section class="flow-card payment-flow-card">
-        <div class="flow-card-head"><div><span class="eyebrow">PEMBAYARAN ROBUX</span><h1>Scan QRIS</h1><p>Bayar tepat sesuai total agar terdeteksi otomatis.</p></div><span class="flow-status ${esc(o.status)}">${esc(statusLabels[o.status] || o.status)}</span></div>
+        <div class="flow-card-head"><div><span class="eyebrow">PEMBAYARAN ROBUX</span><h1>Selesaikan pembayaran</h1><p>Periksa detail pesanan, lalu tampilkan QRIS saat kamu siap membayar.</p></div><span class="flow-status ${esc(o.status)}">${esc(statusLabels[o.status] || o.status)}</span></div>
         <div class="payment-flow-grid">
-          <div class="payment-qris-panel"><div id="paymentQrisBox" class="qris-box large"></div><button id="downloadPaymentQris" class="secondary-btn">Download QRIS</button></div>
+          <div class="payment-qris-panel qris-reveal-panel"><div class="qris-reveal-icon">▦</div><span class="qris-reveal-kicker">METODE PEMBAYARAN</span><h2>Bayar dengan QRIS</h2><p>Kode pembayaran dibuka dalam jendela khusus agar tampil utuh dan mudah dipindai.</p><button id="showPaymentQris" class="primary-btn full">Tampilkan QRIS</button><small>Mendukung aplikasi bank dan e-wallet berlogo QRIS.</small></div>
           <div class="payment-info-panel">
             <dl class="flow-detail-list"><dt>Invoice</dt><dd>${esc(o.invoice)} <button id="copyPaymentInvoice" class="copy-mini">Salin</button></dd><dt>Metode</dt><dd>${esc(o.method_name)}</dd><dt>Paket</dt><dd>${esc(o.package_label)}</dd><dt>Username</dt><dd>${esc(o.username)}</dd><dt>Total</dt><dd class="payment-grand-total">${rupiah(o.payment_amount)}</dd></dl>
             <div id="paymentLiveStatus" class="payment-live-status ${esc(o.status)}">${esc(statusLabels[o.status] || o.status)}</div>
@@ -59,12 +77,8 @@
         </div>
         <div id="paymentSuccessRedirect" class="payment-success-redirect" hidden></div>
       </section>`;
-      const qbox = $('#paymentQrisBox');
-      if (o.qr_image) qbox.innerHTML = `<img src="${esc(o.qr_image)}" crossorigin="anonymous" alt="QRIS pembayaran">`;
-      else if (o.qr_content && window.QRCode) new QRCode(qbox,{text:o.qr_content,width:260,height:260});
-      else qbox.innerHTML = '<p>QRIS belum tersedia. Coba muat ulang halaman.</p>';
+      $('#showPaymentQris').onclick = () => openRobuxQris(o);
       $('#copyPaymentInvoice').onclick = async () => { await navigator.clipboard.writeText(o.invoice); $('#copyPaymentInvoice').textContent='Tersalin ✓'; };
-      $('#downloadPaymentQris').onclick = () => downloadQris(qbox,o.invoice);
     };
 
     try {

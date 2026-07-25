@@ -13,39 +13,15 @@
       return m ? {label:m[1].trim(),value:m[2].trim()} : {label:`Data ${i+1}`,value:line};
     });
   }
-  function saveOrderSnapshot(order){
-    if(!order?.invoice)return;
-    try{
-      const key='kivopay_order_snapshots';
-      const rows=JSON.parse(localStorage.getItem(key)||'[]').filter(Boolean);
-      const next=[order,...rows.filter(item=>item?.invoice!==order.invoice)].slice(0,100);
-      localStorage.setItem(key,JSON.stringify(next));
-      const ids=JSON.parse(localStorage.getItem('kivopay_order_invoices')||'[]').filter(Boolean);
-      localStorage.setItem('kivopay_order_invoices',JSON.stringify([order.invoice,...ids.filter(x=>x!==order.invoice)].slice(0,100)));
-    }catch(_){}
-  }
   async function getOrder(){
     const r=await fetch('/api/check-payment?invoice='+encodeURIComponent(invoice),{cache:'no-store'});
     const raw=await r.text(); let d={};
     try{d=raw?JSON.parse(raw):{};}catch{throw new Error('Respons server pembayaran tidak valid.');}
     if(!r.ok) throw new Error(d.error||'Pesanan tidak ditemukan.');
-    saveOrderSnapshot(d.order);
     return d.order;
   }
   function cachedPayment(){
     try{return JSON.parse(sessionStorage.getItem('kivopay_payment_'+invoice)||'null');}catch{return null;}
-  }
-  function orderCategory(o){
-    const stored=localStorage.getItem('kivopay_order_category_'+(o.invoice||invoice))||'';
-    const category=String(o.category||o.product_category||stored).toLowerCase();
-    if(category==='sewa-bot'||category==='sewa_bot') return 'sewa-bot';
-    if(category==='apk-premium'||category==='apk_premium') return 'apk-premium';
-    return /sewa\s*bot|bot\s*(wa|whatsapp|telegram)/i.test(String(o.product_name||''))?'sewa-bot':'apk-premium';
-  }
-  function historyUrl(o){
-    return orderCategory(o)==='apk-premium'
-      ? 'riwayat-apk-premium.html?invoice='+encodeURIComponent(o.invoice||invoice)
-      : 'riwayat-order.html?invoice='+encodeURIComponent(o.invoice||invoice);
   }
   function deliveryMarkup(o){
     const fields=parseDelivery(o.delivery_content);
@@ -88,7 +64,7 @@
 
       <div class="delivery-receipt-actions">
         <button type="button" id="copyAllDelivery">Salin Semua</button>
-        <a class="secondary-btn" href="${historyUrl(o)}">Lihat Riwayat Pesanan</a>
+        <a class="secondary-btn" href="index.html#orders">Cek Pesanan</a>
       </div>
     </section>`;
   }
@@ -104,6 +80,38 @@
     else if(content&&window.QRCode) new QRCode(box,{text:content,width:260,height:260});
     else box.innerHTML='<p>QRIS belum tersedia. Muat ulang halaman atau buat pesanan kembali.</p>';
   }
+
+  function openQrisModal({image,content,total,invoice}){
+    document.querySelector('#kivoQrisModal')?.remove();
+    const modal=document.createElement('div');
+    modal.id='kivoQrisModal';
+    modal.className='qris-modal';
+    modal.innerHTML=`<div class="qris-modal-backdrop" data-close-qris></div>
+      <section class="qris-modal-card" role="dialog" aria-modal="true" aria-labelledby="qrisModalTitle">
+        <header class="qris-modal-head"><div><span>PEMBAYARAN AMAN</span><h2 id="qrisModalTitle">QRIS Pembayaran</h2></div><button type="button" class="qris-modal-close" data-close-qris aria-label="Tutup">×</button></header>
+        <div class="qris-modal-body">
+          <p class="qris-modal-lead">Scan kode berikut menggunakan aplikasi bank atau e-wallet yang mendukung QRIS.</p>
+          <div id="qrisModalCode" class="qris-modal-code"></div>
+          <div class="qris-modal-tools"><button type="button" id="zoomQrisBtn">Perbesar</button><button type="button" id="downloadModalQris">Download QRIS</button></div>
+          <div class="qris-modal-total"><span>Total pembayaran</span><strong>${rupiah(total)}</strong><small>Bayar tepat sesuai nominal agar transaksi terverifikasi otomatis.</small></div>
+          <div class="qris-modal-info"><strong>Petunjuk pembayaran</strong><ul><li>Buka aplikasi bank atau e-wallet pilihanmu.</li><li>Pilih menu Scan QRIS, lalu pindai kode di atas.</li><li>Jangan mengubah nominal pembayaran.</li><li>Simpan invoice <b>${esc(invoice)}</b> sebagai bukti transaksi.</li></ul></div>
+        </div>
+        <footer class="qris-modal-foot"><button type="button" data-close-qris>Tutup</button></footer>
+      </section>`;
+    document.body.appendChild(modal);
+    const box=modal.querySelector('#qrisModalCode');
+    if(image) box.innerHTML=`<img src="${esc(image)}" crossorigin="anonymous" alt="QRIS pembayaran">`;
+    else if(content&&window.QRCode) new QRCode(box,{text:content,width:300,height:300});
+    else box.innerHTML='<p>QRIS belum tersedia. Silakan muat ulang halaman.</p>';
+    const close=()=>{modal.classList.add('closing');setTimeout(()=>modal.remove(),180)};
+    modal.querySelectorAll('[data-close-qris]').forEach(el=>el.addEventListener('click',close));
+    modal.querySelector('#zoomQrisBtn')?.addEventListener('click',e=>{box.classList.toggle('zoomed');e.currentTarget.textContent=box.classList.contains('zoomed')?'Ukuran Normal':'Perbesar';});
+    modal.querySelector('#downloadModalQris')?.addEventListener('click',()=>downloadQr(box));
+    const onKey=e=>{if(e.key==='Escape'){document.removeEventListener('keydown',onKey);close();}};
+    document.addEventListener('keydown',onKey);
+    requestAnimationFrame(()=>modal.classList.add('show'));
+  }
+
   function downloadQr(box){
     const image=box.querySelector('img'),canvas=box.querySelector('canvas');
     const href=canvas?canvas.toDataURL('image/png'):image?.src;
@@ -113,9 +121,9 @@
   function render(o){
     const cached=cachedPayment();
     root.innerHTML=`<section class="flow-card payment-flow-card">
-      <div class="flow-card-head"><div><span class="eyebrow">PEMBAYARAN KIVOPAY</span><h1>Scan QRIS</h1><p>Bayar tepat sesuai nominal agar pesanan terdeteksi otomatis.</p></div><span id="orderStatusBadge" class="flow-status ${esc(o.status)}">${esc(labels[o.status]||o.status)}</span></div>
+      <div class="flow-card-head"><div><span class="eyebrow">PEMBAYARAN KIVOPAY</span><h1>Selesaikan pembayaran</h1><p>Periksa detail pesanan, lalu tampilkan QRIS saat kamu siap membayar.</p></div><span id="orderStatusBadge" class="flow-status ${esc(o.status)}">${esc(labels[o.status]||o.status)}</span></div>
       <div class="payment-flow-grid">
-        <div class="payment-qris-panel"><div id="paymentOrderQris" class="qris-box large"></div><button id="downloadOrderQris" class="secondary-btn full">Download QRIS</button></div>
+        <div class="payment-qris-panel qris-reveal-panel"><div class="qris-reveal-icon" aria-hidden="true">▦</div><span class="qris-reveal-kicker">METODE PEMBAYARAN</span><h2>Bayar dengan QRIS</h2><p>Tampilkan kode saat kamu siap membayar. QRIS dapat dipindai melalui aplikasi bank dan e-wallet yang mendukung.</p><button id="showOrderQris" class="primary-btn full">Tampilkan QRIS</button><small>Kode QR tidak bergerak dan ditampilkan utuh agar mudah dipindai.</small></div>
         <div class="payment-info-panel"><dl class="flow-detail-list">
           <dt>Invoice</dt><dd>${esc(o.invoice)} <button id="copyOrderInvoice" class="copy-mini">Salin</button></dd>
           <dt>Produk</dt><dd>${esc(o.product_name)}</dd><dt>Paket</dt><dd>${esc(o.variant_name||'Paket utama')}</dd>
@@ -125,9 +133,9 @@
           <a class="secondary-btn full" href="index.html#store">Kembali ke Katalog</a>
         </div>
       </div><div id="deliveryResult"></div></section>`;
-    const qbox=document.querySelector('#paymentOrderQris'); drawQr(qbox,o,cached);
+    const qrImage=o.qr_image||cached?.qr_image; const qrContent=o.qr_content||cached?.qr_content;
     document.querySelector('#copyOrderInvoice').onclick=async()=>{await navigator.clipboard.writeText(o.invoice);document.querySelector('#copyOrderInvoice').textContent='Tersalin ✓';};
-    document.querySelector('#downloadOrderQris').onclick=()=>downloadQr(qbox);
+    document.querySelector('#showOrderQris').onclick=()=>openQrisModal({image:qrImage,content:qrContent,total:o.payment_amount,invoice:o.invoice});
     if(o.status==='completed') showDelivery(o);
   }
   function showDelivery(o){
@@ -136,7 +144,6 @@
     if(box&&!box.children.length){box.innerHTML=deliveryMarkup(o);bindDelivery(o);}
     const st=document.querySelector('#paymentOrderStatus'); if(st){st.className='payment-live-status completed';st.textContent='Pembayaran berhasil • Data produk terkirim otomatis';}
     const badge=document.querySelector('#orderStatusBadge');if(badge){badge.className='flow-status completed';badge.textContent='Pesanan Selesai';}
-    setTimeout(()=>{ location.href=historyUrl(o); },4200);
   }
   async function poll(){
     if(stopped)return;

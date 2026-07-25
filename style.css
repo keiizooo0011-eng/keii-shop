@@ -3831,3 +3831,101 @@ body.kivo-light{
     padding: 16px !important;
   }
 }
+
+/* V50 — QRIS modal and payment copy polish */
+.qris-reveal-panel{
+  min-height:320px;
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:12px;
+  padding:34px 26px!important;
+  overflow:hidden;
+  position:relative;
+}
+.qris-reveal-panel::before{
+  content:"";
+  position:absolute;
+  width:220px;height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(126,75,255,.18),transparent 67%);
+  pointer-events:none;
+}
+.qris-reveal-panel>*{position:relative;z-index:1}
+.qris-reveal-icon{
+  width:72px;height:72px;border-radius:22px;
+  display:grid;place-items:center;
+  font-size:38px;line-height:1;
+  color:#fff;
+  background:linear-gradient(145deg,#8b5cf6,#5b21b6);
+  box-shadow:0 18px 42px rgba(111,55,255,.35),inset 0 1px rgba(255,255,255,.25);
+}
+.qris-reveal-kicker{font-size:12px;font-weight:800;letter-spacing:.18em;color:#bca7ff}
+.qris-reveal-panel h2{font-size:clamp(24px,5vw,32px);margin:0;color:var(--text,#fff)}
+.qris-reveal-panel p{max-width:440px;margin:0;color:var(--muted,#aaa);line-height:1.65}
+.qris-reveal-panel small{color:var(--muted,#8f879e);line-height:1.5}
+.qris-reveal-panel .primary-btn{max-width:360px;margin-top:8px;min-height:56px;font-size:17px}
+
+.qris-modal{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:16px;opacity:0;visibility:hidden;transition:.2s ease}
+.qris-modal.show{opacity:1;visibility:visible}
+.qris-modal.closing{opacity:0}
+.qris-modal-backdrop{position:absolute;inset:0;background:rgba(3,1,10,.78);backdrop-filter:blur(9px)}
+.qris-modal-card{
+  width:min(560px,100%);max-height:calc(100dvh - 24px);overflow:auto;
+  position:relative;border-radius:26px;
+  background:linear-gradient(180deg,#171121 0%,#0e0a15 100%);
+  border:1px solid rgba(182,144,255,.24);
+  box-shadow:0 30px 100px rgba(0,0,0,.6);
+  transform:translateY(18px) scale(.97);transition:.22s ease;
+}
+.qris-modal.show .qris-modal-card{transform:none}
+.qris-modal-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 22px;background:rgba(18,12,27,.94);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
+.qris-modal-head span{display:block;font-size:11px;font-weight:800;letter-spacing:.18em;color:#b99bff;margin-bottom:3px}
+.qris-modal-head h2{margin:0;font-size:24px;color:#fff}
+.qris-modal-close{width:42px;height:42px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.05);color:#fff;font-size:27px;line-height:1;cursor:pointer}
+.qris-modal-body{padding:24px}
+.qris-modal-lead{text-align:center;color:#b7afc2;line-height:1.55;margin:0 auto 18px;max-width:420px}
+.qris-modal-code{
+  width:min(360px,100%);aspect-ratio:1/1;margin:0 auto;
+  box-sizing:border-box;padding:20px;background:#fff;border-radius:18px;
+  display:grid;place-items:center;overflow:visible!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.34);
+  transition:.2s ease;
+}
+.qris-modal-code img,.qris-modal-code canvas{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;transform:none!important;filter:none!important;border-radius:0!important}
+.qris-modal-code.zoomed{width:min(460px,100%)}
+.qris-modal-tools{display:flex;justify-content:center;gap:10px;margin:16px 0 22px}
+.qris-modal-tools button{border:1px solid rgba(167,126,255,.3);background:rgba(120,69,220,.13);color:#d4c2ff;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer}
+.qris-modal-total{text-align:center;padding:18px;border-radius:18px;background:linear-gradient(135deg,rgba(125,66,255,.17),rgba(53,211,193,.09));border:1px solid rgba(171,130,255,.2)}
+.qris-modal-total span,.qris-modal-total small{display:block;color:#aaa1b5}
+.qris-modal-total strong{display:block;font-size:34px;color:#d3b7ff;margin:5px 0}
+.qris-modal-info{margin-top:18px;padding:18px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);color:#b8b0c2}
+.qris-modal-info>strong{color:#fff}
+.qris-modal-info ul{padding-left:20px;margin:11px 0 0;line-height:1.75}
+.qris-modal-foot{padding:0 24px 24px}
+.qris-modal-foot button{width:100%;min-height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;font-weight:800;font-size:16px;cursor:pointer}
+body:has(.qris-modal.show){overflow:hidden}
+
+html[data-theme="light"] .qris-modal-backdrop,body.light-mode .qris-modal-backdrop{background:rgba(24,18,36,.54)}
+html[data-theme="light"] .qris-modal-card,body.light-mode .qris-modal-card{background:linear-gradient(180deg,#fff,#f7f4fb);border-color:#e5daf6}
+html[data-theme="light"] .qris-modal-head,body.light-mode .qris-modal-head{background:rgba(255,255,255,.94);border-color:#eee7f6}
+html[data-theme="light"] .qris-modal-head h2,html[data-theme="light"] .qris-modal-close,body.light-mode .qris-modal-head h2,body.light-mode .qris-modal-close{color:#251b32}
+html[data-theme="light"] .qris-modal-close,body.light-mode .qris-modal-close{background:#f4eff9;border-color:#e4daef}
+html[data-theme="light"] .qris-modal-lead,html[data-theme="light"] .qris-modal-total span,html[data-theme="light"] .qris-modal-total small,html[data-theme="light"] .qris-modal-info,body.light-mode .qris-modal-lead,body.light-mode .qris-modal-total span,body.light-mode .qris-modal-total small,body.light-mode .qris-modal-info{color:#6c6374}
+html[data-theme="light"] .qris-modal-info,body.light-mode .qris-modal-info{background:#faf8fc;border-color:#e9e2ef}
+html[data-theme="light"] .qris-modal-info>strong,body.light-mode .qris-modal-info>strong{color:#2d2335}
+
+@media(max-width:560px){
+  .qris-modal{padding:8px}
+  .qris-modal-card{border-radius:22px;max-height:calc(100dvh - 16px)}
+  .qris-modal-head{padding:16px}
+  .qris-modal-body{padding:18px 16px}
+  .qris-modal-code{width:min(310px,100%);padding:16px;border-radius:15px}
+  .qris-modal-tools{display:grid;grid-template-columns:1fr 1fr}
+  .qris-modal-tools button{padding:11px 8px}
+  .qris-modal-total strong{font-size:29px}
+  .qris-modal-foot{padding:0 16px 16px}
+  .qris-reveal-panel{min-height:270px;padding:28px 20px!important}
+}
