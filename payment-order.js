@@ -123,11 +123,11 @@
     root.innerHTML=`<section class="flow-card payment-flow-card">
       <div class="flow-card-head"><div><span class="eyebrow">PEMBAYARAN KIVOPAY</span><h1>Selesaikan pembayaran</h1><p>Periksa detail pesanan, lalu tampilkan QRIS saat kamu siap membayar.</p></div><span id="orderStatusBadge" class="flow-status ${esc(o.status)}">${esc(labels[o.status]||o.status)}</span></div>
       <div class="payment-flow-grid">
-        <div class="payment-qris-panel qris-reveal-panel"><div class="qris-reveal-icon" aria-hidden="true">▦</div><span class="qris-reveal-kicker">METODE PEMBAYARAN</span><h2>Bayar dengan QRIS</h2><p>Tampilkan kode saat kamu siap membayar. QRIS dapat dipindai melalui aplikasi bank dan e-wallet yang mendukung.</p><button id="showOrderQris" class="primary-btn full">Tampilkan QRIS</button><small>Kode QR tidak bergerak dan ditampilkan utuh agar mudah dipindai.</small></div>
-        <div class="payment-info-panel"><dl class="flow-detail-list">
-          <dt>Invoice</dt><dd>${esc(o.invoice)} <button id="copyOrderInvoice" class="copy-mini">Salin</button></dd>
-          <dt>Produk</dt><dd>${esc(o.product_name)}</dd><dt>Paket</dt><dd>${esc(o.variant_name||'Paket utama')}</dd>
-          <dt>Total</dt><dd class="payment-grand-total">${rupiah(o.payment_amount)}</dd></dl>
+        <div class="payment-qris-panel qris-reveal-panel"><div class="qris-reveal-icon" aria-hidden="true">▦</div><span class="qris-reveal-kicker">METODE PEMBAYARAN</span><h2>Bayar dengan QRIS</h2><p>Tampilkan kode saat kamu siap membayar. QRIS dapat dipindai melalui aplikasi bank dan e-wallet yang mendukung.</p><button id="showOrderQris" class="primary-btn full qris-open-btn"><span class="qris-open-btn-icon">▦</span><span><b>Tampilkan QRIS</b><small>Buka kode pembayaran</small></span><i>→</i></button><small>Kode QR ditampilkan utuh dan tidak bergerak agar mudah dipindai.</small></div>
+        <div class="payment-info-panel"><div class="payment-summary-head"><span>RINGKASAN PESANAN</span><h3>Detail pembayaran</h3><p>Pastikan produk dan nominal sudah sesuai sebelum membayar.</p></div><dl class="flow-detail-list payment-detail-list">
+          <div class="payment-detail-row invoice-row"><dt>Nomor invoice</dt><dd><span class="invoice-value">${esc(o.invoice)}</span><button id="copyOrderInvoice" class="copy-mini">Salin</button></dd></div>
+          <div class="payment-detail-row"><dt>Produk</dt><dd>${esc(o.product_name)}</dd></div><div class="payment-detail-row"><dt>Paket</dt><dd>${esc(o.variant_name||'Paket utama')}</dd></div>
+          <div class="payment-detail-row total-row"><dt>Total pembayaran</dt><dd class="payment-grand-total">${rupiah(o.payment_amount)}</dd></div></dl>
           <div id="paymentOrderStatus" class="payment-live-status ${esc(o.status)}">${esc(labels[o.status]||o.status)}</div>
           <p class="payment-expire">Batas pembayaran: <strong>${o.expires_at?new Date(o.expires_at).toLocaleString('id-ID'):'-'}</strong></p>
           <a class="secondary-btn full" href="index.html#store">Kembali ke Katalog</a>

@@ -3929,3 +3929,171 @@ html[data-theme="light"] .qris-modal-info>strong,body.light-mode .qris-modal-inf
   .qris-modal-foot{padding:0 16px 16px}
   .qris-reveal-panel{min-height:270px;padding:28px 20px!important}
 }
+
+
+/* ===== V51 — payment summary and QRIS button polish ===== */
+.payment-summary-head{
+  margin-bottom:16px;
+  padding-bottom:15px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.payment-summary-head>span{
+  display:block;
+  margin-bottom:5px;
+  color:#b99bff;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.16em;
+}
+.payment-summary-head h3{
+  margin:0;
+  color:var(--text,#fff);
+  font-size:22px;
+  line-height:1.2;
+}
+.payment-summary-head p{
+  margin:7px 0 0;
+  color:var(--muted,#aaa1b5);
+  font-size:14px;
+  line-height:1.5;
+}
+.payment-detail-list{
+  display:flex!important;
+  flex-direction:column;
+  gap:0!important;
+  margin:0!important;
+}
+.payment-detail-row{
+  display:grid;
+  grid-template-columns:minmax(112px,.8fr) minmax(0,1.35fr);
+  align-items:center;
+  gap:18px;
+  min-height:64px;
+  padding:13px 2px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.payment-detail-row:last-child{border-bottom:0}
+.payment-detail-row dt,
+.payment-detail-row dd{
+  margin:0!important;
+  min-width:0;
+}
+.payment-detail-row dt{
+  color:#948ca0!important;
+  font-size:14px;
+  font-weight:650;
+}
+.payment-detail-row dd{
+  color:#f6f2fb!important;
+  font-size:16px;
+  font-weight:750;
+  line-height:1.42;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+.payment-detail-row.invoice-row dd{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px;
+}
+.invoice-value{
+  min-width:0;
+  font-size:15px;
+  letter-spacing:.015em;
+  overflow-wrap:anywhere;
+}
+.payment-detail-row.total-row{
+  margin-top:8px;
+  padding:18px 16px;
+  border:1px solid rgba(170,124,255,.2);
+  border-radius:17px;
+  background:linear-gradient(135deg,rgba(126,71,255,.13),rgba(47,211,192,.07));
+}
+.payment-detail-row.total-row dt{
+  color:#c8bdd6!important;
+  font-weight:750;
+}
+.payment-detail-row.total-row dd.payment-grand-total{
+  color:#d2b4ff!important;
+  font-size:clamp(25px,6vw,34px)!important;
+  line-height:1.05;
+}
+.copy-mini{
+  flex:0 0 auto;
+  min-width:64px;
+  min-height:36px;
+  padding:7px 11px!important;
+  border:1px solid rgba(184,145,255,.28)!important;
+  border-radius:11px!important;
+  background:rgba(126,73,211,.18)!important;
+  color:#d6c4ff!important;
+  font-size:13px!important;
+  font-weight:800!important;
+}
+.qris-open-btn{
+  display:grid!important;
+  grid-template-columns:42px 1fr 24px;
+  align-items:center;
+  gap:13px;
+  width:100%;
+  max-width:380px!important;
+  min-height:66px!important;
+  padding:10px 16px!important;
+  border:1px solid rgba(255,255,255,.17)!important;
+  border-radius:18px!important;
+  background:linear-gradient(135deg,#955dff 0%,#7834e9 52%,#5f24c9 100%)!important;
+  color:#fff!important;
+  text-align:left!important;
+  box-shadow:0 16px 34px rgba(112,50,225,.34),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease!important;
+}
+.qris-open-btn:hover,
+.qris-open-btn:focus-visible{
+  transform:translateY(-2px);
+  filter:brightness(1.06);
+  box-shadow:0 20px 42px rgba(112,50,225,.42),inset 0 1px 0 rgba(255,255,255,.25)!important;
+}
+.qris-open-btn:active{transform:scale(.985)}
+.qris-open-btn-icon{
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  border-radius:13px;
+  background:rgba(255,255,255,.16);
+  font-size:23px;
+  box-shadow:inset 0 1px rgba(255,255,255,.2);
+}
+.qris-open-btn>span:nth-child(2){display:flex;flex-direction:column;gap:1px;min-width:0}
+.qris-open-btn b{font-size:16px;line-height:1.25}
+.qris-open-btn small{color:rgba(255,255,255,.76)!important;font-size:12px;line-height:1.3}
+.qris-open-btn i{font-style:normal;font-size:22px;text-align:right;transition:transform .18s ease}
+.qris-open-btn:hover i{transform:translateX(3px)}
+
+html[data-theme="light"] .payment-summary-head,
+body.light-mode .payment-summary-head{border-color:#e9e1f0}
+html[data-theme="light"] .payment-summary-head h3,
+body.light-mode .payment-summary-head h3{color:#281f31}
+html[data-theme="light"] .payment-summary-head p,
+body.light-mode .payment-summary-head p{color:#756c7d}
+html[data-theme="light"] .payment-detail-row,
+body.light-mode .payment-detail-row{border-color:#ebe4f0}
+html[data-theme="light"] .payment-detail-row dt,
+body.light-mode .payment-detail-row dt{color:#746b7c!important}
+html[data-theme="light"] .payment-detail-row dd,
+body.light-mode .payment-detail-row dd{color:#2e2536!important}
+html[data-theme="light"] .payment-detail-row.total-row,
+body.light-mode .payment-detail-row.total-row{background:linear-gradient(135deg,#f3ecff,#eefcf9);border-color:#dfd2f4}
+html[data-theme="light"] .copy-mini,
+body.light-mode .copy-mini{background:#f0e8fb!important;color:#674298!important;border-color:#ddcff0!important}
+
+@media(max-width:560px){
+  .payment-info-panel{padding:20px 18px!important}
+  .payment-detail-row{grid-template-columns:1fr;gap:6px;min-height:0;padding:14px 0}
+  .payment-detail-row dt{font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  .payment-detail-row dd{text-align:left;font-size:16px}
+  .payment-detail-row.invoice-row dd{justify-content:space-between;align-items:flex-start}
+  .payment-detail-row.total-row{grid-template-columns:1fr auto;align-items:end;gap:12px;padding:16px}
+  .payment-detail-row.total-row dt{text-transform:none;letter-spacing:0;font-size:14px}
+  .payment-detail-row.total-row dd{text-align:right}
+  .qris-open-btn{grid-template-columns:40px 1fr 22px;min-height:64px!important;padding:10px 14px!important}
+}
