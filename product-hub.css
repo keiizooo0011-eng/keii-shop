@@ -10,3 +10,35 @@ body.product-hub-page{margin:0;min-height:100vh;background:#08050e;color:#fff;fo
 /* V37 marketplace visual polish */
 .product-hub-hero,.catalog-hero,.marketplace-hero{border-radius:28px!important;border:1px solid var(--v37-line)!important;background:linear-gradient(135deg,rgba(18,38,66,.96),rgba(8,19,34,.95))!important;box-shadow:var(--v37-shadow)!important;overflow:hidden}.product-grid{gap:15px!important}.product-card{border-radius:22px!important;overflow:hidden}.product-card img,.product-cover{transition:transform .35s ease}.product-card:hover img,.product-card:hover .product-cover{transform:scale(1.035)}.category-tabs,.filter-tabs{padding:6px!important;border-radius:16px!important;background:rgba(7,16,28,.72)!important;border:1px solid var(--v37-line)!important}.category-tabs button,.filter-tabs button{border-radius:11px!important}.category-tabs button.active,.filter-tabs button.active{background:linear-gradient(135deg,var(--v37-blue),var(--v37-cyan))!important;color:#fff!important}.product-price{font-weight:800;letter-spacing:-.03em}
 @media(max-width:700px){.product-hub-hero,.catalog-hero,.marketplace-hero{border-radius:22px!important;padding:22px 18px!important}.product-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}.product-card{border-radius:18px!important}}
+
+
+/* V53 — Panel Pterodactyl catalog card */
+.hub-card.panel-card{
+  --accent:#8b5cf6;
+  grid-column:1/-1;
+  min-height:190px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  align-items:center;
+  gap:22px;
+  background:
+    radial-gradient(circle at 88% 18%,rgba(124,58,237,.22),transparent 34%),
+    linear-gradient(145deg,rgba(28,18,45,.98),rgba(10,7,18,.98));
+}
+.hub-card.panel-card .hub-symbol{margin:0;width:72px;height:72px;border-radius:21px}
+.hub-card.panel-card .hub-symbol svg{width:34px;height:34px}
+.hub-card.panel-card .panel-card-copy{min-width:0}
+.hub-card.panel-card p{min-height:0;max-width:650px;margin-bottom:0}
+.hub-card.panel-card b{margin-top:16px}
+@media(max-width:680px){
+  .hub-card.panel-card{
+    min-height:205px;
+    grid-template-columns:1fr;
+    align-items:start;
+    gap:0;
+    padding:18px;
+  }
+  .hub-card.panel-card .hub-symbol{width:48px;height:48px;margin-bottom:14px;border-radius:15px}
+  .hub-card.panel-card .hub-symbol svg{width:25px;height:25px}
+  .hub-card.panel-card p{min-height:0;font-size:12px}
+}
