@@ -444,13 +444,12 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         </section>` : "";
       const requestedProducts = requestedCategory === "apk-premium" ? apkProducts : requestedCategory === "sewa-bot" ? botProducts : requestedCategory === "panel-pterodactyl" ? panelProducts : products;
       root.innerHTML = requestedProducts.length
-        ? (requestedCategory === "apk-premium"
-            ? `<div class="store-grid catalog-category-grid">${apkProducts.map(productCard).join("")}</div>`
-            : requestedCategory === "sewa-bot"
-              ? `<div class="store-grid catalog-category-grid">${botProducts.map(productCard).join("")}</div>`
-              : `${categorySection("sewa-bot", "Sewa Bot", "Pilih paket bot sesuai kebutuhan dan durasi penggunaanmu.", "BOT", botProducts)}
-                 ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "APP", apkProducts)}`)
-        : `<div class="store-empty">Belum ada produk aktif pada kategori ini.</div>`;
+        ? (requestedCategory
+            ? `<div class="store-grid catalog-category-grid">${requestedProducts.map(productCard).join("")}</div>`
+            : `${categorySection("panel-pterodactyl", "Panel Pterodactyl", "Pilih kapasitas server sesuai kebutuhan bot, aplikasi, atau komunitasmu.", "SERVER", panelProducts)}
+               ${categorySection("sewa-bot", "Sewa Bot", "Pilih paket bot sesuai kebutuhan dan durasi penggunaanmu.", "BOT", botProducts)}
+               ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "APP", apkProducts)}`)
+        : `<div class="store-empty">Belum ada paket Panel Pterodactyl yang aktif. Silakan hubungi admin atau kembali lagi nanti.</div>`;
       document.querySelectorAll(".store-buy").forEach(btn => {
         btn.onclick = () => openCheckout(btn.dataset.productId);
       });

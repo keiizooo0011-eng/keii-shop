@@ -195,7 +195,7 @@
         <img src="${esc(p.image_url || "")}" alt="${esc(p.name)}">
         <div>
           <strong>${esc(p.name)}</strong>
-          <span>${p.category==="sewa-bot"?"Sewa Bot":"APK Premium"} • ${rupiah(p.price)}</span>
+          <span>${p.category === "panel-pterodactyl" ? "Panel Pterodactyl" : p.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"} • ${rupiah(p.price)}</span>
           <small>Stok ${Number(p.stock||0)} • ${p.is_active?"Aktif":"Nonaktif"}</small>
           <div class="variant-badges">${(Array.isArray(p.variants)?p.variants:[]).map(v=>`<span class="variant-badge">${esc(v.name)} · ${rupiah(v.price)}</span>`).join("")}</div>
         </div>
