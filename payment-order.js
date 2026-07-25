@@ -151,6 +151,7 @@
       const o=await getOrder();
       const st=document.querySelector('#paymentOrderStatus');if(st){st.className='payment-live-status '+o.status;st.textContent=labels[o.status]||o.status;}
       const badge=document.querySelector('#orderStatusBadge');if(badge){badge.className='flow-status '+o.status;badge.textContent=labels[o.status]||o.status;}
+      if(o.order_type==='panel-pterodactyl' && ['paid','processing','completed'].includes(o.status)){ stopped=true; localStorage.setItem('kivopay_last_panel_invoice',o.invoice); setTimeout(()=>location.href='riwayat-panel.html?invoice='+encodeURIComponent(o.invoice),900); return;}
       if(o.status==='completed'){showDelivery(o);return;}
       if(['cancelled','failed'].includes(o.status)){stopped=true;return;}
     }catch(e){const st=document.querySelector('#paymentOrderStatus');if(st)st.textContent='Mengecek ulang pembayaran...';}
@@ -158,7 +159,7 @@
   }
   async function init(){
     if(!invoice){root.innerHTML='<div class="flow-error">Invoice tidak ditemukan.<br><a href="index.html#store">Kembali ke Katalog</a></div>';return;}
-    try{const o=await getOrder();render(o);if(!['completed','cancelled','failed'].includes(o.status))poll();}
+    try{const o=await getOrder(); if(o.order_type==='panel-pterodactyl' && ['paid','processing','completed'].includes(o.status)){location.replace('riwayat-panel.html?invoice='+encodeURIComponent(o.invoice));return;} render(o);if(!['completed','cancelled','failed'].includes(o.status))poll();}
     catch(e){root.innerHTML=`<div class="flow-error">${esc(e.message)}<br><a href="index.html#store">Kembali</a></div>`;}
   }
   addEventListener('beforeunload',()=>{stopped=true;});

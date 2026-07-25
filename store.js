@@ -381,7 +381,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
   }
 
   function productCard(p) {
-    const cat = p.category === "sewa-bot" ? "Sewa Bot" : "APK Premium";
+    const cat = p.category === "sewa-bot" ? "Sewa Bot" : p.category === "panel-pterodactyl" ? "Panel Pterodactyl" : "APK Premium";
     return `
       <article class="store-card" data-category="${esc(p.category)}">
         <div class="store-image-wrap">
@@ -432,6 +432,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
       const requestedCategory = document.body?.dataset?.storeCategory || "";
       const apkProducts = products.filter(item => item.category === "apk-premium");
       const botProducts = products.filter(item => item.category === "sewa-bot");
+      const panelProducts = products.filter(item => item.category === "panel-pterodactyl");
       const categorySection = (key, title, subtitle, icon, items) => items.length ? `
         <section class="catalog-category" data-catalog-section="${key}">
           <div class="catalog-category-head">
@@ -441,7 +442,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
           </div>
           <div class="store-grid catalog-category-grid">${items.map(productCard).join("")}</div>
         </section>` : "";
-      const requestedProducts = requestedCategory === "apk-premium" ? apkProducts : requestedCategory === "sewa-bot" ? botProducts : products;
+      const requestedProducts = requestedCategory === "apk-premium" ? apkProducts : requestedCategory === "sewa-bot" ? botProducts : requestedCategory === "panel-pterodactyl" ? panelProducts : products;
       root.innerHTML = requestedProducts.length
         ? (requestedCategory === "apk-premium"
             ? `<div class="store-grid catalog-category-grid">${apkProducts.map(productCard).join("")}</div>`
@@ -485,7 +486,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
           <div class="product-detail-hero">
             <div class="product-detail-cover">
               <img src="${esc(product.image_url || "")}" alt="${esc(product.name)}">
-              <span>${product.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"}</span>
+              <span>${product.category === "sewa-bot" ? "Sewa Bot" : product.category === "panel-pterodactyl" ? "Panel Pterodactyl" : "APK Premium"}</span>
             </div>
             <div class="product-detail-summary">
               <span class="product-detail-kicker">PRODUK KIVOPAY</span>

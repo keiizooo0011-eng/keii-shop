@@ -53,6 +53,7 @@
         <a class="admin-game-nav-link" href="admin-games.html">🎮 Game Top Up</a>
         <button data-admin-page-btn="moderation">💬 Moderasi</button>
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
+        <button data-admin-page-btn="panel-orders">Panel Orders <span id="panelPendingBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="users">Akun User <span id="userCountBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="customer-service">Customer Service</button>
         <button data-admin-page-btn="support-tickets">Tiket Bantuan <span id="supportTicketBadge" class="admin-nav-badge" hidden>0</span></button>
@@ -109,6 +110,7 @@
             <select id="productCategory">
               <option value="apk-premium">APK Premium</option>
               <option value="sewa-bot">Sewa Bot</option>
+              <option value="panel-pterodactyl">Panel Pterodactyl</option>
             </select>
             <div class="form-two">
               <div><label>Harga utama</label><input id="productPrice" type="number" min="0" required></div>
@@ -285,6 +287,14 @@
           <div class="support-admin-layout"><div id="supportTicketListAdmin" class="support-ticket-list-admin"></div><div id="supportTicketDetailAdmin" class="support-ticket-detail-admin"><div class="support-admin-empty">Pilih tiket untuk melihat detail percakapan.</div></div></div>
         </section>
       </div>
+
+      <div class="admin-page" data-admin-page="panel-orders">
+        <section class="admin-panel panel-order-admin">
+          <div class="admin-panel-head"><div><span class="eyebrow">PTERODACTYL FULFILLMENT</span><h2>Pesanan Panel</h2><p class="muted">Pesanan yang sudah dibayar menunggu data panel dikirim secara manual.</p></div><div class="panel-admin-head-actions"><button id="enablePanelNotifications" class="ghost" type="button">Aktifkan Notifikasi Chrome</button><button id="refreshPanelOrders" class="ghost" type="button">Refresh</button></div></div>
+          <div class="panel-order-filterbar"><button class="active" data-panel-filter="all">Semua</button><button data-panel-filter="processing">Perlu Diproses</button><button data-panel-filter="completed">Terkirim</button><button data-panel-filter="pending">Belum Bayar</button></div>
+          <div id="panelOrderAdminMessage" class="admin-message"></div><div id="panelOrderAdminList" class="panel-order-admin-list"></div>
+        </section>
+      </div>
       <div class="admin-page" data-admin-page="orders">
       <section class="admin-panel orders-panel">
         <div class="admin-panel-head">
@@ -300,6 +310,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=19.0.0"></script>
+  <script src="panel-admin.js?v=52"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 </body>
