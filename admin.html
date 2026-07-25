@@ -227,6 +227,24 @@
           <button id="stockSubmitButton" type="submit">Tambahkan Stok</button>
         </form>
         <div id="stockMessage" class="admin-message"></div><div id="stockSummary" class="stock-summary"></div>
+        <section class="panel-stock-manager" aria-labelledby="panelStockTitle">
+          <div class="panel-stock-manager-head">
+            <div><span class="eyebrow">MANUAL FULFILLMENT</span><h3 id="panelStockTitle">Kuota Pesanan Panel</h3><p class="muted">Stok panel berupa kuota pesanan yang bisa diterima. Tidak perlu mengunggah email, password, atau data akses.</p></div>
+            <span class="panel-stock-status">Diproses manual</span>
+          </div>
+          <form id="panelStockForm" class="panel-stock-form">
+            <label>Produk Panel<select id="panelStockProduct" required><option value="">Memuat produk panel...</option></select></label>
+            <label>Jumlah kuota<input id="panelStockAmount" type="number" inputmode="numeric" min="1" max="10000" value="10" required></label>
+            <div class="panel-stock-actions">
+              <button type="submit" data-panel-stock-action="add">Tambah Kuota</button>
+              <button type="button" class="ghost" data-panel-stock-action="set">Atur Jumlah</button>
+              <button type="button" class="danger ghost" data-panel-stock-action="subtract">Kurangi</button>
+            </div>
+          </form>
+          <div class="panel-stock-note"><strong>Informasi untuk pelanggan</strong><span>Setelah pembayaran terverifikasi, pesanan akan diproses admin. Pelanggan dapat memantau status dan data akses melalui Riwayat Panel.</span></div>
+          <div id="panelStockMessage" class="admin-message"></div>
+          <div id="panelStockList" class="panel-stock-list"></div>
+        </section>
       </section>
 
 
@@ -310,7 +328,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=19.0.0"></script>
-  <script src="panel-admin.js?v=52"></script>
+  <script src="panel-admin.js?v=55"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 </body>

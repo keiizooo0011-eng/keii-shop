@@ -397,9 +397,9 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
           </div>
           <div class="store-meta">
             <strong>${rupiah(p.price)}</strong>
-            <span>${Number(p.stock || 0) > 0 ? `Stok ${Number(p.stock || 0)}` : "Stok habis"}</span>
+            <span>${p.category === "panel-pterodactyl" ? (Number(p.stock || 0) > 0 ? `Kuota tersedia ${Number(p.stock || 0)}` : "Kuota penuh") : (Number(p.stock || 0) > 0 ? `Stok ${Number(p.stock || 0)}` : "Stok habis")}</span>
           </div>
-          <button class="store-buy" data-product-id="${esc(p.id)}" ${Number(p.stock || 0) > 0 ? "" : "disabled"}>${Number(p.stock || 0) > 0 ? "Beli Sekarang" : "Stok Habis"}</button>
+          <button class="store-buy" data-product-id="${esc(p.id)}" ${Number(p.stock || 0) > 0 ? "" : "disabled"}>${Number(p.stock || 0) > 0 ? (p.category === "panel-pterodactyl" ? "Pesan Panel" : "Beli Sekarang") : (p.category === "panel-pterodactyl" ? "Kuota Penuh" : "Stok Habis")}</button>
         </div>
       </article>`;
   }
@@ -491,7 +491,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
               <span class="product-detail-kicker">PRODUK KIVOPAY</span>
               <h2>${esc(product.name)}</h2>
               <div class="product-detail-rating">${stars(product.rating_average || 0)} <span>${Number(product.rating_count || 0) ? `${Number(product.rating_average || 0).toFixed(1)} • ${Number(product.rating_count)} ulasan` : "Belum ada ulasan"}</span></div>
-              <div class="product-detail-price"><div><small>Harga mulai</small><strong>${rupiah(startPrice)}</strong></div><span>${Number(product.stock || 0) > 0 ? `Stok ${Number(product.stock || 0)}` : "Cek pilihan paket"}</span></div>
+              <div class="product-detail-price"><div><small>Harga mulai</small><strong>${rupiah(startPrice)}</strong></div><span>${product.category === "panel-pterodactyl" ? (Number(product.stock || 0) > 0 ? `Kuota pesanan ${Number(product.stock || 0)}` : "Kuota sedang penuh") : (Number(product.stock || 0) > 0 ? `Stok ${Number(product.stock || 0)}` : "Cek pilihan paket")}</span></div>
             </div>
           </div>
           <div class="product-detail-content">

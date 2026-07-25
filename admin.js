@@ -209,8 +209,8 @@
     document.querySelectorAll("[data-delete]").forEach(btn=>btn.onclick=()=>deleteProduct(btn.dataset.delete));
     const stockSelect=$("#stockProduct");
     if(stockSelect){
-      stockSelect.innerHTML=productsCache.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
-      updateStockVariants();
+      stockSelect.innerHTML=productsCache.filter(p=>p.category!=="panel-pterodactyl").map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      if(stockSelect.options.length){ updateStockVariants(); } else { stockSelect.innerHTML=`<option value="">Tidak ada produk auto-delivery</option>`; stockSelect.disabled=true; }
       loadStockSummary();
     }
   }
