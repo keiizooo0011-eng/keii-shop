@@ -26,6 +26,6 @@ async function changePanelStock(action){
 $('#panelStockForm')?.addEventListener('submit',e=>{e.preventDefault();changePanelStock('add')});
 document.querySelector('[data-panel-stock-action="set"]')?.addEventListener('click',()=>changePanelStock('set'));
 document.querySelector('[data-panel-stock-action="subtract"]')?.addEventListener('click',()=>changePanelStock('subtract'));
-document.querySelector('[data-admin-page-btn="stock"]')?.addEventListener('click',loadPanelStockManager);
-loadPanelStockManager();
+document.querySelector('[data-admin-page-btn="panel-stock"]')?.addEventListener('click',loadPanelStockManager);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.querySelector('[data-admin-page="panel-stock"]')?.classList.contains('active'))loadPanelStockManager()});
 })();

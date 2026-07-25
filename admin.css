@@ -182,3 +182,12 @@ body.kivo-light.admin-body{background:#f4f5fb;color:#171a22}body.kivo-light .adm
 .panel-stock-actions{grid-column:1/-1;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px}.panel-stock-actions button{min-height:48px;border-radius:14px}.panel-stock-note{margin-top:16px;padding:15px 16px;border-radius:16px;border:1px solid rgba(96,165,250,.2);background:rgba(96,165,250,.07);display:grid;gap:5px}.panel-stock-note strong{color:#c4b5fd}.panel-stock-note span{color:var(--muted,#a7a4b3);line-height:1.55}
 .panel-stock-list{display:grid;gap:10px;margin-top:14px}.panel-stock-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 16px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:rgba(255,255,255,.025)}.panel-stock-row div{display:grid;gap:3px}.panel-stock-row small{color:#a78bfa;font-weight:850;letter-spacing:.12em}.panel-stock-row span{color:var(--muted,#a7a4b3)}.panel-stock-row b{font-size:1.65rem;color:#fff}
 @media(max-width:640px){.panel-stock-manager{padding:17px}.panel-stock-manager-head{display:grid}.panel-stock-status{justify-self:start}.panel-stock-form{grid-template-columns:1fr}.panel-stock-actions{grid-template-columns:1fr}.panel-stock-actions button{width:100%}}
+
+/* V56 — dedicated Panel Pterodactyl quota page */
+.panel-stock-page{max-width:980px;margin-inline:auto}
+.panel-stock-explainer{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 20px}
+.panel-stock-explainer article{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:16px;border:1px solid rgba(139,92,246,.18);border-radius:17px;background:rgba(255,255,255,.025)}
+.panel-stock-explainer article>span{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:rgba(139,92,246,.14);color:#c4b5fd;font-weight:900}
+.panel-stock-explainer strong,.panel-stock-explainer p{display:block;margin:0}.panel-stock-explainer p{margin-top:5px;color:var(--muted,#a7a4b3);font-size:.86rem;line-height:1.5}
+.panel-stock-list .panel-stock-row b::after{content:' kuota';font-size:.72rem;font-weight:700;color:#9b93a8;margin-left:5px}
+@media(max-width:760px){.panel-stock-explainer{grid-template-columns:1fr}.admin-module-nav [data-admin-page-btn="panel-stock"]{border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.09)}}

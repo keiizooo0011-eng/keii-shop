@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=16.6.9">
+  <link rel="stylesheet" href="admin.css?v=16.7.0">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
@@ -49,7 +49,8 @@
         <button data-admin-page-btn="products">🛍️ Produk</button>
         <button data-admin-page-btn="robux-catalog">💎 Katalog Robux</button>
         <button data-admin-page-btn="robux-orders">🎮 Proses Robux <span id="robuxPendingBadge" class="admin-nav-badge" hidden>0</span></button>
-        <button data-admin-page-btn="stock">📦 Stok</button>
+        <button data-admin-page-btn="stock">📦 Stok APK</button>
+        <button data-admin-page-btn="panel-stock">&gt;_ Kuota Panel</button>
         <a class="admin-game-nav-link" href="admin-games.html">🎮 Game Top Up</a>
         <button data-admin-page-btn="moderation">💬 Moderasi</button>
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
@@ -227,10 +228,26 @@
           <button id="stockSubmitButton" type="submit">Tambahkan Stok</button>
         </form>
         <div id="stockMessage" class="admin-message"></div><div id="stockSummary" class="stock-summary"></div>
-        <section class="panel-stock-manager" aria-labelledby="panelStockTitle">
+
+      </section>
+
+
+      </div>
+
+      <div class="admin-page" data-admin-page="panel-stock">
+        <section class="admin-panel panel-stock-manager panel-stock-page" aria-labelledby="panelStockTitle">
           <div class="panel-stock-manager-head">
-            <div><span class="eyebrow">MANUAL FULFILLMENT</span><h3 id="panelStockTitle">Kuota Pesanan Panel</h3><p class="muted">Stok panel berupa kuota pesanan yang bisa diterima. Tidak perlu mengunggah email, password, atau data akses.</p></div>
-            <span class="panel-stock-status">Diproses manual</span>
+            <div>
+              <span class="eyebrow">PANEL ORDER CAPACITY</span>
+              <h2 id="panelStockTitle">Kuota Pesanan Panel</h2>
+              <p class="muted">Atur jumlah pesanan Panel Pterodactyl yang masih dapat diterima. Sistem ini terpisah dari stok akun APK Premium.</p>
+            </div>
+            <span class="panel-stock-status">Proses manual</span>
+          </div>
+          <div class="panel-stock-explainer">
+            <article><span>01</span><div><strong>Pilih produk panel</strong><p>Produk kategori Panel Pterodactyl akan tampil otomatis.</p></div></article>
+            <article><span>02</span><div><strong>Masukkan jumlah</strong><p>Contoh: isi 10 lalu tekan Tambah Kuota.</p></div></article>
+            <article><span>03</span><div><strong>Pesanan diproses admin</strong><p>Setelah pembayaran, kuota berkurang satu dan pelanggan memantau Riwayat Panel.</p></div></article>
           </div>
           <form id="panelStockForm" class="panel-stock-form">
             <label>Produk Panel<select id="panelStockProduct" required><option value="">Memuat produk panel...</option></select></label>
@@ -241,13 +258,10 @@
               <button type="button" class="danger ghost" data-panel-stock-action="subtract">Kurangi</button>
             </div>
           </form>
-          <div class="panel-stock-note"><strong>Informasi untuk pelanggan</strong><span>Setelah pembayaran terverifikasi, pesanan akan diproses admin. Pelanggan dapat memantau status dan data akses melalui Riwayat Panel.</span></div>
+          <div class="panel-stock-note"><strong>Informasi yang tampil kepada pelanggan</strong><span>Pesanan panel diproses manual setelah pembayaran berhasil. Status pengerjaan dan data akses akan selalu tersedia melalui Riwayat Panel.</span></div>
           <div id="panelStockMessage" class="admin-message"></div>
           <div id="panelStockList" class="panel-stock-list"></div>
         </section>
-      </section>
-
-
       </div>
 
       <div class="admin-page" data-admin-page="moderation">
@@ -328,7 +342,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=19.0.0"></script>
-  <script src="panel-admin.js?v=55"></script>
+  <script src="panel-admin.js?v=56"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 </body>
