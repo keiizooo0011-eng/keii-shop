@@ -3778,3 +3778,56 @@ body.kivo-light{
     padding: 10px !important;
   }
 }
+
+/* ===== V49 — QRIS safe quiet-zone fix =====
+   Keep a clean white margin around every side of the QR so small screens,
+   screenshots and scanner previews never make the code look cropped. */
+.qris-box,
+.qris-box.large {
+  box-sizing: border-box !important;
+  width: min(330px, calc(100vw - 64px)) !important;
+  max-width: 100% !important;
+  padding: clamp(18px, 5vw, 24px) !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  overflow: visible !important;
+}
+
+.qris-box img,
+.qris-box.large img,
+.qris-box canvas,
+.qris-box.large canvas {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 282px !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border-radius: 0 !important;
+  clip-path: none !important;
+}
+
+@media (max-width: 390px) {
+  .qris-box,
+  .qris-box.large {
+    width: min(300px, calc(100vw - 48px)) !important;
+    padding: 18px !important;
+  }
+
+  .qris-box img,
+  .qris-box.large img,
+  .qris-box canvas,
+  .qris-box.large canvas {
+    max-width: 254px !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .qris-box,
+  .qris-box.large {
+    width: calc(100vw - 36px) !important;
+    padding: 16px !important;
+  }
+}
