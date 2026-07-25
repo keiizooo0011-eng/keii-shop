@@ -3726,3 +3726,55 @@ body.kivo-light{
     border-radius: 14px !important;
   }
 }
+
+/* ===== V48 — QRIS intrinsic-size fix (no stretching / no cropping) ===== */
+.payment-qris-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  overflow: visible !important;
+}
+
+.qris-box,
+.qris-box.large {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: min(320px, calc(100vw - 72px)) !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  padding: 12px !important;
+  background: #fff !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  overflow: visible !important;
+}
+
+.qris-box img,
+.qris-box.large img,
+.qris-box canvas,
+.qris-box.large canvas {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  animation: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+@media (max-width: 380px) {
+  .qris-box,
+  .qris-box.large {
+    width: min(286px, calc(100vw - 54px)) !important;
+    padding: 10px !important;
+  }
+}
