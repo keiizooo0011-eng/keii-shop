@@ -559,7 +559,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         try {
           const response = await fetch("/api/create-order", {
             method: "POST",
-            headers: {"Content-Type":"application/json"},
+            headers: await kivoAuthHeaders({"Content-Type":"application/json"}),
             body: JSON.stringify({
               product_id: product.id,
               variant_index: variantIndex,

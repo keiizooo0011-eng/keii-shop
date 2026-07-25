@@ -3613,3 +3613,38 @@ body.kivo-light{
 .premium-order-detail .secondary-btn+.secondary-btn{margin-top:10px}.premium-detail-list{align-content:start}
 @keyframes dotWave{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}@keyframes loaderFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}@keyframes orbitRing{to{transform:rotate(360deg)}}@keyframes qrisGlow{0%,100%{transform:scale(.85);opacity:.55}50%{transform:scale(1.18);opacity:1}}@keyframes qrisScan{0%,100%{top:8%;opacity:.3}50%{top:88%;opacity:1}}@keyframes paymentCardIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}@keyframes statusPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}50%{box-shadow:0 0 0 8px rgba(245,158,11,.06)}}
 @media(max-width:760px){.qris-creator-loading{min-height:320px}.qris-box.large{min-height:250px;border-width:7px}.qris-box.large img,.qris-box.large canvas{max-width:225px!important}.payment-flow-card .flow-card-head{text-align:center}.payment-flow-card .flow-status{margin-left:auto;margin-right:auto}.payment-flow-grid{gap:14px}.payment-qris-panel,.payment-info-panel{border-radius:19px}.payment-info-panel .flow-detail-list{grid-template-columns:105px 1fr}.premium-order-detail .order-detail-grid{gap:14px}}
+
+/* ===== V46 — Static QRIS for maximum scanner compatibility ===== */
+.qris-box,
+.qris-box.large,
+.qris-box img,
+.qris-box canvas,
+.qris-box.large img,
+.qris-box.large canvas {
+  animation: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Remove the animated scan line that passes over the QR code. */
+.qris-box.large::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+/* Keep the QR area completely still and clean. */
+.qris-box.large {
+  overflow: visible !important;
+  background: #fff !important;
+  isolation: isolate;
+}
+
+.qris-box.large img,
+.qris-box.large canvas {
+  position: relative;
+  z-index: 2;
+  display: block;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}

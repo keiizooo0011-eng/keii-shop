@@ -13,11 +13,23 @@
       return m ? {label:m[1].trim(),value:m[2].trim()} : {label:`Data ${i+1}`,value:line};
     });
   }
+  function saveOrderSnapshot(order){
+    if(!order?.invoice)return;
+    try{
+      const key='kivopay_order_snapshots';
+      const rows=JSON.parse(localStorage.getItem(key)||'[]').filter(Boolean);
+      const next=[order,...rows.filter(item=>item?.invoice!==order.invoice)].slice(0,100);
+      localStorage.setItem(key,JSON.stringify(next));
+      const ids=JSON.parse(localStorage.getItem('kivopay_order_invoices')||'[]').filter(Boolean);
+      localStorage.setItem('kivopay_order_invoices',JSON.stringify([order.invoice,...ids.filter(x=>x!==order.invoice)].slice(0,100)));
+    }catch(_){}
+  }
   async function getOrder(){
     const r=await fetch('/api/check-payment?invoice='+encodeURIComponent(invoice),{cache:'no-store'});
     const raw=await r.text(); let d={};
     try{d=raw?JSON.parse(raw):{};}catch{throw new Error('Respons server pembayaran tidak valid.');}
     if(!r.ok) throw new Error(d.error||'Pesanan tidak ditemukan.');
+    saveOrderSnapshot(d.order);
     return d.order;
   }
   function cachedPayment(){

@@ -109,6 +109,12 @@
 
     if (error) {
       console.warn('KivoPay live orders:', error.message || error);
+      if (PAGE_HAS_FEED) {
+        const list=document.getElementById('kivoLiveOrderList');
+        const count=document.getElementById('kivoLiveOrderCount');
+        if(count)count.textContent='Aktivitas belum tersedia';
+        if(list)list.innerHTML='<div class="kivo-live-empty"><span>◎</span><strong>Belum ada aktivitas terbaru</strong><p>Pesanan baru akan tampil otomatis setelah transaksi masuk.</p></div>';
+      }
       return;
     }
 
@@ -157,7 +163,12 @@
       auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
     });
 
+    const loadingGuard=setTimeout(()=>{
+      const list=document.getElementById('kivoLiveOrderList');
+      if(list&&/Memuat order terbaru/.test(list.textContent||''))renderFeed([]);
+    },7000);
     await fetchOrders();
+    clearTimeout(loadingGuard);
     startRealtime();
     pollTimer = setInterval(() => fetchOrders({ notify:true }), POLL_INTERVAL);
     document.addEventListener('visibilitychange', () => {
