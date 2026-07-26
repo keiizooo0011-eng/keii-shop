@@ -489,150 +489,110 @@
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]));
   const uid = () => (window.crypto?.randomUUID?.() || `cs-${Date.now()}-${Math.random().toString(16).slice(2)}`);
-  const setMessage = (el, text, type="") => {
-    if (!el) return;
-    el.textContent = text;
-    el.className = `admin-message ${type}`.trim();
-  };
+  const setMessage = (el, text, type="") => { if(el){ el.textContent=text; el.className=`admin-message ${type}`.trim(); } };
 
   const buttons=[...document.querySelectorAll('[data-admin-page-btn]')];
   const pages=[...document.querySelectorAll('[data-admin-page]')];
-  function openPage(name){
-    buttons.forEach(b=>b.classList.toggle('active',b.dataset.adminPageBtn===name));
-    pages.forEach(p=>p.classList.toggle('active',p.dataset.adminPage===name));
-    localStorage.setItem('kivopay_admin_page',name);
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+  function openPage(name){buttons.forEach(b=>b.classList.toggle('active',b.dataset.adminPageBtn===name));pages.forEach(p=>p.classList.toggle('active',p.dataset.adminPage===name));localStorage.setItem('kivopay_admin_page',name);window.scrollTo({top:0,behavior:'smooth'});}
   buttons.forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.adminPageBtn)));
-  const savedPage=localStorage.getItem('kivopay_admin_page');
-  if(savedPage && pages.some(p=>p.dataset.adminPage===savedPage)) openPage(savedPage);
+  const savedPage=localStorage.getItem('kivopay_admin_page'); if(savedPage&&pages.some(p=>p.dataset.adminPage===savedPage)) openPage(savedPage);
 
-  const toggle=document.querySelector('#adminThemeToggle');
-  function applyTheme(theme){
-    document.body.classList.toggle('admin-light',theme==='light');
-    document.documentElement.style.colorScheme=theme;
-    if(toggle) toggle.textContent=theme==='light'?'Mode Malam':'Mode Siang';
-    localStorage.setItem('kivopay_admin_theme',theme);
-  }
+  const toggle=$('#adminThemeToggle');
+  function applyTheme(theme){document.body.classList.toggle('admin-light',theme==='light');document.documentElement.style.colorScheme=theme;if(toggle)toggle.textContent=theme==='light'?'Mode Malam':'Mode Siang';localStorage.setItem('kivopay_admin_theme',theme)}
   applyTheme(localStorage.getItem('kivopay_admin_theme')||'dark');
   toggle?.addEventListener('click',()=>applyTheme(document.body.classList.contains('admin-light')?'dark':'light'));
 
   const cfg=window.KIVOPAY_CONFIG||{};
-  const configured=cfg.supabaseUrl && cfg.supabaseAnonKey && !String(cfg.supabaseUrl).startsWith('ISI_') && !String(cfg.supabaseAnonKey).startsWith('ISI_');
-  const csDb=configured && window.supabase ? window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey) : null;
-  const CS_SETTING_KEY='customer_service_agents';
-  const defaultCsAgents=()=>[
-    {id:uid(),name:'CS 1',channel:'whatsapp',contact:cfg.csWhatsapp||'',status:'online'},
-    {id:uid(),name:'CS 2',channel:'telegram',contact:cfg.csTelegram||'',status:'offline'}
+  const configured=cfg.supabaseUrl&&cfg.supabaseAnonKey&&!String(cfg.supabaseUrl).startsWith('ISI_')&&!String(cfg.supabaseAnonKey).startsWith('ISI_');
+  const csDb=configured&&window.supabase?window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey):null;
+  const AGENT_KEY='customer_service_agents';
+  const CHANNEL_KEY='customer_service_channels';
+  const defaultAgents=()=>[
+    {id:uid(),name:'CUSTOMER SERVICE KIVOPAY',role:'customer_service',channel:'whatsapp',contact:cfg.csWhatsapp||'',status:'online'},
+    {id:uid(),name:'CUSTOMER SS LOGIN APK PREMIUM',role:'apk_login',channel:'telegram',contact:cfg.csTelegram||'',status:'online'}
   ];
   let csAgents=[];
+  let csChannels=[];
 
-  function collectCsEditors(){
+  function ensureChannelManager(){
+    const list=$('#csAgentEditorList'); if(!list||$('#csChannelManager')) return;
+    const section=document.createElement('section');
+    section.id='csChannelManager'; section.className='cs-channel-admin';
+    section.innerHTML=`<div class="cs-channel-admin-head"><div><small>SALURAN RESMI</small><h3>JOIN SALURAN KIVOPAY</h3><p>Kelola link komunitas secara terpisah dari Customer Service.</p></div><button type="button" id="addCsChannelBtn">+ Tambah Saluran</button></div><div id="csChannelEditorList"></div>`;
+    list.insertAdjacentElement('afterend',section);
+    $('#addCsChannelBtn')?.addEventListener('click',()=>{collectChannels();csChannels.push({id:uid(),name:'Saluran KivoPay',channel:'link',contact:''});renderChannels();});
+  }
+
+  function collectAgents(){
     csAgents=[...document.querySelectorAll('.cs-agent-editor')].map((card,i)=>({
       id:card.dataset.csId||uid(),
       name:card.querySelector('[data-cs-name]')?.value.trim()||`CS ${i+1}`,
+      role:card.querySelector('[data-cs-role]')?.value||(i===0?'customer_service':'apk_login'),
       channel:card.querySelector('[data-cs-channel]')?.value||'whatsapp',
       contact:card.querySelector('[data-cs-contact]')?.value.trim()||'',
       status:card.querySelector('[data-cs-status]')?.checked?'online':'offline'
     }));
   }
+  function collectChannels(){
+    csChannels=[...document.querySelectorAll('.cs-channel-editor')].map(card=>({id:card.dataset.channelId||uid(),name:card.querySelector('[data-channel-name]')?.value.trim()||'Saluran KivoPay',channel:card.querySelector('[data-channel-type]')?.value||'link',contact:card.querySelector('[data-channel-contact]')?.value.trim()||''}));
+  }
 
-  function renderCsEditors(){
-    const root=$('#csAgentEditorList');
-    if(!root) return;
+  function syncContact(card,prefix){
+    const select=card.querySelector(`[data-${prefix}-channel], [data-channel-type]`);
+    const input=card.querySelector(`[data-${prefix}-contact], [data-channel-contact]`);
+    const label=card.querySelector(`[data-${prefix}-contact-label], [data-channel-contact-label]`);
+    if(!select||!input) return;
+    const type=select.value;
+    if(label) label.textContent=type==='link'?'URL lengkap':type==='telegram'?'Username / URL Telegram':'Nomor WhatsApp';
+    input.placeholder=type==='link'?'https://contoh.com/saluran':type==='telegram'?'@username atau https://t.me/...':'628xxxxxxxxxx';
+  }
+
+  function renderAgents(){
+    const root=$('#csAgentEditorList'); if(!root)return;
     root.innerHTML=csAgents.map((a,i)=>`<article class="cs-agent-editor" data-cs-id="${esc(a.id)}">
-      <div class="cs-editor-head">
-        <div class="cs-editor-avatar"><span data-kivo-icon="headphones"></span></div>
-        <div><small>CUSTOMER SERVICE ${i+1}</small><strong>${esc(a.name||`CS ${i+1}`)}</strong></div>
-        <label class="cs-status-switch"><input type="checkbox" data-cs-status ${a.status==='online'?'checked':''}><span></span><b>${a.status==='online'?'Online':'Offline'}</b></label>
-      </div>
+      <div class="cs-editor-head"><div class="cs-editor-avatar"><span data-kivo-icon="headphones"></span></div><div><small>${a.role==='apk_login'?'KHUSUS APK PREMIUM':'CUSTOMER SERVICE UTAMA'}</small><strong>${esc(a.name)}</strong></div><label class="cs-status-switch"><input type="checkbox" data-cs-status ${a.status==='online'?'checked':''}><span></span><b>${a.status==='online'?'Online':'Offline'}</b></label></div>
       <div class="cs-editor-grid">
-        <label>Nama tampilan<input data-cs-name value="${esc(a.name||'')}" placeholder="Contoh: CS 1"></label>
-        <label>Saluran<select data-cs-channel><option value="whatsapp" ${a.channel==='whatsapp'?'selected':''}>WhatsApp</option><option value="telegram" ${a.channel==='telegram'?'selected':''}>Telegram</option><option value="link" ${a.channel==='link'?'selected':''}>Link lainnya</option></select></label>
-        <label class="cs-contact-field"><span data-cs-contact-label>${a.channel==='link'?'URL saluran':'Nomor / username'}</span><input data-cs-contact value="${esc(a.contact||'')}" placeholder="${a.channel==='link'?'https://contoh.com/saluran':'628xxx, @username, atau URL Telegram'}"></label>
+        <label>Nama tampilan<input data-cs-name value="${esc(a.name)}" placeholder="Nama petugas"></label>
+        <label>Role<select data-cs-role><option value="customer_service" ${a.role==='customer_service'?'selected':''}>Customer Service</option><option value="apk_login" ${a.role==='apk_login'?'selected':''}>Customer SS Login APK Premium</option></select></label>
+        <label>Kontak melalui<select data-cs-channel><option value="whatsapp" ${a.channel==='whatsapp'?'selected':''}>WhatsApp</option><option value="telegram" ${a.channel==='telegram'?'selected':''}>Telegram</option><option value="link" ${a.channel==='link'?'selected':''}>Link langsung</option></select></label>
+        <label class="cs-contact-field"><span data-cs-contact-label>Kontak</span><input data-cs-contact value="${esc(a.contact)}"></label>
       </div>
-      <button type="button" class="ghost-danger cs-remove-agent" ${csAgents.length<=1?'disabled':''}>Hapus Customer Service</button>
+      <p class="cs-role-note">${a.role==='customer_service'?'Jika role ini offline, tombol Tiket Bantuan otomatis muncul untuk user.':'Role ini khusus menerima screenshot login akun APK Premium dan tidak memengaruhi tombol tiket bantuan.'}</p>
     </article>`).join('');
-
-    root.querySelectorAll('[data-cs-channel]').forEach(select=>{
-      const syncContactField=()=>{
-        const card=select.closest('.cs-agent-editor');
-        const input=card?.querySelector('[data-cs-contact]');
-        const label=card?.querySelector('[data-cs-contact-label]');
-        const isLink=select.value==='link';
-        if(label) label.textContent=isLink?'URL saluran':'Nomor / username';
-        if(input) input.placeholder=isLink?'https://contoh.com/saluran':'628xxx, @username, atau URL Telegram';
-      };
-      select.addEventListener('change',syncContactField);
-      syncContactField();
-    });
-
-    root.querySelectorAll('[data-cs-status]').forEach(input=>input.addEventListener('change',()=>{
-      const card=input.closest('.cs-agent-editor');
-      const label=card?.querySelector('.cs-status-switch b');
-      if(label) label.textContent=input.checked?'Online':'Offline';
-    }));
-    root.querySelectorAll('.cs-remove-agent').forEach(btn=>btn.addEventListener('click',()=>{
-      collectCsEditors();
-      const id=btn.closest('.cs-agent-editor')?.dataset.csId;
-      csAgents=csAgents.filter(x=>x.id!==id);
-      renderCsEditors();
-    }));
+    root.querySelectorAll('.cs-agent-editor').forEach(card=>{const ch=card.querySelector('[data-cs-channel]');ch?.addEventListener('change',()=>syncContact(card,'cs'));syncContact(card,'cs');card.querySelector('[data-cs-status]')?.addEventListener('change',e=>{const b=card.querySelector('.cs-status-switch b');if(b)b.textContent=e.target.checked?'Online':'Offline'});card.querySelector('[data-cs-role]')?.addEventListener('change',()=>{collectAgents();renderAgents()})});
     window.KivoIcons?.refresh?.();
   }
 
-  async function loadCsSettings(){
-    const root=$('#csAgentEditorList');
-    if(!root) return;
-    root.innerHTML='<div class="cs-admin-loading"><span></span><p>Memuat pengaturan Customer Service...</p></div>';
-    if(!csDb){
-      csAgents=defaultCsAgents();
-      renderCsEditors();
-      setMessage($('#csSettingsMessage'),'Supabase belum dikonfigurasi. Data sementara tetap dapat diedit, tetapi belum bisa disimpan ke website.','error');
-      return;
-    }
-    try{
-      const {data,error}=await csDb.from('site_settings').select('value').eq('key',CS_SETTING_KEY).maybeSingle();
-      if(error) throw error;
-      csAgents=Array.isArray(data?.value)&&data.value.length?data.value:defaultCsAgents();
-      renderCsEditors();
-    }catch(error){
-      csAgents=defaultCsAgents();
-      renderCsEditors();
-      setMessage($('#csSettingsMessage'),'Pengaturan CS belum tersedia. Jalankan supabase_customer_service_settings.sql satu kali, lalu muat ulang halaman.','error');
-      console.error('Load CS settings failed:',error);
-    }
+  function renderChannels(){
+    ensureChannelManager(); const root=$('#csChannelEditorList'); if(!root)return;
+    root.innerHTML=csChannels.length?csChannels.map(c=>`<article class="cs-channel-editor" data-channel-id="${esc(c.id)}"><div class="cs-channel-grid"><label>Nama saluran<input data-channel-name value="${esc(c.name)}" placeholder="Contoh: Telegram KivoPay"></label><label>Jenis<select data-channel-type><option value="link" ${c.channel==='link'?'selected':''}>Link langsung</option><option value="telegram" ${c.channel==='telegram'?'selected':''}>Telegram</option><option value="whatsapp" ${c.channel==='whatsapp'?'selected':''}>WhatsApp Channel</option></select></label><label><span data-channel-contact-label>URL lengkap</span><input data-channel-contact value="${esc(c.contact)}"></label><button type="button" class="ghost-danger remove-cs-channel">Hapus Saluran</button></div></article>`).join(''):'<p class="cs-channel-empty">Belum ada saluran. Klik “Tambah Saluran”.</p>';
+    root.querySelectorAll('.cs-channel-editor').forEach(card=>{card.querySelector('[data-channel-type]')?.addEventListener('change',()=>syncContact(card,'channel'));syncContact(card,'channel');card.querySelector('.remove-cs-channel')?.addEventListener('click',()=>{collectChannels();csChannels=csChannels.filter(x=>x.id!==card.dataset.channelId);renderChannels()})});
   }
 
-  $('#addCsAgentBtn')?.addEventListener('click',()=>{
-    collectCsEditors();
-    csAgents.push({id:uid(),name:`CS ${csAgents.length+1}`,channel:'whatsapp',contact:'',status:'offline'});
-    renderCsEditors();
-    document.querySelector('.cs-agent-editor:last-child')?.scrollIntoView({behavior:'smooth',block:'center'});
-  });
-
-  $('#csSettingsForm')?.addEventListener('submit',async event=>{
-    event.preventDefault();
-    collectCsEditors();
-    const button=$('#saveCsSettingsBtn');
-    if(button) button.disabled=true;
-    setMessage($('#csSettingsMessage'),'Menyimpan pengaturan Customer Service...');
+  async function loadCsSettings(){
+    const root=$('#csAgentEditorList'); if(!root)return;
+    root.innerHTML='<div class="cs-admin-loading"><span></span><p>Memuat pengaturan Customer Service...</p></div>'; ensureChannelManager();
+    if(!csDb){csAgents=defaultAgents();csChannels=[];renderAgents();renderChannels();setMessage($('#csSettingsMessage'),'Supabase belum dikonfigurasi.','error');return}
     try{
-      if(!csDb) throw new Error('Supabase belum dikonfigurasi di config.js.');
-      const {error}=await csDb.from('site_settings').upsert({key:CS_SETTING_KEY,value:csAgents,updated_at:new Date().toISOString()},{onConflict:'key'});
-      if(error) throw error;
-      setMessage($('#csSettingsMessage'),'Pengaturan berhasil disimpan dan akan tampil di halaman utama.','success');
-      renderCsEditors();
-    }catch(error){
-      setMessage($('#csSettingsMessage'),error.message||'Pengaturan gagal disimpan.','error');
-      console.error('Save CS settings failed:',error);
-    }finally{
-      if(button) button.disabled=false;
-    }
-  });
+      const [{data:a,error:ae},{data:c,error:ce}]=await Promise.all([csDb.from('site_settings').select('value').eq('key',AGENT_KEY).maybeSingle(),csDb.from('site_settings').select('value').eq('key',CHANNEL_KEY).maybeSingle()]);
+      if(ae) throw ae;
+      const saved=Array.isArray(a?.value)?a.value:[];
+      csAgents=(saved.length?saved:defaultAgents()).map((x,i)=>({...x,role:x.role||(i===0?'customer_service':'apk_login')}));
+      csChannels=!ce&&Array.isArray(c?.value)?c.value:[];
+      renderAgents();renderChannels();
+    }catch(error){csAgents=defaultAgents();csChannels=[];renderAgents();renderChannels();setMessage($('#csSettingsMessage'),'Pengaturan CS gagal dimuat.','error');console.error(error)}
+  }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadCsSettings,{once:true});
-  else loadCsSettings();
+  $('#addCsAgentBtn')?.addEventListener('click',()=>{setMessage($('#csSettingsMessage'),'KivoPay memakai dua role CS tetap. Ubah role dan kontak pada dua kartu yang tersedia.','error')});
+  $('#csSettingsForm')?.addEventListener('submit',async event=>{
+    event.preventDefault();collectAgents();collectChannels();
+    const mainCount=csAgents.filter(a=>a.role==='customer_service').length;
+    const apkCount=csAgents.filter(a=>a.role==='apk_login').length;
+    if(mainCount!==1||apkCount!==1){setMessage($('#csSettingsMessage'),'Harus ada tepat 1 Customer Service dan 1 Customer SS Login APK Premium.','error');return}
+    const button=$('#saveCsSettingsBtn');if(button)button.disabled=true;setMessage($('#csSettingsMessage'),'Menyimpan pengaturan...');
+    try{if(!csDb)throw new Error('Supabase belum dikonfigurasi.');const [{error:e1},{error:e2}]=await Promise.all([csDb.from('site_settings').upsert({key:AGENT_KEY,value:csAgents,updated_at:new Date().toISOString()},{onConflict:'key'}),csDb.from('site_settings').upsert({key:CHANNEL_KEY,value:csChannels,updated_at:new Date().toISOString()},{onConflict:'key'})]);if(e1)throw e1;if(e2)throw e2;setMessage($('#csSettingsMessage'),'CS dan saluran berhasil disimpan.','success');renderAgents();renderChannels()}catch(error){setMessage($('#csSettingsMessage'),error.message||'Gagal menyimpan.','error')}finally{if(button)button.disabled=false}
+  });
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadCsSettings,{once:true});else loadCsSettings();
 })();
 
 // ===== KivoPay Helpdesk / Support Tickets =====
