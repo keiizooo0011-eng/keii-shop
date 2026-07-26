@@ -549,25 +549,45 @@
 
   function renderAgents(){
     const root=$('#csAgentEditorList'); if(!root)return;
-    root.innerHTML=csAgents.map((a,i)=>`<article class="cs-agent-editor" data-cs-id="${esc(a.id)}">
+    const normalized=[
+      {...(csAgents.find(a=>a.role==='customer_service')||defaultAgents()[0]),role:'customer_service'},
+      {...(csAgents.find(a=>a.role==='apk_login')||defaultAgents()[1]),role:'apk_login'}
+    ];
+    csAgents=normalized;
+    root.innerHTML=normalized.map(a=>`<article class="cs-agent-editor cs-agent-fixed" data-cs-id="${esc(a.id)}">
       <div class="cs-editor-head"><div class="cs-editor-avatar"><span data-kivo-icon="headphones"></span></div><div><small>${a.role==='apk_login'?'KHUSUS APK PREMIUM':'CUSTOMER SERVICE UTAMA'}</small><strong>${esc(a.name)}</strong></div><label class="cs-status-switch"><input type="checkbox" data-cs-status ${a.status==='online'?'checked':''}><span></span><b>${a.status==='online'?'Online':'Offline'}</b></label></div>
-      <div class="cs-editor-grid">
-        <label>Nama tampilan<input data-cs-name value="${esc(a.name)}" placeholder="Nama petugas"></label>
-        <label>Role<select data-cs-role><option value="customer_service" ${a.role==='customer_service'?'selected':''}>Customer Service</option><option value="apk_login" ${a.role==='apk_login'?'selected':''}>Customer SS Login APK Premium</option></select></label>
+      <input type="hidden" data-cs-role value="${a.role}">
+      <div class="cs-editor-grid cs-editor-grid-fixed">
+        <label class="cs-field-full">Nama tampilan<input data-cs-name value="${esc(a.name)}" placeholder="Nama petugas"></label>
         <label>Kontak melalui<select data-cs-channel><option value="whatsapp" ${a.channel==='whatsapp'?'selected':''}>WhatsApp</option><option value="telegram" ${a.channel==='telegram'?'selected':''}>Telegram</option><option value="link" ${a.channel==='link'?'selected':''}>Link langsung</option></select></label>
         <label class="cs-contact-field"><span data-cs-contact-label>Kontak</span><input data-cs-contact value="${esc(a.contact)}"></label>
       </div>
-      <p class="cs-role-note">${a.role==='customer_service'?'Jika role ini offline, tombol Tiket Bantuan otomatis muncul untuk user.':'Role ini khusus menerima screenshot login akun APK Premium dan tidak memengaruhi tombol tiket bantuan.'}</p>
-      <div class="cs-card-actions"><button type="button" class="cs-delete-agent-btn" data-delete-cs="${esc(a.id)}">Hapus Customer Service</button></div>
+      <p class="cs-role-note">${a.role==='customer_service'?'Jika CS utama offline, tombol Tiket Bantuan otomatis muncul untuk user.':'Khusus menerima screenshot login APK Premium dan tidak memengaruhi tiket bantuan.'}</p>
     </article>`).join('');
-    root.querySelectorAll('.cs-agent-editor').forEach(card=>{const ch=card.querySelector('[data-cs-channel]');ch?.addEventListener('change',()=>syncContact(card,'cs'));syncContact(card,'cs');card.querySelector('[data-cs-status]')?.addEventListener('change',e=>{const b=card.querySelector('.cs-status-switch b');if(b)b.textContent=e.target.checked?'Online':'Offline'});card.querySelector('[data-cs-role]')?.addEventListener('change',()=>{collectAgents();renderAgents()});card.querySelector('.cs-delete-agent-btn')?.addEventListener('click',()=>{collectAgents();if(csAgents.length<=1){setMessage($('#csSettingsMessage'),'Minimal harus ada 1 Customer Service.','error');return}const target=csAgents.find(x=>x.id===card.dataset.csId);if(target?.role==='customer_service'&&csAgents.filter(x=>x.role==='customer_service').length<=1){setMessage($('#csSettingsMessage'),'Customer Service utama tidak bisa dihapus sebelum role utama dipindahkan ke petugas lain.','error');return}if(!window.confirm(`Hapus ${target?.name||'Customer Service'}?`))return;csAgents=csAgents.filter(x=>x.id!==card.dataset.csId);renderAgents();setMessage($('#csSettingsMessage'),'Petugas dihapus dari daftar. Klik Simpan Pengaturan CS untuk menyimpan.','success')})});
+    root.querySelectorAll('.cs-agent-editor').forEach(card=>{
+      const ch=card.querySelector('[data-cs-channel]');
+      ch?.addEventListener('change',()=>syncContact(card,'cs'));
+      syncContact(card,'cs');
+      card.querySelector('[data-cs-status]')?.addEventListener('change',e=>{const b=card.querySelector('.cs-status-switch b');if(b)b.textContent=e.target.checked?'Online':'Offline'});
+    });
     window.KivoIcons?.refresh?.();
   }
 
   function renderChannels(){
     ensureChannelManager(); const root=$('#csChannelEditorList'); if(!root)return;
-    root.innerHTML=csChannels.length?csChannels.map(c=>`<article class="cs-channel-editor" data-channel-id="${esc(c.id)}"><div class="cs-channel-grid"><label>Nama saluran<input data-channel-name value="${esc(c.name)}" placeholder="Contoh: Telegram KivoPay"></label><label>Jenis<select data-channel-type><option value="link" ${c.channel==='link'?'selected':''}>Link langsung</option><option value="telegram" ${c.channel==='telegram'?'selected':''}>Telegram</option><option value="whatsapp" ${c.channel==='whatsapp'?'selected':''}>WhatsApp Channel</option></select></label><label><span data-channel-contact-label>URL lengkap</span><input data-channel-contact value="${esc(c.contact)}"></label><button type="button" class="ghost-danger remove-cs-channel">Hapus Saluran</button></div></article>`).join(''):'<p class="cs-channel-empty">Belum ada saluran. Klik “Tambah Saluran”.</p>';
-    root.querySelectorAll('.cs-channel-editor').forEach(card=>{card.querySelector('[data-channel-type]')?.addEventListener('change',()=>syncContact(card,'channel'));syncContact(card,'channel');card.querySelector('.remove-cs-channel')?.addEventListener('click',()=>{collectChannels();csChannels=csChannels.filter(x=>x.id!==card.dataset.channelId);renderChannels()})});
+    root.innerHTML=csChannels.length?csChannels.map((c,i)=>`<article class="cs-channel-editor" data-channel-id="${esc(c.id)}">
+      <div class="cs-channel-card-head"><div><small>SALURAN ${i+1}</small><strong>${esc(c.name||'Saluran KivoPay')}</strong></div><button type="button" class="remove-cs-channel" aria-label="Hapus saluran">Hapus</button></div>
+      <div class="cs-channel-grid">
+        <label class="cs-field-full">Nama saluran<input data-channel-name value="${esc(c.name)}" placeholder="Contoh: WhatsApp Channel KivoPay"></label>
+        <label>Jenis saluran<select data-channel-type><option value="link" ${c.channel==='link'?'selected':''}>Link langsung</option><option value="telegram" ${c.channel==='telegram'?'selected':''}>Telegram</option><option value="whatsapp" ${c.channel==='whatsapp'?'selected':''}>WhatsApp Channel</option></select></label>
+        <label><span data-channel-contact-label>URL lengkap</span><input data-channel-contact value="${esc(c.contact)}" placeholder="https://..."></label>
+      </div>
+    </article>`).join(''):'<div class="cs-channel-empty"><strong>Belum ada saluran</strong><span>Tekan “Tambah Saluran” untuk menambahkan WhatsApp Channel, Telegram, atau link komunitas.</span></div>';
+    root.querySelectorAll('.cs-channel-editor').forEach(card=>{
+      card.querySelector('[data-channel-type]')?.addEventListener('change',()=>syncContact(card,'channel'));
+      syncContact(card,'channel');
+      card.querySelector('.remove-cs-channel')?.addEventListener('click',()=>{collectChannels();if(!window.confirm('Hapus saluran ini?'))return;csChannels=csChannels.filter(x=>x.id!==card.dataset.channelId);renderChannels()});
+    });
   }
 
   async function loadCsSettings(){
@@ -578,18 +598,17 @@
       const [{data:a,error:ae},{data:c,error:ce}]=await Promise.all([csDb.from('site_settings').select('value').eq('key',AGENT_KEY).maybeSingle(),csDb.from('site_settings').select('value').eq('key',CHANNEL_KEY).maybeSingle()]);
       if(ae) throw ae;
       const saved=Array.isArray(a?.value)?a.value:[];
-      csAgents=(saved.length?saved:defaultAgents()).map((x,i)=>({...x,role:x.role||(i===0?'customer_service':'apk_login')}));
+      const defaults=defaultAgents();
+      const main=saved.find(x=>x.role==='customer_service')||saved[0]||defaults[0];
+      const apk=saved.find(x=>x.role==='apk_login')||saved.find(x=>x.id!==main.id)||defaults[1];
+      csAgents=[{...defaults[0],...main,role:'customer_service'},{...defaults[1],...apk,role:'apk_login'}];
       csChannels=!ce&&Array.isArray(c?.value)?c.value:[];
       renderAgents();renderChannels();
     }catch(error){csAgents=defaultAgents();csChannels=[];renderAgents();renderChannels();setMessage($('#csSettingsMessage'),'Pengaturan CS gagal dimuat.','error');console.error(error)}
   }
-
-  $('#addCsAgentBtn')?.addEventListener('click',()=>{collectAgents();csAgents.push({id:uid(),name:`CUSTOMER SERVICE ${csAgents.length+1}`,role:'apk_login',channel:'whatsapp',contact:'',status:'offline'});renderAgents();setMessage($('#csSettingsMessage'),'Customer Service baru ditambahkan. Atur role dan kontaknya, lalu simpan.','success')});
   $('#csSettingsForm')?.addEventListener('submit',async event=>{
     event.preventDefault();collectAgents();collectChannels();
-    const mainCount=csAgents.filter(a=>a.role==='customer_service').length;
-    const apkCount=csAgents.filter(a=>a.role==='apk_login').length;
-    if(mainCount!==1){setMessage($('#csSettingsMessage'),'Harus ada tepat 1 Customer Service utama. Role APK Premium boleh ditambah atau dihapus sesuai kebutuhan.','error');return}
+    if(csAgents.length!==2){setMessage($('#csSettingsMessage'),'Pengaturan harus memiliki 1 CS utama dan 1 CS APK Premium.','error');return}
     const button=$('#saveCsSettingsBtn');if(button)button.disabled=true;setMessage($('#csSettingsMessage'),'Menyimpan pengaturan...');
     try{if(!csDb)throw new Error('Supabase belum dikonfigurasi.');const [{error:e1},{error:e2}]=await Promise.all([csDb.from('site_settings').upsert({key:AGENT_KEY,value:csAgents,updated_at:new Date().toISOString()},{onConflict:'key'}),csDb.from('site_settings').upsert({key:CHANNEL_KEY,value:csChannels,updated_at:new Date().toISOString()},{onConflict:'key'})]);if(e1)throw e1;if(e2)throw e2;setMessage($('#csSettingsMessage'),'CS dan saluran berhasil disimpan.','success');renderAgents();renderChannels()}catch(error){setMessage($('#csSettingsMessage'),error.message||'Gagal menyimpan.','error')}finally{if(button)button.disabled=false}
   });

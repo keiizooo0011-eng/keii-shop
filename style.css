@@ -4174,3 +4174,31 @@ body.light-mode .copy-mini{background:#f0e8fb!important;color:#674298!important;
   .cs-card-actions{justify-content:stretch}.cs-delete-agent-btn{width:100%}
   .cs-admin-actions-clean #saveCsSettingsBtn{width:100%}
 }
+
+
+/* ===== CS Manager fixed two-role layout V3 ===== */
+.cs-manager-toolbar-fixed{display:block!important;padding:16px 18px!important;border:1px solid rgba(167,139,250,.16);border-radius:18px;background:rgba(255,255,255,.025)}
+.cs-manager-toolbar-fixed>div{display:grid;gap:5px}.cs-manager-toolbar-fixed span{color:#9d93a8;font-size:13px;line-height:1.5}
+.cs-agent-editor-list{display:grid;gap:18px!important;margin-top:18px}
+.cs-agent-fixed{overflow:hidden!important}
+.cs-editor-grid-fixed{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:14px!important}
+.cs-editor-grid-fixed .cs-field-full{grid-column:1/-1}
+.cs-channel-admin{padding:22px!important;overflow:hidden}
+#csChannelEditorList{display:grid;gap:14px}
+.cs-channel-editor{display:block!important;padding:18px!important;border:1px solid rgba(167,139,250,.18)!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(22,14,34,.86),rgba(11,8,18,.92))!important;overflow:hidden!important}
+.cs-channel-card-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.cs-channel-card-head>div{display:grid;gap:4px;min-width:0}.cs-channel-card-head small{font-size:9px;letter-spacing:.16em;color:#a78bfa;font-weight:850}.cs-channel-card-head strong{font-size:15px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cs-channel-card-head .remove-cs-channel{width:auto!important;min-height:38px!important;padding:0 14px!important;border:1px solid rgba(251,113,133,.3)!important;border-radius:11px!important;background:rgba(127,29,29,.16)!important;color:#fda4af!important;font-weight:800!important}
+.cs-channel-grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:14px!important;align-items:end!important}
+.cs-channel-grid label{display:grid!important;gap:8px!important;min-width:0!important;color:#ddd6e8!important;font-size:13px!important;font-weight:800!important}
+.cs-channel-grid .cs-field-full{grid-column:1/-1!important}
+.cs-channel-grid input,.cs-channel-grid select{display:block!important;width:100%!important;min-width:0!important;height:50px!important;margin:0!important;padding:0 15px!important;border:1px solid rgba(167,139,250,.18)!important;border-radius:14px!important;background:#0d0915!important;color:#f8f5ff!important;font:inherit!important;box-sizing:border-box!important;outline:none!important;appearance:auto!important}
+.cs-channel-grid input:focus,.cs-channel-grid select:focus{border-color:#8b5cf6!important;box-shadow:0 0 0 3px rgba(139,92,246,.14)!important}
+.cs-channel-empty{display:grid!important;gap:6px!important;padding:22px!important}.cs-channel-empty strong{color:#f8f5ff}.cs-channel-empty span{color:#9d93a8;line-height:1.5}
+@media(max-width:720px){
+  .cs-editor-grid-fixed,.cs-channel-grid{grid-template-columns:1fr!important}
+  .cs-editor-grid-fixed .cs-field-full,.cs-channel-grid .cs-field-full{grid-column:auto!important}
+  .cs-channel-admin{padding:16px!important}
+  .cs-channel-card-head{align-items:flex-start}
+  .cs-channel-card-head .remove-cs-channel{flex:0 0 auto}
+}
