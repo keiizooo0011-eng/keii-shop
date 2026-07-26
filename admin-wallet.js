@@ -1,15 +1,79 @@
-(()=>{
-const cfg=window.KIVOPAY_CONFIG||{},db=window.supabase&&cfg.supabaseUrl&&cfg.supabaseAnonKey?window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey):null,$=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])),money=v=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(v||0)),date=v=>v?new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v)):'-';
-let data={users:[],deposits:[],transactions:[],stats:{}};
-async function api(options={}){if(!db)throw new Error('Supabase belum dikonfigurasi.');const{data:{session}}=await db.auth.getSession();if(!session)throw new Error('Sesi admin berakhir.');const r=await fetch('/api/admin-wallet',{...options,headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,...(options.headers||{})}}),b=await r.json().catch(()=>({}));if(!r.ok||b.ok===false)throw new Error(b.message||`HTTP ${r.status}`);return b}
-function setText(id,v){const e=$(id);if(e)e.textContent=v}
-function renderStats(){setText('#walletStatBalance',money(data.stats.total_balance));setText('#walletStatDeposit',money(data.stats.total_deposit));setText('#walletStatCompleted',data.stats.completed_deposits||0);setText('#walletStatPending',data.stats.pending_deposits||0)}
-function renderSelect(){const el=$('#walletUserSelect');if(!el)return;const value=el.value;el.innerHTML='<option value="">Pilih pengguna</option>'+data.users.map(u=>`<option value="${esc(u.user_id)}">${esc(u.display_name)} — ${esc(u.email||u.username||'')} (${money(u.balance)})</option>`).join('');el.value=value}
-function renderUsers(){const root=$('#walletUsersList');if(!root)return;const q=($('#walletUserSearch')?.value||'').toLowerCase();const rows=data.users.filter(u=>!q||`${u.display_name} ${u.email} ${u.username}`.toLowerCase().includes(q));root.innerHTML=rows.length?rows.map(u=>`<button type="button" class="wallet-user-row" data-wallet-user="${esc(u.user_id)}"><span><b>${esc(u.display_name)}</b><small>${esc(u.email||u.username||'-')}</small></span><strong>${money(u.balance)}</strong></button>`).join(''):'<p class="muted">Pengguna tidak ditemukan.</p>';root.querySelectorAll('[data-wallet-user]').forEach(b=>b.onclick=()=>{const s=$('#walletUserSelect');s.value=b.dataset.walletUser;s.scrollIntoView({behavior:'smooth',block:'center'})})}
-function statusText(s){return({completed:'Berhasil',pending:'Pending',expired:'Kedaluwarsa',failed:'Gagal'})[s]||s}
-function renderDeposits(){const root=$('#walletDepositsList');if(!root)return;const q=($('#walletDepositSearch')?.value||'').toLowerCase(),st=$('#walletDepositStatus')?.value||'';const rows=data.deposits.filter(d=>(!st||d.status===st)&&(!q||`${d.invoice} ${d.display_name} ${d.email}`.toLowerCase().includes(q)));root.innerHTML=rows.length?rows.map(d=>`<article class="wallet-history-row"><div><b>${esc(d.invoice)}</b><small>${esc(d.display_name)} · ${esc(d.email||'-')}</small></div><div><strong>${money(d.amount)}</strong><small>${date(d.created_at)}</small></div><span class="wallet-status ${esc(d.status)}">${esc(statusText(d.status))}</span></article>`).join(''):'<p class="muted">Belum ada deposit yang sesuai.</p>'}
-function renderTransactions(){const root=$('#walletTransactionsList');if(!root)return;root.innerHTML=data.transactions.length?data.transactions.map(t=>`<article class="wallet-history-row"><div><b>${esc(t.description||t.reference)}</b><small>${esc(t.display_name)} · ${esc(t.reference)}</small></div><div><strong class="${Number(t.amount)>=0?'wallet-plus':'wallet-minus'}">${Number(t.amount)>=0?'+':''}${money(t.amount)}</strong><small>Saldo akhir ${money(t.balance_after)} · ${date(t.created_at)}</small></div><span class="wallet-status ${esc(t.type)}">${esc(t.type)}</span></article>`).join(''):'<p class="muted">Belum ada transaksi saldo.</p>'}
-async function load(){setText('#walletAdjustMessage','Memuat data saldo...');try{data=await api();renderStats();renderSelect();renderUsers();renderDeposits();renderTransactions();setText('#walletAdjustMessage','')}catch(e){setText('#walletAdjustMessage',e.message)}}
-$('#walletAdjustForm')?.addEventListener('submit',async e=>{e.preventDefault();const user_id=$('#walletUserSelect').value,operation=document.querySelector('input[name="walletOperation"]:checked')?.value,amount=Number($('#walletAmount').value),reason=$('#walletReason').value.trim(),btn=$('#walletAdjustSubmit');if(!confirm(`${operation==='add'?'Tambah':'Kurangi'} saldo sebesar ${money(amount)}?`))return;btn.disabled=true;setText('#walletAdjustMessage','Menyimpan perubahan...');try{const b=await api({method:'POST',body:JSON.stringify({user_id,operation,amount,reason})});setText('#walletAdjustMessage',b.message);e.target.reset();document.querySelector('input[name="walletOperation"][value="add"]').checked=true;await load()}catch(err){setText('#walletAdjustMessage',err.message)}finally{btn.disabled=false}});
-$('#refreshAdminWallet')?.addEventListener('click',load);$('#walletUserSearch')?.addEventListener('input',renderUsers);$('#walletDepositSearch')?.addEventListener('input',renderDeposits);$('#walletDepositStatus')?.addEventListener('change',renderDeposits);document.querySelector('[data-admin-page-btn="wallet"]')?.addEventListener('click',load);
-})();
+import { adminClient, authClient } from './_lib.js';
+
+function json(res,status,body){res.status(status).setHeader('Content-Type','application/json');return res.end(JSON.stringify(body))}
+async function requireAdmin(req){
+  const token=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');
+  if(!token)throw new Error('Sesi admin tidak ditemukan.');
+  const verifier=authClient();
+  const{data:userData,error:userError}=await verifier.auth.getUser(token);
+  const db=adminClient();
+  if(userError||!userData?.user)throw new Error('Sesi admin tidak valid.');
+  const{data:admin}=await db.from('admin_users').select('user_id').eq('user_id',userData.user.id).maybeSingle();
+  if(!admin)throw new Error('Akses hanya untuk admin.');
+  return{db,adminUser:userData.user};
+}
+async function authUsersMap(db){
+  const users=[];
+  for(let page=1;page<=10;page++){
+    const{data,error}=await db.auth.admin.listUsers({page,perPage:200});
+    if(error)throw error;
+    users.push(...(data.users||[]));
+    if((data.users||[]).length<200)break;
+  }
+  return new Map(users.map(u=>[u.id,u]));
+}
+export default async function handler(req,res){
+  try{
+    const{db,adminUser}=await requireAdmin(req);
+    if(req.method==='GET'){
+      const [authMapResult,profilesResult,depositsResult,transactionsResult]=await Promise.all([
+        authUsersMap(db),
+        db.from('profiles').select('user_id,display_name,full_name,username,balance,created_at').order('balance',{ascending:false}).limit(500),
+        db.from('deposits').select('id,user_id,invoice,amount,pay_amount,status,created_at,paid_at,expires_at').order('created_at',{ascending:false}).limit(150),
+        db.from('wallet_transactions').select('id,user_id,reference,type,amount,balance_after,description,metadata,created_at').order('created_at',{ascending:false}).limit(200)
+      ]);
+      const authMap=authMapResult;
+      if(profilesResult.error)throw profilesResult.error;
+      if(depositsResult.error)throw depositsResult.error;
+      if(transactionsResult.error)throw transactionsResult.error;
+      const profiles=profilesResult.data||[],deposits=depositsResult.data||[],transactions=transactionsResult.data||[];
+      const decorate=(row)=>{const auth=authMap.get(row.user_id);const p=profiles.find(x=>x.user_id===row.user_id)||{};return{...row,email:auth?.email||'',display_name:p.full_name||p.display_name||p.username||auth?.user_metadata?.full_name||'Pengguna KivoPay'}};
+      const completed=deposits.filter(x=>x.status==='completed');
+      return json(res,200,{ok:true,
+        stats:{total_balance:profiles.reduce((n,p)=>n+Number(p.balance||0),0),total_deposit:completed.reduce((n,d)=>n+Number(d.amount||0),0),completed_deposits:completed.length,pending_deposits:deposits.filter(x=>x.status==='pending').length},
+        users:Array.from(authMap.values()).map(auth=>{const p=profiles.find(x=>x.user_id===auth.id)||{};return{user_id:auth.id,...p,balance:Number(p.balance||0),email:auth.email||'',username:p.username||auth.user_metadata?.username||'',display_name:p.full_name||p.display_name||p.username||auth.user_metadata?.full_name||auth.email?.split('@')[0]||'Pengguna KivoPay'}}).sort((a,b)=>b.balance-a.balance),
+        deposits:deposits.map(decorate),transactions:transactions.map(decorate)
+      });
+    }
+    if(req.method==='POST'){
+      const body=req.body||{};
+      const userId=String(body.user_id||'');
+      const operation=String(body.operation||'');
+      const amount=Math.trunc(Number(body.amount||0));
+      const reason=String(body.reason||'').trim();
+      if(!userId)return json(res,400,{ok:false,message:'Pilih akun pengguna.'});
+      if(!['add','subtract'].includes(operation))return json(res,400,{ok:false,message:'Jenis perubahan saldo tidak valid.'});
+      if(!Number.isSafeInteger(amount)||amount<1000||amount>100000000)return json(res,400,{ok:false,message:'Nominal harus antara Rp1.000 dan Rp100.000.000.'});
+      if(reason.length<5)return json(res,400,{ok:false,message:'Alasan perubahan saldo minimal 5 karakter.'});
+      const reference=`ADMIN-${operation.toUpperCase()}-${Date.now()}-${userId.slice(0,8)}`;
+      const { data: existingProfile } = await db.from('profiles').select('user_id').eq('user_id', userId).maybeSingle();
+      if (!existingProfile) {
+        const { data: authUserData, error: authUserError } = await db.auth.admin.getUserById(userId);
+        if (authUserError) throw authUserError;
+        const authUser = authUserData?.user;
+        const fallbackName = authUser?.user_metadata?.full_name || authUser?.user_metadata?.username || authUser?.email?.split('@')[0] || 'Pengguna KivoPay';
+        const { error: profileError } = await db.from('profiles').insert({user_id:userId,display_name:fallbackName,full_name:fallbackName,username:authUser?.user_metadata?.username||null,balance:0});
+        if (profileError) throw profileError;
+      }
+      const{data,error}=await db.rpc('admin_adjust_wallet',{p_user_id:userId,p_amount:amount,p_operation:operation,p_reference:reference,p_reason:reason,p_admin_user_id:adminUser.id});
+      if(error)throw error;
+      return json(res,200,{ok:true,message:operation==='add'?'Saldo berhasil ditambahkan.':'Saldo berhasil dikurangi.',result:data,reference});
+    }
+    res.setHeader('Allow','GET, POST');
+    return json(res,405,{ok:false,message:'Method tidak didukung.'});
+  }catch(error){
+    const message=error.message||'Terjadi kesalahan.';
+    const status=/admin|sesi/i.test(message)?401:/INSUFFICIENT_BALANCE/i.test(message)?400:500;
+    return json(res,status,{ok:false,message:message.replace('INSUFFICIENT_BALANCE','Saldo pengguna tidak mencukupi.')});
+  }
+}
