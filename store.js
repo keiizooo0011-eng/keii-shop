@@ -792,15 +792,48 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
     }
   }
 
+  const CHAT_REPLY_OPEN = "[[KIVO_REPLY:";
+  const CHAT_REPLY_CLOSE = "]]";
+
+  function parseChatMessage(raw = "") {
+    const text = String(raw || "");
+    if (!text.startsWith(CHAT_REPLY_OPEN)) return { body: text, reply: null };
+    const closeIndex = text.indexOf(CHAT_REPLY_CLOSE);
+    if (closeIndex < 0) return { body: text, reply: null };
+    try {
+      const encoded = text.slice(CHAT_REPLY_OPEN.length, closeIndex);
+      const reply = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+      return { body: text.slice(closeIndex + CHAT_REPLY_CLOSE.length).trim(), reply };
+    } catch {
+      return { body: text, reply: null };
+    }
+  }
+
+  function encodeChatReply(reply) {
+    const payload = JSON.stringify({
+      name: String(reply?.name || "Pengguna").slice(0, 28),
+      text: String(reply?.text || "").replace(/\s+/g, " ").trim().slice(0, 72)
+    });
+    return CHAT_REPLY_OPEN + btoa(unescape(encodeURIComponent(payload))) + CHAT_REPLY_CLOSE;
+  }
+
   function chatItem(item) {
     const time = new Date(item.created_at).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"});
     const mine = item.guest_id && item.guest_id === guestId;
+    const parsed = parseChatMessage(item.message);
+    const replyBlock = parsed.reply ? `
+      <div class="chat-quoted-reply">
+        <strong>${esc(parsed.reply.name)}</strong>
+        <span>${esc(parsed.reply.text)}</span>
+      </div>` : "";
     return `
-      <article class="chat-message ${mine ? "mine" : "other"}">
+      <article class="chat-message ${mine ? "mine" : "other"}" data-chat-name="${esc(item.nickname || "Pengguna")}" data-chat-text="${esc(parsed.body)}">
         <div class="chat-avatar">${esc((item.nickname || "U").slice(0,1).toUpperCase())}</div>
         <div class="chat-bubble-wrap">
           <div class="chat-message-head"><strong>${esc(item.nickname)}${mine ? " • Kamu" : ""}</strong><time>${time}</time></div>
-          <p>${esc(item.message)}</p>
+          ${replyBlock}
+          <p>${esc(parsed.body)}</p>
+          <button class="chat-reply-btn" type="button" aria-label="Balas pesan">Balas</button>
         </div>
       </article>`;
   }
@@ -827,18 +860,65 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
     const form = document.querySelector("#chatForm");
     const nickname = document.querySelector("#chatNickname");
     const input = document.querySelector("#chatInput");
-    if (!form || !sb) return;
+    const counter = document.querySelector("#chatCounter");
+    const replyPreview = document.querySelector("#chatReplyPreview");
+    const replyName = document.querySelector("#chatReplyName");
+    const replyText = document.querySelector("#chatReplyText");
+    const replyCancel = document.querySelector("#chatReplyCancel");
+    if (!form || !sb || !input) return;
+
+    let activeReply = null;
+
+    const resizeComposer = () => {
+      input.style.height = "auto";
+      input.style.height = `${Math.min(Math.max(input.scrollHeight, 52), 156)}px`;
+      if (counter) counter.textContent = `${input.value.length}/280 karakter`;
+    };
+
+    const clearReply = () => {
+      activeReply = null;
+      if (replyPreview) replyPreview.hidden = true;
+      if (replyName) replyName.textContent = "";
+      if (replyText) replyText.textContent = "";
+    };
+
+    const setReply = (name, text) => {
+      activeReply = { name, text };
+      if (replyName) replyName.textContent = name;
+      if (replyText) replyText.textContent = text;
+      if (replyPreview) replyPreview.hidden = false;
+      input.focus();
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
 
     nickname.value = localStorage.getItem("kivo_chat_nickname") || "";
+    input.addEventListener("input", resizeComposer);
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+    replyCancel?.addEventListener("click", clearReply);
+    document.querySelector("#chatMessages")?.addEventListener("click", event => {
+      const button = event.target.closest(".chat-reply-btn");
+      if (!button) return;
+      const message = button.closest(".chat-message");
+      if (!message) return;
+      setReply(message.dataset.chatName || "Pengguna", message.dataset.chatText || "Pesan");
+    });
+    resizeComposer();
+
     form.onsubmit = async event => {
       event.preventDefault();
       const name = nickname.value.trim();
-      const message = input.value.trim();
-      if (!name || !message) return;
+      const body = input.value.trim();
+      if (!name || !body) return;
 
-      const button = form.querySelector("button");
+      const message = activeReply ? `${encodeChatReply(activeReply)}${body}` : body;
+      const button = form.querySelector("button[type='submit']");
       button.disabled = true;
-      button.textContent = "Mengirim...";
+      button.classList.add("is-sending");
 
       try {
         const response = await fetch("/api/chat-message", {
@@ -850,13 +930,15 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         if (!response.ok) throw new Error(data.error || "Pesan gagal dikirim.");
         localStorage.setItem("kivo_chat_nickname", name);
         input.value = "";
+        clearReply();
+        resizeComposer();
         communityCache = null;
         await loadChat(true);
       } catch (error) {
         alert(error.message);
       } finally {
         button.disabled = false;
-        button.textContent = "Kirim";
+        button.classList.remove("is-sending");
       }
     };
 
@@ -869,7 +951,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         if (!payload.new?.is_visible) return;
         const root = document.querySelector("#chatMessages");
         if (!root) return;
-        if (root.querySelector(".community-empty")) root.innerHTML = "";
+        if (root.querySelector(".community-empty, .chat-welcome-state")) root.innerHTML = "";
         root.insertAdjacentHTML("beforeend", chatItem(payload.new));
         root.scrollTop = root.scrollHeight;
       })
