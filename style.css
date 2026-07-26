@@ -4097,3 +4097,31 @@ body.light-mode .copy-mini{background:#f0e8fb!important;color:#674298!important;
   .payment-detail-row.total-row dd{text-align:right}
   .qris-open-btn{grid-template-columns:40px 1fr 22px;min-height:64px!important;padding:10px 14px!important}
 }
+
+
+/* V59 — completed orders open history; product credentials stay complete and readable */
+.history-delivery {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(65, 211, 171, .24);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(10, 48, 47, .52), rgba(10, 18, 30, .78));
+}
+.history-delivery-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.history-delivery-head div { display:grid; gap:4px; }
+.history-delivery-head small { color:#82e7cd; letter-spacing:.16em; font-weight:800; }
+.history-delivery-head strong { color:var(--text, #fff); font-size:1rem; }
+.history-delivery-head > span { flex:none; padding:7px 10px; border-radius:999px; background:rgba(99,102,241,.14); color:#c8bcff; font-size:.78rem; }
+.history-delivery-grid { display:grid; gap:10px; }
+.history-delivery-field { min-width:0; padding:13px 14px; border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(3,8,18,.52); display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 12px; align-items:center; }
+.history-delivery-field > span { grid-column:1/-1; color:#8f98aa; font-size:.73rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+.history-delivery-field > strong { min-width:0; color:#f5f7ff; overflow-wrap:anywhere; word-break:break-word; font-size:.95rem; line-height:1.45; }
+.history-delivery-field > button { border:1px solid rgba(126,87,255,.32); border-radius:10px; padding:8px 11px; background:rgba(104,66,220,.16); color:#d7ccff; font-weight:800; }
+.history-detail-primary { display:flex; align-items:center; justify-content:center; width:100%; margin-top:12px; min-height:46px; border-radius:13px; background:linear-gradient(135deg,#7656ff,#8e2de2); color:#fff !important; font-weight:850; text-decoration:none; }
+.delivery-field strong, .delivery-value { overflow-wrap:anywhere; word-break:break-word; white-space:normal; }
+@media (max-width:480px){
+  .history-delivery { padding:14px; border-radius:17px; }
+  .history-delivery-head { align-items:flex-start; }
+  .history-delivery-field { grid-template-columns:minmax(0,1fr); }
+  .history-delivery-field > button { width:100%; }
+}

@@ -138,12 +138,31 @@
     document.querySelector('#showOrderQris').onclick=()=>openQrisModal({image:qrImage,content:qrContent,total:o.payment_amount,invoice:o.invoice});
     if(o.status==='completed') showDelivery(o);
   }
+  function rememberOrder(o){
+    if(!o?.invoice)return;
+    try{
+      const rows=JSON.parse(localStorage.getItem('kivopay_order_snapshots')||'[]').filter(Boolean);
+      localStorage.setItem('kivopay_order_snapshots',JSON.stringify([o,...rows.filter(x=>x?.invoice!==o.invoice)].slice(0,100)));
+      const ids=JSON.parse(localStorage.getItem('kivopay_order_invoices')||'[]').filter(Boolean);
+      localStorage.setItem('kivopay_order_invoices',JSON.stringify([o.invoice,...ids.filter(x=>x!==o.invoice)].slice(0,100)));
+    }catch{}
+  }
+  function completedHistoryUrl(o){
+    const category=String(o.category||o.product_category||o.service_type||o.order_type||'').toLowerCase();
+    const name=String(o.product_name||'').toLowerCase();
+    if(category==='panel-pterodactyl'||name.includes('pterodactyl')) return 'riwayat-panel.html';
+    if(category==='apk-premium'||category==='apk_premium'||(!category&&!/(sewa\s*bot|bot\s*(wa|whatsapp|telegram))/i.test(name))) return 'riwayat-apk-premium.html';
+    return 'riwayat-order.html';
+  }
   function showDelivery(o){
     stopped=true;
-    const box=document.querySelector('#deliveryResult');
-    if(box&&!box.children.length){box.innerHTML=deliveryMarkup(o);bindDelivery(o);}
-    const st=document.querySelector('#paymentOrderStatus'); if(st){st.className='payment-live-status completed';st.textContent='Pembayaran berhasil • Data produk terkirim otomatis';}
-    const badge=document.querySelector('#orderStatusBadge');if(badge){badge.className='flow-status completed';badge.textContent='Pesanan Selesai';}
+    rememberOrder(o);
+    const st=document.querySelector('#paymentOrderStatus');
+    if(st){st.className='payment-live-status completed';st.textContent='Pembayaran berhasil • Membuka riwayat pesanan...';}
+    const badge=document.querySelector('#orderStatusBadge');
+    if(badge){badge.className='flow-status completed';badge.textContent='Pesanan Selesai';}
+    const target=completedHistoryUrl(o)+'?invoice='+encodeURIComponent(o.invoice||invoice);
+    setTimeout(()=>location.replace(target),700);
   }
   async function poll(){
     if(stopped)return;
@@ -159,7 +178,7 @@
   }
   async function init(){
     if(!invoice){root.innerHTML='<div class="flow-error">Invoice tidak ditemukan.<br><a href="index.html#store">Kembali ke Katalog</a></div>';return;}
-    try{const o=await getOrder(); if(o.order_type==='panel-pterodactyl' && ['paid','processing','completed'].includes(o.status)){location.replace('riwayat-panel.html?invoice='+encodeURIComponent(o.invoice));return;} render(o);if(!['completed','cancelled','failed'].includes(o.status))poll();}
+    try{const o=await getOrder(); if(o.order_type==='panel-pterodactyl' && ['paid','processing','completed'].includes(o.status)){rememberOrder(o);location.replace('riwayat-panel.html?invoice='+encodeURIComponent(o.invoice));return;} if(o.status==='completed'){showDelivery(o);return;} render(o);if(!['completed','cancelled','failed'].includes(o.status))poll();}
     catch(e){root.innerHTML=`<div class="flow-error">${esc(e.message)}<br><a href="index.html#store">Kembali</a></div>`;}
   }
   addEventListener('beforeunload',()=>{stopped=true;});
