@@ -1,0 +1,11 @@
+/* KivoPay Clean Commerce — dashboard cleanup */
+:root{--clean-card:rgba(18,13,28,.82);--clean-line:rgba(167,139,250,.16)}
+.main-nav{display:none!important}.topbar{max-width:1180px;margin:0 auto;padding-inline:18px}.visitor-entry{margin-left:auto}
+/* Keep the homepage focused: hero, categories, recent activity, support */
+.kp-command-center,.home-search-section,.v31-section,.promo-showcase,.user-dashboard,.trust-strip,.why-section,#store,#community,#tools,#faq,.seo-trust{display:none!important}
+main{width:min(1180px,calc(100% - 28px));margin-inline:auto}.hero{min-height:auto!important;margin-top:22px!important;padding:clamp(24px,5vw,58px)!important;border-radius:30px!important}.hero-copy{max-width:650px}.hero h1{font-size:clamp(36px,6vw,66px)!important;line-height:1.02!important}.hero-description{max-width:620px!important}.hero-row{flex-wrap:wrap}
+.kp-platform-grid{margin-top:22px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.kp-platform-item{min-height:190px!important;padding:20px!important;border-radius:22px!important}.kp-platform-item span{font-size:12px!important}.kp-platform-item:nth-child(4){display:none!important}.kp-platform-grid:after{content:"";display:none}
+#live-orders{margin-top:24px!important;padding-top:0!important}.section-head{margin-bottom:14px!important}.section-head h2{font-size:clamp(24px,4vw,38px)!important}
+#support{margin-top:24px!important}.site-footer{margin-top:36px!important}.footer-columns{display:none!important}.footer-shell{padding-block:26px!important}.footer-brand-block{max-width:650px}.footer-bottom{margin-top:18px!important}
+@media(max-width:850px){.kp-platform-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.hero-visual{display:none!important}.hero-copy{max-width:none}.visitor-entry{display:none!important}}
+@media(max-width:520px){main{width:min(100% - 18px,1180px)}.topbar{padding:10px 12px}.hero{padding:24px 18px!important;border-radius:24px!important}.hero h1{font-size:38px!important}.hero-row .btn{width:100%;justify-content:center}.hero-trust{display:grid!important;gap:8px!important}.kp-platform-grid{grid-template-columns:1fr 1fr!important;gap:9px!important}.kp-platform-item{padding:15px!important;min-height:165px!important}.kp-platform-item span{display:none!important}.kp-platform-item strong{font-size:15px!important}}
