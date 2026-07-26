@@ -56,6 +56,7 @@
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
         <button data-admin-page-btn="panel-orders">Panel Orders <span id="panelPendingBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="users">Akun User <span id="userCountBadge" class="admin-nav-badge" hidden>0</span></button>
+        <button data-admin-page-btn="wallet">💰 Saldo & Deposit</button>
         <button data-admin-page-btn="customer-service">Customer Service</button>
         <button data-admin-page-btn="support-tickets">Tiket Bantuan <span id="supportTicketBadge" class="admin-nav-badge" hidden>0</span></button>
       </nav>
@@ -307,6 +308,32 @@
         </section>
       </div>
 
+
+      <div class="admin-page" data-admin-page="wallet">
+        <section class="admin-panel wallet-admin-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">KIVOPAY WALLET CONTROL</span><h2>Saldo & Deposit</h2><p class="muted">Pantau saldo pengguna, riwayat deposit, dan lakukan penyesuaian saldo dengan catatan audit.</p></div><button id="refreshAdminWallet" class="ghost" type="button">Refresh Data</button></div>
+          <div class="wallet-admin-stats">
+            <article><span>Total saldo pengguna</span><strong id="walletStatBalance">Rp0</strong></article>
+            <article><span>Deposit berhasil</span><strong id="walletStatDeposit">Rp0</strong></article>
+            <article><span>Transaksi deposit</span><strong id="walletStatCompleted">0</strong></article>
+            <article><span>Deposit pending</span><strong id="walletStatPending">0</strong></article>
+          </div>
+          <div class="wallet-admin-grid">
+            <form id="walletAdjustForm" class="wallet-adjust-card">
+              <span class="eyebrow">PENYESUAIAN MANUAL</span><h3>Tambah atau Kurangi Saldo</h3>
+              <label>Pengguna</label><select id="walletUserSelect" required><option value="">Pilih pengguna</option></select>
+              <label>Tindakan</label><div class="wallet-operation"><label><input type="radio" name="walletOperation" value="add" checked> Tambah saldo</label><label><input type="radio" name="walletOperation" value="subtract"> Kurangi saldo</label></div>
+              <label>Nominal</label><div class="wallet-money-input"><span>Rp</span><input id="walletAmount" type="number" min="1000" step="1000" placeholder="10.000" required></div>
+              <label>Alasan</label><textarea id="walletReason" rows="3" minlength="5" placeholder="Contoh: Koreksi pembayaran deposit" required></textarea>
+              <button id="walletAdjustSubmit" type="submit">Simpan Perubahan Saldo</button><div id="walletAdjustMessage" class="admin-message"></div>
+            </form>
+            <section class="wallet-user-card"><div class="wallet-section-head"><div><span class="eyebrow">SALDO PENGGUNA</span><h3>Daftar Saldo</h3></div><input id="walletUserSearch" type="search" placeholder="Cari nama atau email"></div><div id="walletUsersList" class="wallet-users-list"></div></section>
+          </div>
+          <section class="wallet-history-card"><div class="wallet-section-head"><div><span class="eyebrow">DEPOSIT HISTORY</span><h3>Riwayat Deposit</h3></div><div class="wallet-filters"><input id="walletDepositSearch" type="search" placeholder="Cari invoice atau pengguna"><select id="walletDepositStatus"><option value="">Semua status</option><option value="completed">Berhasil</option><option value="pending">Pending</option><option value="expired">Kedaluwarsa</option><option value="failed">Gagal</option></select></div></div><div id="walletDepositsList" class="wallet-deposits-list"></div></section>
+          <section class="wallet-history-card"><div class="wallet-section-head"><div><span class="eyebrow">AUDIT LOG</span><h3>Riwayat Perubahan Saldo</h3></div></div><div id="walletTransactionsList" class="wallet-transactions-list"></div></section>
+        </section>
+      </div>
+
       <div class="admin-page" data-admin-page="customer-service">
         <section class="admin-panel cs-admin-panel">
           <div class="admin-panel-head"><div><span class="eyebrow">CUSTOMER SERVICE MANAGER</span><h2>Kelola Tim Customer Service</h2><p class="muted">Atur kontak dan ketersediaan CS yang ditampilkan pada halaman utama.</p></div><div class="admin-live"><i></i><span>Sinkron ke website</span></div></div>
@@ -354,6 +381,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=19.0.0"></script>
+  <script src="admin-wallet.js?v=1.0.0"></script>
   <script src="panel-admin.js?v=58"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
