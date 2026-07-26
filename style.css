@@ -4140,3 +4140,25 @@ body.light-mode .copy-mini{background:#f0e8fb!important;color:#674298!important;
   .chat-message{max-width:94%}.chat-bubble-wrap{min-width:150px}
 }
 .wallet-payment-options,.wallet-checkout-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 16px}.wallet-payment-options label,.wallet-checkout-box label{display:flex;align-items:center;gap:9px;padding:13px;border:1px solid rgba(160,125,255,.2);border-radius:15px;background:rgba(255,255,255,.035);cursor:pointer}.wallet-payment-options span,.wallet-checkout-box label{min-width:0}.wallet-payment-options b,.wallet-checkout-box b{display:block;font-size:13px}.wallet-payment-options small,.wallet-checkout-box small{display:block;opacity:.65;font-size:11px;line-height:1.35}.wallet-checkout-box>span{grid-column:1/-1;font-weight:700}.wallet-payment-options input,.wallet-checkout-box input{accent-color:#8b5cf6}@media(max-width:420px){.wallet-payment-options,.wallet-checkout-box{grid-template-columns:1fr}}
+
+
+/* CS popup mobile visibility fix — hide fixed navigation while support drawer is open. */
+body.support-open{overflow:hidden}
+body.support-open .kivo-bottom-nav,
+body.support-open .bottom-nav,
+body.support-open nav[data-bottom-nav]{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transform:translateX(-50%) translateY(130%)!important;
+}
+body.support-open .floating-cs-agent{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.support-team-card{padding-bottom:max(28px,calc(env(safe-area-inset-bottom) + 22px))}
+@media(max-width:640px){
+  .support-team-card{max-height:94dvh;padding-bottom:max(34px,calc(env(safe-area-inset-bottom) + 26px))}
+  .support-hours-note{margin-bottom:8px}
+}

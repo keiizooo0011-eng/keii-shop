@@ -1676,13 +1676,14 @@ async function initKivoSupport(){
   if(list){
     list.innerHTML=agents.map((a,i)=>{
       const online=a.status==="online";
-      const label=a.channel==="telegram"?"Telegram":"WhatsApp";
+      const label=a.channel==="telegram"?"Telegram":a.channel==="link"?"Saluran":"WhatsApp";
       return `<article class="support-agent-card ${online?'is-online':'is-offline'}"><div class="support-agent-person"><span><svg viewBox="0 0 64 64"><circle cx="32" cy="24" r="10"/><path d="M14 53c2-11 9-16 18-16s16 5 18 16"/><path d="M18 29v-5c0-8 6-14 14-14s14 6 14 14v5"/></svg></span><div><small>CUSTOMER SERVICE ${i+1}</small><strong>${String(a.name||`CS ${i+1}`).replace(/[<>]/g,'')}</strong><em><i class="cs-dot ${online?'online':'offline'}"></i>${online?'Online':'Offline'}</em></div></div><button type="button" data-agent-index="${i}" ${online&&a.contact?'':'disabled'}>${online?'Hubungi via '+label:'Sedang tidak tersedia'}<b data-kivo-icon="chevron-right"></b></button></article>`
     }).join("");
     list.querySelectorAll("[data-agent-index]").forEach(btn=>btn.onclick=()=>{
       const a=agents[Number(btn.dataset.agentIndex)]; if(!a||a.status!=="online") return;
       let url="";
       if(a.channel==="telegram"){const raw=String(a.contact||"").trim();url=raw.startsWith("http")?raw:`https://t.me/${raw.replace(/^@/,"")}`}
+      else if(a.channel==="link"){const raw=String(a.contact||"").trim();url=/^https?:\/\//i.test(raw)?raw:""}
       else {const num=String(a.contact||"").replace(/\D/g,"");url=num?`https://wa.me/${num}?text=${encodeURIComponent(cfg.csMessage||"Halo KivoPay, saya membutuhkan bantuan.")}`:""}
       if(url){
         close();

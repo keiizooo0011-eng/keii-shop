@@ -548,11 +548,24 @@
       </div>
       <div class="cs-editor-grid">
         <label>Nama tampilan<input data-cs-name value="${esc(a.name||'')}" placeholder="Contoh: CS 1"></label>
-        <label>Saluran<select data-cs-channel><option value="whatsapp" ${a.channel==='whatsapp'?'selected':''}>WhatsApp</option><option value="telegram" ${a.channel==='telegram'?'selected':''}>Telegram</option></select></label>
-        <label class="cs-contact-field">Nomor / username<input data-cs-contact value="${esc(a.contact||'')}" placeholder="628xxx, @username, atau URL Telegram"></label>
+        <label>Saluran<select data-cs-channel><option value="whatsapp" ${a.channel==='whatsapp'?'selected':''}>WhatsApp</option><option value="telegram" ${a.channel==='telegram'?'selected':''}>Telegram</option><option value="link" ${a.channel==='link'?'selected':''}>Link lainnya</option></select></label>
+        <label class="cs-contact-field"><span data-cs-contact-label>${a.channel==='link'?'URL saluran':'Nomor / username'}</span><input data-cs-contact value="${esc(a.contact||'')}" placeholder="${a.channel==='link'?'https://contoh.com/saluran':'628xxx, @username, atau URL Telegram'}"></label>
       </div>
       <button type="button" class="ghost-danger cs-remove-agent" ${csAgents.length<=1?'disabled':''}>Hapus Customer Service</button>
     </article>`).join('');
+
+    root.querySelectorAll('[data-cs-channel]').forEach(select=>{
+      const syncContactField=()=>{
+        const card=select.closest('.cs-agent-editor');
+        const input=card?.querySelector('[data-cs-contact]');
+        const label=card?.querySelector('[data-cs-contact-label]');
+        const isLink=select.value==='link';
+        if(label) label.textContent=isLink?'URL saluran':'Nomor / username';
+        if(input) input.placeholder=isLink?'https://contoh.com/saluran':'628xxx, @username, atau URL Telegram';
+      };
+      select.addEventListener('change',syncContactField);
+      syncContactField();
+    });
 
     root.querySelectorAll('[data-cs-status]').forEach(input=>input.addEventListener('change',()=>{
       const card=input.closest('.cs-agent-editor');
