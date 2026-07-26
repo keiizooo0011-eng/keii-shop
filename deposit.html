@@ -1,0 +1,22 @@
+<!doctype html><html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0a0710">
+<title>Deposit Saldo — KivoPay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=40"><link rel="stylesheet" href="bottom-nav.css?v=63"><link rel="stylesheet" href="deposit.css?v=1">
+<style id="authGateStyle">html{background:#090611}body{visibility:hidden}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js?v=2"></script>
+<script>(async()=>{try{if(!window.KivoAuth||!KivoAuth.db)return location.replace('login.html');const s=await KivoAuth.session();if(!s)return location.replace('login.html');document.getElementById('authGateStyle')?.remove()}catch(e){location.replace('login.html')}})();</script>
+</head><body class="deposit-page"><div class="deposit-glow one"></div><div class="deposit-glow two"></div>
+<header class="deposit-header"><a href="index.html" class="brand"><span class="mark">K</span><span>KivoPay</span></a><a href="history.html" class="deposit-history-link">Riwayat</a></header>
+<main class="deposit-shell">
+<section class="deposit-hero"><div><small>DOMPET KIVOPAY</small><h1>Deposit Saldo</h1><p>Isi saldo dengan QRIS. Pembayaran diverifikasi otomatis melalui mutasi Sanpay.</p></div><article class="balance-card"><span>Saldo tersedia</span><strong id="depositBalance">Rp0</strong><small id="balanceHint">Memuat saldo akun...</small></article></section>
+<section class="deposit-layout">
+<form id="depositForm" class="deposit-card"><div class="section-head"><span>1</span><div><small>NOMINAL DEPOSIT</small><h2>Pilih jumlah saldo</h2><p>Nominal utama akan masuk ke saldo. Kode unik hanya untuk verifikasi pembayaran.</p></div></div>
+<div class="quick-amounts" id="quickAmounts"><button type="button" data-amount="10000">Rp10.000</button><button type="button" data-amount="20000">Rp20.000</button><button type="button" data-amount="50000">Rp50.000</button><button type="button" data-amount="100000">Rp100.000</button><button type="button" data-amount="200000">Rp200.000</button><button type="button" data-amount="500000">Rp500.000</button></div>
+<label class="amount-field"><span>Nominal manual</span><div><b>Rp</b><input id="depositAmount" inputmode="numeric" autocomplete="off" placeholder="Minimal 10.000" required></div><small>Kelipatan Rp1.000, maksimal Rp2.000.000.</small></label>
+<div class="payment-method"><span class="method-icon">▦</span><div><small>METODE PEMBAYARAN</small><strong>QRIS Sanpay</strong><p>Dapat dibayar melalui aplikasi bank dan e-wallet yang mendukung QRIS.</p></div><i>✓</i></div>
+<p id="depositMessage" class="deposit-message" aria-live="polite"></p><button id="createDepositBtn" class="deposit-submit" type="submit"><span>Buat Deposit</span><b>→</b></button></form>
+<aside class="deposit-summary"><div class="section-head compact"><span>2</span><div><small>RINGKASAN</small><h2>Detail pembayaran</h2></div></div><dl><div><dt>Saldo masuk</dt><dd id="summaryAmount">Rp0</dd></div><div><dt>Kode unik</dt><dd>Dihitung saat invoice dibuat</dd></div><div class="total"><dt>Total bayar</dt><dd id="summaryTotal">Rp0</dd></div></dl><div class="safe-note"><b>!</b><p>Bayar tepat sesuai total pada invoice. Selisih nominal dapat membuat mutasi tidak cocok.</p></div></aside>
+</section>
+<section class="deposit-history"><div class="history-title"><div><small>TRANSAKSI TERAKHIR</small><h2>Riwayat deposit</h2></div><button id="refreshDeposits" type="button">Muat ulang</button></div><div id="depositHistoryList" class="deposit-history-list"><p class="history-empty">Memuat riwayat deposit...</p></div></section>
+</main><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="deposit.js?v=1"></script><script src="bottom-nav.js?v=63"></script></body></html>
