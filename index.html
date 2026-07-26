@@ -40,6 +40,7 @@
   <link rel="stylesheet" href="home-engagement.css?v=31">
   <link rel="stylesheet" href="kivopay-v34.css?v=34">
   <link rel="stylesheet" href="clean-commerce.css?v=62">
+  <link rel="stylesheet" href="home-wallet.css?v=2">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -65,6 +66,24 @@
   </header>
 
   <main>
+    <section class="home-wallet-panel" aria-label="Saldo akun KivoPay">
+      <div class="home-wallet-copy">
+        <span class="home-wallet-label">SALDO KIVOPAY</span>
+        <div class="home-wallet-value-row">
+          <div>
+            <small>Total saldo kamu</small>
+            <strong id="kpWalletBalance">Rp0</strong>
+            <p id="kpWalletStatus">Saldo akun KivoPay</p>
+          </div>
+          <span class="home-wallet-symbol" aria-hidden="true">Rp</span>
+        </div>
+      </div>
+      <div class="home-wallet-actions">
+        <a class="home-wallet-deposit" href="deposit.html"><span>＋</span> Deposit Saldo</a>
+        <a class="home-wallet-history" href="deposit.html#riwayat">Riwayat Deposit <span>→</span></a>
+      </div>
+    </section>
+
     <section id="home" class="hero hero-premium reveal">
       <div class="hero-copy">
         <span class="badge">KIVOPAY DIGITAL HUB</span>
@@ -92,16 +111,6 @@
     <section class="kp-command-center reveal" aria-label="Pusat akun KivoPay">
       <article class="kp-dashboard-card">
         <div class="kp-card-head"><div><small>MY KIVOPAY</small><h2 id="kpDashboardGreeting">Halo, Member</h2></div><span class="kp-live-pill"><i></i>Sistem online</span></div>
-        <div class="kp-wallet-card">
-          <div class="kp-wallet-top">
-            <div><span>Total Saldo</span><strong id="kpWalletBalance">Rp0</strong><small id="kpWalletStatus">Saldo akun KivoPay</small></div>
-            <span class="kp-wallet-icon" aria-hidden="true">＋</span>
-          </div>
-          <div class="kp-wallet-actions">
-            <a class="kp-deposit-button" href="deposit.html"><span>＋</span> Deposit Saldo</a>
-            <a class="kp-wallet-history" href="deposit.html#riwayat">Lihat Riwayat</a>
-          </div>
-        </div>
         <div class="kp-actions"><a href="account.html">Buka Dashboard</a><a href="history.html">Riwayat Pesanan</a><a href="support-ticket.html">Pusat Bantuan</a></div>
       </article>
       <article class="kp-dashboard-card">
