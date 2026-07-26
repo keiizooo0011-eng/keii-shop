@@ -9,6 +9,13 @@
       const user=session?.user;
       if(!user) return;
       const db=auth.db;
+      try{
+        const {data:profile}=await db.from('profiles').select('balance').eq('user_id',user.id).maybeSingle();
+        setText('kpWalletBalance',formatIDR(profile?.balance||0));
+        setText('kpWalletStatus','Siap dipakai untuk transaksi KivoPay');
+      }catch{
+        setText('kpWalletStatus','Saldo belum dapat dimuat');
+      }
       let count=0, completed=0, pending=0, spending=0;
       const candidates=['orders','game_orders','robux_orders'];
       for(const table of candidates){
