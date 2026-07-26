@@ -323,11 +323,15 @@
 
       <div class="admin-page" data-admin-page="customer-service">
         <section class="admin-panel cs-admin-panel">
-          <div class="admin-panel-head"><div><span class="eyebrow">CUSTOMER SERVICE MANAGER</span><h2>Kelola Tim Customer Service</h2><p class="muted">Atur kontak dan ketersediaan CS yang ditampilkan pada halaman utama.</p></div><div class="admin-live"><i></i><span>Sinkron ke website</span></div></div>
-          <div class="cs-admin-guidance"><span data-kivo-icon="clock"></span><p>Gunakan indikator status untuk membantu pelanggan memahami ketersediaan layanan dan estimasi waktu terbaik untuk menghubungi tim Customer Service.</p></div>
+          <div class="admin-panel-head"><div><span class="eyebrow">CUSTOMER SERVICE MANAGER</span><h2>Kelola Tim Customer Service</h2><p class="muted">Kelola 1 Customer Service utama, 1 penerima SS login APK Premium, dan saluran komunitas secara terpisah.</p></div><div class="admin-live"><i></i><span>Sinkron ke website</span></div></div>
+          <div class="cs-admin-guidance"><span data-kivo-icon="clock"></span><p>Customer Service utama mengatur bantuan umum. Saat role utama offline, tiket bantuan otomatis tersedia. Role APK Premium hanya menerima screenshot login.</p></div>
           <form id="csSettingsForm" class="cs-settings-form">
+            <div class="cs-manager-toolbar">
+              <div><small>DAFTAR PETUGAS</small><strong>Customer Service KivoPay</strong></div>
+              <button type="button" id="addCsAgentBtn" class="cs-add-agent-btn">+ Tambah CS</button>
+            </div>
             <div id="csAgentEditorList" class="cs-agent-editor-list"></div>
-            <div class="cs-admin-actions"><button type="button" id="addCsAgentBtn" class="ghost">Tambah Customer Service</button><button type="submit" id="saveCsSettingsBtn">Simpan Pengaturan CS</button></div>
+            <div class="cs-admin-actions cs-admin-actions-clean"><button type="submit" id="saveCsSettingsBtn">Simpan Pengaturan CS</button></div>
           </form>
           <div id="csSettingsMessage" class="admin-message"></div>
         </section>

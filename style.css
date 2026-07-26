@@ -4141,32 +4141,36 @@ body.light-mode .copy-mini{background:#f0e8fb!important;color:#674298!important;
 }
 .wallet-payment-options,.wallet-checkout-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 16px}.wallet-payment-options label,.wallet-checkout-box label{display:flex;align-items:center;gap:9px;padding:13px;border:1px solid rgba(160,125,255,.2);border-radius:15px;background:rgba(255,255,255,.035);cursor:pointer}.wallet-payment-options span,.wallet-checkout-box label{min-width:0}.wallet-payment-options b,.wallet-checkout-box b{display:block;font-size:13px}.wallet-payment-options small,.wallet-checkout-box small{display:block;opacity:.65;font-size:11px;line-height:1.35}.wallet-checkout-box>span{grid-column:1/-1;font-weight:700}.wallet-payment-options input,.wallet-checkout-box input{accent-color:#8b5cf6}@media(max-width:420px){.wallet-payment-options,.wallet-checkout-box{grid-template-columns:1fr}}
 
-
-/* CS popup mobile visibility fix — hide fixed navigation while support drawer is open. */
-body.support-open{overflow:hidden}
-body.support-open .kivo-bottom-nav,
-body.support-open .bottom-nav,
-body.support-open nav[data-bottom-nav]{
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  transform:translateX(-50%) translateY(130%)!important;
+/* KivoPay CS manager cleanup */
+.cs-manager-toolbar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin:4px 0 18px;padding:16px 18px;border:1px solid rgba(167,139,250,.16);
+  border-radius:18px;background:linear-gradient(135deg,rgba(139,92,246,.10),rgba(20,184,166,.045));
 }
-body.support-open .floating-cs-agent{
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
+.cs-manager-toolbar>div{display:grid;gap:4px;min-width:0}
+.cs-manager-toolbar small{font-size:10px;font-weight:850;letter-spacing:.16em;color:#a78bfa}
+.cs-manager-toolbar strong{font-size:17px;color:#f8f5ff}
+.cs-add-agent-btn,#addCsChannelBtn{
+  flex:0 0 auto;min-height:42px;padding:10px 16px!important;border:1px solid rgba(167,139,250,.32)!important;
+  border-radius:13px!important;background:linear-gradient(135deg,#8b5cf6,#6d28d9)!important;color:#fff!important;
+  font-size:13px!important;font-weight:850!important;box-shadow:0 10px 24px rgba(109,40,217,.22)!important;cursor:pointer;
 }
-.support-team-card{padding-bottom:max(28px,calc(env(safe-area-inset-bottom) + 22px))}
-@media(max-width:640px){
-  .support-team-card{max-height:94dvh;padding-bottom:max(34px,calc(env(safe-area-inset-bottom) + 26px))}
-  .support-hours-note{margin-bottom:8px}
+.cs-card-actions{display:flex;justify-content:flex-end;margin-top:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,.07)}
+.cs-delete-agent-btn{
+  min-height:40px;padding:9px 14px;border:1px solid rgba(251,113,133,.30);border-radius:12px;
+  background:rgba(190,24,93,.10);color:#fda4af;font-size:12px;font-weight:850;cursor:pointer;
 }
-
-/* KivoPay CS roles + separated channel manager */
-.cs-role-note{margin:12px 0 0;padding:11px 12px;border:1px solid rgba(167,139,250,.14);border-radius:12px;background:rgba(139,92,246,.06);color:#a99fb7;font-size:10px;line-height:1.6}
-.cs-channel-admin{margin-top:20px;padding:18px;border:1px solid rgba(167,139,250,.18);border-radius:20px;background:rgba(255,255,255,.025)}
-.cs-channel-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}.cs-channel-admin-head small{color:#b89cff;font-size:9px;letter-spacing:.16em;font-weight:900}.cs-channel-admin-head h3{margin:5px 0 4px;font-size:20px}.cs-channel-admin-head p{margin:0;color:#9d94aa;font-size:11px}.cs-channel-admin-head button{padding:10px 13px;border:1px solid rgba(167,139,250,.25);border-radius:12px;background:rgba(139,92,246,.12);color:#fff;font-weight:800}
-#csChannelEditorList{display:grid;gap:12px}.cs-channel-editor{padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025)}.cs-channel-grid{display:grid;grid-template-columns:1.2fr .8fr 1.4fr auto;gap:10px;align-items:end}.cs-channel-grid label{display:grid;gap:7px;color:#b8afc3;font-size:11px}.cs-channel-grid input,.cs-channel-grid select{width:100%;min-height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:#0c0913;color:#fff}.cs-channel-empty{margin:0;color:#978da5;font-size:11px}
-.support-channel-section{margin-top:18px;padding-top:16px;border-top:1px solid rgba(167,139,250,.14)}.support-channel-title small,.support-channel-title strong{display:block}.support-channel-title small{color:#9c8ab8;font-size:8px;letter-spacing:.16em;font-weight:850}.support-channel-title strong{margin-top:5px;font-size:16px}.support-channel-list{display:grid;gap:9px;margin-top:12px}.support-channel-card{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 14px;border:1px solid rgba(167,139,250,.18);border-radius:13px;background:rgba(139,92,246,.08);color:#fff;text-align:left;cursor:pointer}.support-channel-card span{font-weight:800}.support-channel-card b{color:#bca7ff;font-size:10px}
-@media(max-width:760px){.cs-channel-admin-head{display:grid}.cs-channel-admin-head button{width:100%}.cs-channel-grid{grid-template-columns:1fr}.cs-channel-grid .ghost-danger{width:100%}}
+.cs-delete-agent-btn:hover{background:rgba(190,24,93,.18);border-color:rgba(251,113,133,.48)}
+.cs-admin-actions-clean{justify-content:flex-end!important;margin-top:18px!important}
+.cs-admin-actions-clean #saveCsSettingsBtn{width:min(100%,320px);min-height:48px;border-radius:14px}
+.cs-channel-admin{margin-top:20px;padding:20px;border:1px solid rgba(167,139,250,.16);border-radius:22px;background:rgba(10,7,18,.34)}
+.cs-channel-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.cs-channel-admin-head>div{display:grid;gap:5px}.cs-channel-admin-head small{color:#a78bfa;font-weight:850;letter-spacing:.15em;font-size:10px}
+.cs-channel-admin-head h3{margin:0;color:#fff;font-size:21px}.cs-channel-admin-head p{margin:0;color:#9d93a8;line-height:1.5}
+.cs-channel-empty{margin:0;padding:18px;border:1px dashed rgba(167,139,250,.20);border-radius:14px;color:#9d93a8;text-align:center;background:rgba(255,255,255,.02)}
+@media(max-width:600px){
+  .cs-manager-toolbar,.cs-channel-admin-head{align-items:stretch;flex-direction:column}
+  .cs-add-agent-btn,#addCsChannelBtn{width:100%}
+  .cs-card-actions{justify-content:stretch}.cs-delete-agent-btn{width:100%}
+  .cs-admin-actions-clean #saveCsSettingsBtn{width:100%}
+}

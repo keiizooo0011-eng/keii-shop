@@ -558,8 +558,9 @@
         <label class="cs-contact-field"><span data-cs-contact-label>Kontak</span><input data-cs-contact value="${esc(a.contact)}"></label>
       </div>
       <p class="cs-role-note">${a.role==='customer_service'?'Jika role ini offline, tombol Tiket Bantuan otomatis muncul untuk user.':'Role ini khusus menerima screenshot login akun APK Premium dan tidak memengaruhi tombol tiket bantuan.'}</p>
+      <div class="cs-card-actions"><button type="button" class="cs-delete-agent-btn" data-delete-cs="${esc(a.id)}">Hapus Customer Service</button></div>
     </article>`).join('');
-    root.querySelectorAll('.cs-agent-editor').forEach(card=>{const ch=card.querySelector('[data-cs-channel]');ch?.addEventListener('change',()=>syncContact(card,'cs'));syncContact(card,'cs');card.querySelector('[data-cs-status]')?.addEventListener('change',e=>{const b=card.querySelector('.cs-status-switch b');if(b)b.textContent=e.target.checked?'Online':'Offline'});card.querySelector('[data-cs-role]')?.addEventListener('change',()=>{collectAgents();renderAgents()})});
+    root.querySelectorAll('.cs-agent-editor').forEach(card=>{const ch=card.querySelector('[data-cs-channel]');ch?.addEventListener('change',()=>syncContact(card,'cs'));syncContact(card,'cs');card.querySelector('[data-cs-status]')?.addEventListener('change',e=>{const b=card.querySelector('.cs-status-switch b');if(b)b.textContent=e.target.checked?'Online':'Offline'});card.querySelector('[data-cs-role]')?.addEventListener('change',()=>{collectAgents();renderAgents()});card.querySelector('.cs-delete-agent-btn')?.addEventListener('click',()=>{collectAgents();if(csAgents.length<=1){setMessage($('#csSettingsMessage'),'Minimal harus ada 1 Customer Service.','error');return}const target=csAgents.find(x=>x.id===card.dataset.csId);if(target?.role==='customer_service'&&csAgents.filter(x=>x.role==='customer_service').length<=1){setMessage($('#csSettingsMessage'),'Customer Service utama tidak bisa dihapus sebelum role utama dipindahkan ke petugas lain.','error');return}if(!window.confirm(`Hapus ${target?.name||'Customer Service'}?`))return;csAgents=csAgents.filter(x=>x.id!==card.dataset.csId);renderAgents();setMessage($('#csSettingsMessage'),'Petugas dihapus dari daftar. Klik Simpan Pengaturan CS untuk menyimpan.','success')})});
     window.KivoIcons?.refresh?.();
   }
 
@@ -583,12 +584,12 @@
     }catch(error){csAgents=defaultAgents();csChannels=[];renderAgents();renderChannels();setMessage($('#csSettingsMessage'),'Pengaturan CS gagal dimuat.','error');console.error(error)}
   }
 
-  $('#addCsAgentBtn')?.addEventListener('click',()=>{setMessage($('#csSettingsMessage'),'KivoPay memakai dua role CS tetap. Ubah role dan kontak pada dua kartu yang tersedia.','error')});
+  $('#addCsAgentBtn')?.addEventListener('click',()=>{collectAgents();csAgents.push({id:uid(),name:`CUSTOMER SERVICE ${csAgents.length+1}`,role:'apk_login',channel:'whatsapp',contact:'',status:'offline'});renderAgents();setMessage($('#csSettingsMessage'),'Customer Service baru ditambahkan. Atur role dan kontaknya, lalu simpan.','success')});
   $('#csSettingsForm')?.addEventListener('submit',async event=>{
     event.preventDefault();collectAgents();collectChannels();
     const mainCount=csAgents.filter(a=>a.role==='customer_service').length;
     const apkCount=csAgents.filter(a=>a.role==='apk_login').length;
-    if(mainCount!==1||apkCount!==1){setMessage($('#csSettingsMessage'),'Harus ada tepat 1 Customer Service dan 1 Customer SS Login APK Premium.','error');return}
+    if(mainCount!==1){setMessage($('#csSettingsMessage'),'Harus ada tepat 1 Customer Service utama. Role APK Premium boleh ditambah atau dihapus sesuai kebutuhan.','error');return}
     const button=$('#saveCsSettingsBtn');if(button)button.disabled=true;setMessage($('#csSettingsMessage'),'Menyimpan pengaturan...');
     try{if(!csDb)throw new Error('Supabase belum dikonfigurasi.');const [{error:e1},{error:e2}]=await Promise.all([csDb.from('site_settings').upsert({key:AGENT_KEY,value:csAgents,updated_at:new Date().toISOString()},{onConflict:'key'}),csDb.from('site_settings').upsert({key:CHANNEL_KEY,value:csChannels,updated_at:new Date().toISOString()},{onConflict:'key'})]);if(e1)throw e1;if(e2)throw e2;setMessage($('#csSettingsMessage'),'CS dan saluran berhasil disimpan.','success');renderAgents();renderChannels()}catch(error){setMessage($('#csSettingsMessage'),error.message||'Gagal menyimpan.','error')}finally{if(button)button.disabled=false}
   });
