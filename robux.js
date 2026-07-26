@@ -85,17 +85,18 @@
     e.preventDefault();
     if (!selectedMethod || !selectedPackage) return;
     const btn=$('#robuxContinueBtn');
-    btn.disabled=true; btn.textContent='Membuat QRIS...';
+    const paymentMethod=document.querySelector('input[name="robuxPayment"]:checked')?.value||'qris';
+    btn.disabled=true; btn.textContent=paymentMethod==='balance'?'Memproses Saldo...':'Membuat QRIS...';
     try {
       const response = await fetch('/api/create-robux-order', {
-        method:'POST', headers:{'Content-Type':'application/json'},
+        method:'POST', headers:(window.KivoAuth?await KivoAuth.authHeaders({'Content-Type':'application/json'}):{'Content-Type':'application/json'}),
         body:JSON.stringify({
           method_id:selectedMethod.id, package_id:selectedPackage.id,
           username:$('#robuxUsername').value.trim(), whatsapp:$('#robuxWhatsapp').value.trim(),
           password:$('#robuxPassword').value,
           backup_code_1:$('#robuxBackupCode1').value.trim(),
           backup_code_2:$('#robuxBackupCode2').value.trim(),
-          backup_code_3:$('#robuxBackupCode3').value.trim()
+          backup_code_3:$('#robuxBackupCode3').value.trim(), payment_method:paymentMethod
         })
       });
       const data=await response.json();
@@ -105,8 +106,8 @@
       const invoices=JSON.parse(localStorage.getItem('kivopay_robux_invoices')||'[]');
       localStorage.setItem('kivopay_robux_invoices',JSON.stringify([invoice,...invoices.filter(x=>x!==invoice)].slice(0,30)));
       sessionStorage.setItem('kivopay_robux_payment_'+invoice,JSON.stringify(data));
-      location.href='payment-robux.html?invoice='+encodeURIComponent(invoice);
-    } catch(err) { alert(err.message); }
+      location.href=data.payment_method==='balance'?'riwayat-robux.html?invoice='+encodeURIComponent(invoice):'payment-robux.html?invoice='+encodeURIComponent(invoice);
+    } catch(err) { if(/saldo/i.test(err.message)&&confirm(err.message+'\n\nBuka halaman Deposit Saldo?')) location.href='deposit.html'; else alert(err.message); }
     finally { btn.disabled=false; btn.textContent='Lanjut ke Pembayaran'; }
   });
 

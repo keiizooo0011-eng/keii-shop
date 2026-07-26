@@ -539,6 +539,11 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         <input id="checkoutName" placeholder="Nama kamu">
         <label>Nomor WhatsApp / Telegram</label>
         <input id="checkoutContact" placeholder="Contoh: 62812xxxx">
+        <label>Metode pembayaran</label>
+        <div class="wallet-payment-options">
+          <label><input type="radio" name="checkoutPayment" value="balance" checked><span><b>Saldo KivoPay</b><small>Bayar langsung dari saldo akun</small></span></label>
+          <label><input type="radio" name="checkoutPayment" value="qris"><span><b>QRIS</b><small>Bayar dengan kode QR</small></span></label>
+        </div>
         <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>
         <small class="checkout-auto-note">Setelah pembayaran berhasil, data produk dikirim otomatis dari stok yang tersedia.</small>`;
 
@@ -550,11 +555,12 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         const contact = body.querySelector("#checkoutContact").value.trim();
         const checkoutContact = contact;
         const variantIndex = Number(body.querySelector("#checkoutVariant").value);
+        const paymentMethod = body.querySelector('input[name="checkoutPayment"]:checked')?.value || "qris";
         if (!name || !contact) return alert("Nama dan kontak wajib diisi.");
 
         const submit = body.querySelector("#checkoutSubmit");
         submit.disabled = true;
-        submit.textContent = "Membuat QRIS...";
+        submit.textContent = paymentMethod === "balance" ? "Memproses Saldo..." : "Membuat QRIS...";
 
         try {
           const response = await fetch("/api/create-order", {
@@ -564,7 +570,8 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
               product_id: product.id,
               variant_index: variantIndex,
               customer_name: name,
-              customer_contact: contact
+              customer_contact: contact,
+              payment_method: paymentMethod
             })
           });
           const raw = await response.text();
@@ -585,9 +592,13 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
             sessionStorage.setItem("kivopay_payment_" + invoice, JSON.stringify(data));
             localStorage.setItem("kivopay_order_category_" + invoice, product.category || "apk-premium");
           } catch (_) {}
-          location.href = "payment-order.html?invoice=" + encodeURIComponent(invoice);
+          location.href = data.payment_method === "balance"
+            ? "riwayat-order.html?invoice=" + encodeURIComponent(invoice)
+            : "payment-order.html?invoice=" + encodeURIComponent(invoice);
         } catch (e) {
-          alert(e.message);
+          if (/saldo/i.test(e.message)) {
+            if (confirm(e.message + "\n\nBuka halaman Deposit Saldo?")) location.href = "deposit.html";
+          } else alert(e.message);
           submit.disabled = false;
           submit.textContent = "Buat Pesanan";
         }
