@@ -1660,8 +1660,24 @@ async function initKivoSupport(){
   ];
   let agents=fallbackAgents;
   let channels=[];
-  const open=()=>{if(!popup)return;popup.classList.add("open");popup.setAttribute("aria-hidden","false");document.body.classList.add("support-open")};
-  const close=()=>{if(!popup)return;popup.classList.remove("open");popup.setAttribute("aria-hidden","true");document.body.classList.remove("support-open")};
+  const navSelectors=[".kivo-bottom-nav",".bottom-nav","#bottomNav","[data-bottom-nav]"];
+  const setNavigationHidden=hidden=>{
+    document.querySelectorAll(navSelectors.join(",")).forEach(nav=>{
+      if(hidden){
+        if(!nav.dataset.csPreviousDisplay) nav.dataset.csPreviousDisplay=nav.style.display||"__empty__";
+        nav.style.setProperty("display","none","important");
+        nav.setAttribute("aria-hidden","true");
+      }else{
+        const previous=nav.dataset.csPreviousDisplay;
+        nav.style.removeProperty("display");
+        if(previous&&previous!=="__empty__") nav.style.display=previous;
+        delete nav.dataset.csPreviousDisplay;
+        nav.removeAttribute("aria-hidden");
+      }
+    });
+  };
+  const open=()=>{if(!popup)return;popup.classList.add("open");popup.setAttribute("aria-hidden","false");document.body.classList.add("support-open");setNavigationHidden(true)};
+  const close=()=>{if(!popup)return;popup.classList.remove("open");popup.setAttribute("aria-hidden","true");document.body.classList.remove("support-open");setNavigationHidden(false)};
   const normalizeAgents=value=>Array.isArray(value)?value.map((a,i)=>({...a,role:a.role||(i===0?"customer_service":"apk_login")})):[];
   try{
     const c=window.KIVOPAY_CONFIG||{};

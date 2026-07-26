@@ -4141,64 +4141,46 @@ body.light-mode .copy-mini{background:#f0e8fb!important;color:#674298!important;
 }
 .wallet-payment-options,.wallet-checkout-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 16px}.wallet-payment-options label,.wallet-checkout-box label{display:flex;align-items:center;gap:9px;padding:13px;border:1px solid rgba(160,125,255,.2);border-radius:15px;background:rgba(255,255,255,.035);cursor:pointer}.wallet-payment-options span,.wallet-checkout-box label{min-width:0}.wallet-payment-options b,.wallet-checkout-box b{display:block;font-size:13px}.wallet-payment-options small,.wallet-checkout-box small{display:block;opacity:.65;font-size:11px;line-height:1.35}.wallet-checkout-box>span{grid-column:1/-1;font-weight:700}.wallet-payment-options input,.wallet-checkout-box input{accent-color:#8b5cf6}@media(max-width:420px){.wallet-payment-options,.wallet-checkout-box{grid-template-columns:1fr}}
 
-/* KivoPay CS manager cleanup */
-.cs-manager-toolbar{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
-  margin:4px 0 18px;padding:16px 18px;border:1px solid rgba(167,139,250,.16);
-  border-radius:18px;background:linear-gradient(135deg,rgba(139,92,246,.10),rgba(20,184,166,.045));
+/* ===== KivoPay CS popup user cleanup V4 ===== */
+body.support-open{overflow:hidden!important;touch-action:none}
+body.support-open .kivo-bottom-nav,
+body.support-open .bottom-nav,
+body.support-open #bottomNav,
+body.support-open [data-bottom-nav],
+body.support-open .floating-cs-agent,
+body.support-open .floating-support,
+body.support-open .floating-support-v2{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
-.cs-manager-toolbar>div{display:grid;gap:4px;min-width:0}
-.cs-manager-toolbar small{font-size:10px;font-weight:850;letter-spacing:.16em;color:#a78bfa}
-.cs-manager-toolbar strong{font-size:17px;color:#f8f5ff}
-.cs-add-agent-btn,#addCsChannelBtn{
-  flex:0 0 auto;min-height:42px;padding:10px 16px!important;border:1px solid rgba(167,139,250,.32)!important;
-  border-radius:13px!important;background:linear-gradient(135deg,#8b5cf6,#6d28d9)!important;color:#fff!important;
-  font-size:13px!important;font-weight:850!important;box-shadow:0 10px 24px rgba(109,40,217,.22)!important;cursor:pointer;
+.support-popup.support-drawer{z-index:99999!important}
+.support-team-card{padding-bottom:max(28px,env(safe-area-inset-bottom))!important}
+.support-agent-list{padding-bottom:4px}
+.support-channel-section{
+  display:grid;gap:14px;margin-top:4px;padding:18px;
+  border:1px solid rgba(167,139,250,.18);border-radius:20px;
+  background:linear-gradient(145deg,rgba(19,13,30,.96),rgba(11,8,18,.96));
+  overflow:hidden;
 }
-.cs-card-actions{display:flex;justify-content:flex-end;margin-top:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,.07)}
-.cs-delete-agent-btn{
-  min-height:40px;padding:9px 14px;border:1px solid rgba(251,113,133,.30);border-radius:12px;
-  background:rgba(190,24,93,.10);color:#fda4af;font-size:12px;font-weight:850;cursor:pointer;
+.support-channel-title{display:grid;gap:5px;min-width:0}
+.support-channel-title small{color:#b99aff;font-size:9px;font-weight:900;letter-spacing:.15em}
+.support-channel-title strong{color:#fff;font-size:18px;line-height:1.25;overflow-wrap:anywhere}
+.support-channel-list{display:grid;gap:10px}
+.support-channel-card{
+  appearance:none!important;-webkit-appearance:none!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:12px!important;
+  width:100%!important;min-width:0!important;min-height:54px!important;margin:0!important;padding:13px 14px!important;
+  border:1px solid rgba(167,139,250,.22)!important;border-radius:15px!important;
+  background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(255,255,255,.035))!important;
+  color:#fff!important;text-align:left!important;font:inherit!important;box-shadow:none!important;cursor:pointer!important;
 }
-.cs-delete-agent-btn:hover{background:rgba(190,24,93,.18);border-color:rgba(251,113,133,.48)}
-.cs-admin-actions-clean{justify-content:flex-end!important;margin-top:18px!important}
-.cs-admin-actions-clean #saveCsSettingsBtn{width:min(100%,320px);min-height:48px;border-radius:14px}
-.cs-channel-admin{margin-top:20px;padding:20px;border:1px solid rgba(167,139,250,.16);border-radius:22px;background:rgba(10,7,18,.34)}
-.cs-channel-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
-.cs-channel-admin-head>div{display:grid;gap:5px}.cs-channel-admin-head small{color:#a78bfa;font-weight:850;letter-spacing:.15em;font-size:10px}
-.cs-channel-admin-head h3{margin:0;color:#fff;font-size:21px}.cs-channel-admin-head p{margin:0;color:#9d93a8;line-height:1.5}
-.cs-channel-empty{margin:0;padding:18px;border:1px dashed rgba(167,139,250,.20);border-radius:14px;color:#9d93a8;text-align:center;background:rgba(255,255,255,.02)}
-@media(max-width:600px){
-  .cs-manager-toolbar,.cs-channel-admin-head{align-items:stretch;flex-direction:column}
-  .cs-add-agent-btn,#addCsChannelBtn{width:100%}
-  .cs-card-actions{justify-content:stretch}.cs-delete-agent-btn{width:100%}
-  .cs-admin-actions-clean #saveCsSettingsBtn{width:100%}
-}
-
-
-/* ===== CS Manager fixed two-role layout V3 ===== */
-.cs-manager-toolbar-fixed{display:block!important;padding:16px 18px!important;border:1px solid rgba(167,139,250,.16);border-radius:18px;background:rgba(255,255,255,.025)}
-.cs-manager-toolbar-fixed>div{display:grid;gap:5px}.cs-manager-toolbar-fixed span{color:#9d93a8;font-size:13px;line-height:1.5}
-.cs-agent-editor-list{display:grid;gap:18px!important;margin-top:18px}
-.cs-agent-fixed{overflow:hidden!important}
-.cs-editor-grid-fixed{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:14px!important}
-.cs-editor-grid-fixed .cs-field-full{grid-column:1/-1}
-.cs-channel-admin{padding:22px!important;overflow:hidden}
-#csChannelEditorList{display:grid;gap:14px}
-.cs-channel-editor{display:block!important;padding:18px!important;border:1px solid rgba(167,139,250,.18)!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(22,14,34,.86),rgba(11,8,18,.92))!important;overflow:hidden!important}
-.cs-channel-card-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}
-.cs-channel-card-head>div{display:grid;gap:4px;min-width:0}.cs-channel-card-head small{font-size:9px;letter-spacing:.16em;color:#a78bfa;font-weight:850}.cs-channel-card-head strong{font-size:15px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cs-channel-card-head .remove-cs-channel{width:auto!important;min-height:38px!important;padding:0 14px!important;border:1px solid rgba(251,113,133,.3)!important;border-radius:11px!important;background:rgba(127,29,29,.16)!important;color:#fda4af!important;font-weight:800!important}
-.cs-channel-grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:14px!important;align-items:end!important}
-.cs-channel-grid label{display:grid!important;gap:8px!important;min-width:0!important;color:#ddd6e8!important;font-size:13px!important;font-weight:800!important}
-.cs-channel-grid .cs-field-full{grid-column:1/-1!important}
-.cs-channel-grid input,.cs-channel-grid select{display:block!important;width:100%!important;min-width:0!important;height:50px!important;margin:0!important;padding:0 15px!important;border:1px solid rgba(167,139,250,.18)!important;border-radius:14px!important;background:#0d0915!important;color:#f8f5ff!important;font:inherit!important;box-sizing:border-box!important;outline:none!important;appearance:auto!important}
-.cs-channel-grid input:focus,.cs-channel-grid select:focus{border-color:#8b5cf6!important;box-shadow:0 0 0 3px rgba(139,92,246,.14)!important}
-.cs-channel-empty{display:grid!important;gap:6px!important;padding:22px!important}.cs-channel-empty strong{color:#f8f5ff}.cs-channel-empty span{color:#9d93a8;line-height:1.5}
-@media(max-width:720px){
-  .cs-editor-grid-fixed,.cs-channel-grid{grid-template-columns:1fr!important}
-  .cs-editor-grid-fixed .cs-field-full,.cs-channel-grid .cs-field-full{grid-column:auto!important}
-  .cs-channel-admin{padding:16px!important}
-  .cs-channel-card-head{align-items:flex-start}
-  .cs-channel-card-head .remove-cs-channel{flex:0 0 auto}
+.support-channel-card span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:850;color:#f8f5ff}
+.support-channel-card b{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:6px 10px;border-radius:999px;background:rgba(139,92,246,.18);color:#c4b5fd;font-size:9px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.support-channel-card:active{transform:scale(.985)}
+@media(max-width:640px){
+  .support-popup.support-drawer{padding:0!important}
+  .support-team-card{max-height:94dvh!important;padding:22px 16px max(24px,env(safe-area-inset-bottom))!important}
+  .support-channel-section{padding:16px;margin-top:2px}
+  .support-channel-card{min-height:56px!important}
 }
