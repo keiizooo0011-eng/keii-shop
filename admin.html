@@ -52,11 +52,11 @@
         <button data-admin-page-btn="stock">📦 Stok APK</button>
         <button data-admin-page-btn="panel-stock">&gt;_ Kuota Panel</button>
         <a class="admin-game-nav-link" href="admin-games.html">🎮 Game Top Up</a>
+        <button data-admin-page-btn="wallet">💰 Saldo & Deposit</button>
         <button data-admin-page-btn="moderation">💬 Moderasi</button>
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
         <button data-admin-page-btn="panel-orders">Panel Orders <span id="panelPendingBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="users">Akun User <span id="userCountBadge" class="admin-nav-badge" hidden>0</span></button>
-        <button data-admin-page-btn="wallet">💰 Saldo & Deposit</button>
         <button data-admin-page-btn="customer-service">Customer Service</button>
         <button data-admin-page-btn="support-tickets">Tiket Bantuan <span id="supportTicketBadge" class="admin-nav-badge" hidden>0</span></button>
       </nav>
@@ -277,6 +277,19 @@
         </section>
       </div>
 
+
+      <div class="admin-page" data-admin-page="wallet">
+        <section class="admin-panel wallet-admin-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">KIVOPAY WALLET</span><h2>Saldo & Deposit</h2><p class="muted">Pantau saldo pengguna, deposit, dan seluruh perubahan saldo dari satu halaman.</p></div><button id="refreshAdminWallet" class="ghost" type="button">Refresh Data</button></div>
+          <div class="wallet-admin-stats"><article><span>Total saldo pengguna</span><strong id="walletStatBalance">Rp0</strong></article><article><span>Total deposit berhasil</span><strong id="walletStatDeposit">Rp0</strong></article><article><span>Deposit berhasil</span><strong id="walletStatCompleted">0</strong></article><article><span>Deposit pending</span><strong id="walletStatPending">0</strong></article></div>
+          <div class="wallet-admin-grid">
+            <section class="wallet-adjust-card"><span class="eyebrow">PENYESUAIAN SALDO</span><h3>Tambah atau kurangi saldo</h3><form id="walletAdjustForm" class="wallet-custom-form"><label>Pengguna<div class="wallet-field"><select id="walletUserSelect" required><option value="">Pilih pengguna</option></select></div></label><div class="wallet-operation"><label><input type="radio" name="walletOperation" value="add" checked><span>＋ Tambah saldo</span></label><label><input type="radio" name="walletOperation" value="subtract"><span>− Kurangi saldo</span></label></div><label>Nominal<div class="wallet-money-input"><span>Rp</span><input id="walletAmount" inputmode="numeric" type="text" placeholder="50.000" required></div></label><label>Alasan<div class="wallet-field"><textarea id="walletReason" rows="3" placeholder="Contoh: Bonus pelanggan atau koreksi transaksi" required></textarea></div></label><button id="walletAdjustSubmit" type="submit">Simpan Perubahan</button><div id="walletAdjustMessage" class="admin-message"></div></form></section>
+            <section class="wallet-user-card"><div class="wallet-section-head"><div><span class="eyebrow">AKUN PENGGUNA</span><h3>Daftar saldo</h3></div><input id="walletUserSearch" type="search" placeholder="Cari nama atau email"></div><div id="walletUsersList" class="wallet-users-list"><p class="muted">Buka menu ini untuk memuat pengguna.</p></div></section>
+          </div>
+          <section class="wallet-history-card"><div class="wallet-section-head"><div><span class="eyebrow">RIWAYAT DEPOSIT</span><h3>Transaksi deposit terbaru</h3></div><div class="wallet-filters"><input id="walletDepositSearch" type="search" placeholder="Cari invoice atau pengguna"><select id="walletDepositStatus"><option value="">Semua status</option><option value="completed">Berhasil</option><option value="pending">Pending</option><option value="expired">Kedaluwarsa</option><option value="failed">Gagal</option></select></div></div><div id="walletDepositsList" class="wallet-deposits-list"></div></section>
+          <section class="wallet-history-card"><div class="wallet-section-head"><div><span class="eyebrow">AUDIT SALDO</span><h3>Semua perubahan saldo</h3></div></div><div id="walletTransactionsList" class="wallet-transactions-list"></div></section>
+        </section>
+      </div>
       <div class="admin-page" data-admin-page="moderation">
       <div class="admin-grid moderation-grid">
         <section class="admin-panel">
@@ -305,32 +318,6 @@
           <div class="user-manager-stats"><article><span>Total akun</span><strong id="adminUsersTotal">0</strong></article><article><span>Login 24 jam</span><strong id="adminUsersActiveToday">0</strong></article><article><span>Akun diblokir</span><strong id="adminUsersBanned">0</strong></article></div>
           <div class="user-manager-toolbar"><input id="adminUserSearch" type="search" placeholder="Cari email, username, atau nama pengguna"><select id="adminUserFilter"><option value="">Semua akun</option><option value="active">Aktif</option><option value="banned">Diblokir</option><option value="recent">Login 24 jam</option></select></div>
           <div id="adminUsersMessage" class="admin-message"></div><div id="adminUsersList" class="admin-users-list"><div class="admin-users-empty">Pilih menu Akun User untuk memuat data pengguna.</div></div>
-        </section>
-      </div>
-
-
-      <div class="admin-page" data-admin-page="wallet">
-        <section class="admin-panel wallet-admin-panel">
-          <div class="admin-panel-head"><div><span class="eyebrow">KIVOPAY WALLET CONTROL</span><h2>Saldo & Deposit</h2><p class="muted">Pantau saldo pengguna, riwayat deposit, dan lakukan penyesuaian saldo dengan catatan audit.</p></div><button id="refreshAdminWallet" class="ghost" type="button">Refresh Data</button></div>
-          <div class="wallet-admin-stats">
-            <article><span>Total saldo pengguna</span><strong id="walletStatBalance">Rp0</strong></article>
-            <article><span>Deposit berhasil</span><strong id="walletStatDeposit">Rp0</strong></article>
-            <article><span>Transaksi deposit</span><strong id="walletStatCompleted">0</strong></article>
-            <article><span>Deposit pending</span><strong id="walletStatPending">0</strong></article>
-          </div>
-          <div class="wallet-admin-grid">
-            <form id="walletAdjustForm" class="wallet-adjust-card">
-              <span class="eyebrow">PENYESUAIAN MANUAL</span><h3>Tambah atau Kurangi Saldo</h3>
-              <label>Pengguna</label><select id="walletUserSelect" required><option value="">Pilih pengguna</option></select>
-              <label>Tindakan</label><div class="wallet-operation"><label><input type="radio" name="walletOperation" value="add" checked> Tambah saldo</label><label><input type="radio" name="walletOperation" value="subtract"> Kurangi saldo</label></div>
-              <label>Nominal</label><div class="wallet-money-input"><span>Rp</span><input id="walletAmount" type="number" min="1000" step="1000" placeholder="10.000" required></div>
-              <label>Alasan</label><textarea id="walletReason" rows="3" minlength="5" placeholder="Contoh: Koreksi pembayaran deposit" required></textarea>
-              <button id="walletAdjustSubmit" type="submit">Simpan Perubahan Saldo</button><div id="walletAdjustMessage" class="admin-message"></div>
-            </form>
-            <section class="wallet-user-card"><div class="wallet-section-head"><div><span class="eyebrow">SALDO PENGGUNA</span><h3>Daftar Saldo</h3></div><input id="walletUserSearch" type="search" placeholder="Cari nama atau email"></div><div id="walletUsersList" class="wallet-users-list"></div></section>
-          </div>
-          <section class="wallet-history-card"><div class="wallet-section-head"><div><span class="eyebrow">DEPOSIT HISTORY</span><h3>Riwayat Deposit</h3></div><div class="wallet-filters"><input id="walletDepositSearch" type="search" placeholder="Cari invoice atau pengguna"><select id="walletDepositStatus"><option value="">Semua status</option><option value="completed">Berhasil</option><option value="pending">Pending</option><option value="expired">Kedaluwarsa</option><option value="failed">Gagal</option></select></div></div><div id="walletDepositsList" class="wallet-deposits-list"></div></section>
-          <section class="wallet-history-card"><div class="wallet-section-head"><div><span class="eyebrow">AUDIT LOG</span><h3>Riwayat Perubahan Saldo</h3></div></div><div id="walletTransactionsList" class="wallet-transactions-list"></div></section>
         </section>
       </div>
 
@@ -381,7 +368,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=19.0.0"></script>
-  <script src="admin-wallet.js?v=1.0.0"></script>
+  <script src="admin-wallet.js?v=2"></script>
   <script src="panel-admin.js?v=58"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
