@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=16.7.0">
+  <link rel="stylesheet" href="admin.css?v=58">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
@@ -74,6 +74,18 @@
         <article class="stat-card"><div class="stat-icon">🧾</div><span>Total Order</span><strong id="statOrders">0</strong><small>Seluruh transaksi</small></article>
         <article class="stat-card stat-revenue"><div class="stat-icon">💸</div><span>Omzet Selesai</span><strong id="statRevenue">Rp0</strong><small>Order paid/completed</small></article>
       </div>
+
+      <section class="admin-panel admin-notification-card" aria-labelledby="adminNotificationTitle">
+        <div class="admin-notification-copy">
+          <span class="eyebrow">ORDER ALERT</span>
+          <h2 id="adminNotificationTitle">Notifikasi pesanan panel</h2>
+          <p>Status pilihan tersimpan di perangkat ini. Saat dashboard dibuka kembali, pemantauan pesanan akan aktif otomatis.</p>
+        </div>
+        <div class="admin-notification-control">
+          <span id="panelNotificationState" class="notification-state off"><i></i><b>Nonaktif</b></span>
+          <button id="enablePanelNotifications" type="button">Aktifkan Notifikasi</button>
+        </div>
+      </section>
 
       <div class="admin-overview-grid">
         <section class="admin-panel admin-insight-panel">
@@ -322,7 +334,7 @@
 
       <div class="admin-page" data-admin-page="panel-orders">
         <section class="admin-panel panel-order-admin">
-          <div class="admin-panel-head"><div><span class="eyebrow">PTERODACTYL FULFILLMENT</span><h2>Pesanan Panel</h2><p class="muted">Pesanan yang sudah dibayar menunggu data panel dikirim secara manual.</p></div><div class="panel-admin-head-actions"><button id="enablePanelNotifications" class="ghost" type="button">Aktifkan Notifikasi Chrome</button><button id="refreshPanelOrders" class="ghost" type="button">Refresh</button></div></div>
+          <div class="admin-panel-head"><div><span class="eyebrow">PTERODACTYL FULFILLMENT</span><h2>Pesanan Panel</h2><p class="muted">Pesanan yang sudah dibayar menunggu data panel dikirim secara manual.</p></div><div class="panel-admin-head-actions"><button id="refreshPanelOrders" class="ghost" type="button">Refresh</button></div></div>
           <div class="panel-order-filterbar"><button class="active" data-panel-filter="all">Semua</button><button data-panel-filter="processing">Perlu Diproses</button><button data-panel-filter="completed">Terkirim</button><button data-panel-filter="pending">Belum Bayar</button></div>
           <div id="panelOrderAdminMessage" class="admin-message"></div><div id="panelOrderAdminList" class="panel-order-admin-list"></div>
         </section>
@@ -342,7 +354,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="admin.js?v=19.0.0"></script>
-  <script src="panel-admin.js?v=56"></script>
+  <script src="panel-admin.js?v=58"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 </body>
