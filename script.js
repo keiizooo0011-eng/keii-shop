@@ -1446,7 +1446,7 @@ function initWelcome(){
     };
   }
 
-  const message="Belanja produk digital, kelola pesanan, dan gunakan berbagai tools dalam satu platform yang cepat, praktis, dan terpercaya.";
+  const message="Temukan produk digital pilihan dengan proses cepat, pembayaran aman, dan layanan yang siap membantu setiap pesanan.";
   const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
 
   initVisitorEntry();
