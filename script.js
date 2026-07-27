@@ -1412,7 +1412,39 @@ function initWelcome(){
   const overlay=$("#welcomeOverlay");
   const textEl=$("#welcomeText");
   const closeBtn=$("#welcomeClose");
+  const video=$("#welcomeVideo");
+  const soundToggle=$("#welcomeSoundToggle");
   if(!overlay || !textEl || !closeBtn) return;
+
+  const setSoundState=(enabled)=>{
+    if(!video || !soundToggle) return;
+    video.muted=!enabled;
+    video.volume=enabled ? 0.75 : 0;
+    soundToggle.classList.toggle("sound-on",enabled);
+    soundToggle.setAttribute("aria-pressed",String(enabled));
+    soundToggle.setAttribute("aria-label",enabled ? "Matikan suara video" : "Aktifkan suara video");
+    const icon=soundToggle.querySelector(".sound-icon");
+    const label=soundToggle.querySelector(".sound-label");
+    if(icon) icon.textContent=enabled ? "🔊" : "🔇";
+    if(label) label.textContent=enabled ? "Suara aktif" : "Suara mati";
+  };
+
+  if(video){
+    video.muted=true;
+    video.volume=0;
+    video.play().catch(()=>{});
+  }
+
+  if(soundToggle && video){
+    soundToggle.onclick=async(e)=>{
+      e.stopPropagation();
+      const enable=video.muted;
+      setSoundState(enable);
+      if(enable){
+        try{ await video.play(); }catch(_){ setSoundState(false); }
+      }
+    };
+  }
 
   const message="Belanja produk digital, kelola pesanan, dan gunakan berbagai tools dalam satu platform yang cepat, praktis, dan terpercaya.";
   const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
@@ -1429,6 +1461,10 @@ function initWelcome(){
 
   const closeWelcome=()=>{
     clearInterval(timer);
+    if(video){
+      video.pause();
+      video.muted=true;
+    }
     sessionStorage.setItem("kivo_welcome_seen","1");
     overlay.classList.add("welcome-hide");
     setTimeout(()=>overlay.remove(),450);
