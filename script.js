@@ -1443,6 +1443,9 @@ function initWelcome(){
   const closeBtn=$("#welcomeClose");
   const video=$("#welcomeVideo");
   const soundToggle=$("#welcomeSoundToggle");
+  const loadingLabel=$("#welcomeLoadingLabel");
+  const loadingPercent=$("#welcomeLoadingPercent");
+  const loadingBar=$("#welcomeLoadingBar");
   if(!overlay || !textEl || !closeBtn) return;
 
   const setSoundState=(enabled)=>{
@@ -1475,15 +1478,18 @@ function initWelcome(){
     };
   }
 
-  const message="Temukan produk digital pilihan dengan proses cepat, pembayaran aman, dan layanan yang siap membantu setiap pesanan.";
+  const message="Menyiapkan pengalaman belanja digital yang cepat, aman, dan nyaman khusus untukmu.";
   const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
 
   initVisitorEntry();
 
   if(hasSeenWelcome){
+    document.body.classList.remove("welcome-active");
     overlay.remove();
     return;
   }
+
+  document.body.classList.add("welcome-active");
 
   let timer;
   let index=0;
@@ -1495,6 +1501,7 @@ function initWelcome(){
       video.muted=true;
     }
     sessionStorage.setItem("kivo_welcome_seen","1");
+    document.body.classList.remove("welcome-active");
     overlay.classList.add("welcome-hide");
     setTimeout(()=>overlay.remove(),450);
   };
@@ -1502,13 +1509,32 @@ function initWelcome(){
   overlay.classList.add("welcome-show");
   overlay.setAttribute("aria-hidden","false");
 
+  const updateLoading=(percent)=>{
+    const value=Math.max(0,Math.min(100,Math.round(percent)));
+    if(loadingPercent) loadingPercent.textContent=`${value}%`;
+    if(loadingBar) loadingBar.style.width=`${value}%`;
+    if(loadingLabel){
+      loadingLabel.textContent=value < 35
+        ? "Menyiapkan etalase digital"
+        : value < 70
+          ? "Menghubungkan layanan KivoPay"
+          : value < 100
+            ? "Memastikan semuanya siap"
+            : "KivoPay siap digunakan";
+    }
+  };
+
+  updateLoading(0);
   timer=setInterval(()=>{
     textEl.textContent=message.slice(0,index++);
+    const progress=(index/message.length)*100;
+    updateLoading(progress);
     if(index>message.length){
       clearInterval(timer);
+      updateLoading(100);
       closeBtn.classList.add("welcome-button-show");
     }
-  },24);
+  },32);
 
   closeBtn.onclick=closeWelcome;
   overlay.onclick=e=>{
