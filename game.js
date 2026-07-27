@@ -2,6 +2,25 @@
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const plainText=v=>{const doc=new DOMParser().parseFromString(String(v??''),'text/html');return (doc.body.textContent||'').replace(/\s+/g,' ').trim();};
+const serviceDescriptionHtml=value=>{
+  const raw=String(value??'').trim();
+  if(!raw)return '';
+  const doc=new DOMParser().parseFromString(raw,'text/html');
+  const allowed=new Set(['BR','B','STRONG','EM','I','U','P','DIV','UL','OL','LI']);
+  const clean=node=>{
+    if(node.nodeType===Node.TEXT_NODE)return esc(node.textContent||'');
+    if(node.nodeType!==Node.ELEMENT_NODE)return '';
+    const children=[...node.childNodes].map(clean).join('');
+    if(!allowed.has(node.tagName))return children;
+    const tag=node.tagName.toLowerCase();
+    return tag==='br'?'<br>':`<${tag}>${children}</${tag}>`;
+  };
+  let html=[...doc.body.childNodes].map(clean).join('').trim();
+  if(!/<[a-z][\s\S]*>/i.test(html)){
+    html=esc(raw).replace(/\r?\n/g,'<br>');
+  }
+  return html;
+};
 const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
 const fallbackImage='https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg';
 let services=[],catalog=[],selectedService=null,currentCategory='games',activeGame='',activeConfig={},activeSchema=[];
@@ -25,7 +44,7 @@ function restoreSavedForm(){try{const saved=JSON.parse(localStorage.getItem('kiv
 let nicknameTimer=null,lastNicknameKey='';
 async function checkNickname(auto=false){if(!selectedService){if(!auto)$('#nicknameResult').textContent='Pilih produk terlebih dahulu.';return false;}const target=mappedValue('target'),zone=mappedValue('zone');if(!target){if(!auto)$('#nicknameResult').textContent='Isi data tujuan terlebih dahulu.';return false;}const requiredZone=activeSchema.some(f=>f.mapTo==='zone'&&f.required);if(requiredZone&&!zone){if(!auto)$('#nicknameResult').textContent='Isi Zone ID / Server terlebih dahulu.';return false;}const key=[selectedService.code,target,zone].join('|');if(auto&&key===lastNicknameKey)return true;$('#nicknameResult').textContent='Mengecek nickname...';try{const d=await jsonFetch('/api/game-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:selectedService.code,game:selectedService.game||activeGame,target,zone})});lastNicknameKey=key;$('#nicknameResult').textContent='✓ '+(d.nickname||'ID ditemukan');return true}catch(e){lastNicknameKey='';$('#nicknameResult').textContent='⚠ '+e.message;return false}}
 function scheduleNicknameCheck(){clearTimeout(nicknameTimer);nicknameTimer=setTimeout(()=>checkNickname(true),650)}
-function selectService(code){selectedService=services.find(x=>x.code===code)||null;lastNicknameKey='';document.querySelectorAll('.service-option').forEach(x=>x.classList.toggle('selected',x.dataset.code===code));$('#selectedServiceName').textContent=selectedService?.name||'Pilih produk';$('#selectedServiceDescription').textContent=plainText(selectedService?.description)||'Isi data tujuan dengan benar.';$('#gameSellPrice').textContent=rupiah(displayPrice(selectedService));$('#submitGameOrder').disabled=!selectedService;if(selectedService){scheduleNicknameCheck();showToast('Produk berhasil dipilih','success');updateProgress(2);}}
+function selectService(code){selectedService=services.find(x=>x.code===code)||null;lastNicknameKey='';document.querySelectorAll('.service-option').forEach(x=>x.classList.toggle('selected',x.dataset.code===code));$('#selectedServiceName').textContent=selectedService?.name||'Pilih produk';$('#selectedServiceDescription').innerHTML=serviceDescriptionHtml(selectedService?.description)||'Isi data tujuan dengan benar.';$('#gameSellPrice').textContent=rupiah(displayPrice(selectedService));$('#submitGameOrder').disabled=!selectedService;if(selectedService){scheduleNicknameCheck();showToast('Produk berhasil dipilih','success');updateProgress(2);}}
 function initDetail(){activeGame=new URLSearchParams(location.search).get('game')||'';if(!activeGame){location.href='topup-game.html';return;}loadData().then(()=>{const rows=services.filter(x=>x.game===activeGame).sort((a,b)=>displayPrice(a)-displayPrice(b));activeConfig=conf(activeGame);const title=activeConfig.display_name||activeGame;document.title=`${title} — KivoPay`;$('#detailGameName').textContent=title;$('#detailGameImage').src=activeConfig.image_url||fallbackImage;$('#detailGameImage').onerror=()=>$('#detailGameImage').src=fallbackImage;$('#detailGameSummary').textContent=`${rows.length} produk tersedia. Pilih paket terbaik untuk kebutuhanmu.`;$('#detailEyebrow').textContent=categoryOf(activeGame)==='streaming'?'PRODUK DIGITAL OTOMATIS':'TOP UP OTOMATIS';renderDynamicFields(activeConfig.form_schema);document.querySelectorAll('[data-form-key]').forEach(el=>{el.addEventListener(el.tagName==='SELECT'?'change':'input',scheduleNicknameCheck)});$('#serviceGrid').innerHTML=rows.length?rows.map(s=>`<button type="button" class="service-option" data-code="${esc(s.code)}"><span>${esc(s.name)}</span><strong>${rupiah(displayPrice(s))}</strong></button>`).join(''):'<p>Produk sedang tidak tersedia.</p>';document.querySelectorAll('.service-option').forEach(b=>b.onclick=()=>selectService(b.dataset.code));}).catch(e=>$('#serviceGrid').innerHTML=`<p>${esc(e.message)}</p>`);
 $('#saveTargetBtn').onclick=()=>{localStorage.setItem('kivopay_dynamic_form_'+encodeURIComponent(activeGame),JSON.stringify(formValues()));$('#nicknameResult').textContent='✓ Data berhasil disimpan di perangkat ini.';showToast('Data tujuan tersimpan','success');updateProgress(1);};
 $('#checkNicknameBtn').onclick=()=>checkNickname(false);

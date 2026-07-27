@@ -82,3 +82,11 @@ html{scroll-behavior:smooth}.catalog-dashboard,.detail-page,.payment-page{backgr
 .order-summary,.payment-summary,.checkout-summary{position:relative;border-radius:22px!important}.order-summary:before,.payment-summary:before,.checkout-summary:before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(79,140,255,.65),transparent)}
 .step,.progress-step{transition:.2s}.step.active,.progress-step.active{color:#fff!important}.step.active:before,.progress-step.active:before{box-shadow:0 0 0 6px rgba(79,140,255,.10)}
 @media(max-width:700px){.game-hero,.game-detail-hero,.checkout-hero,.payment-hero{border-radius:22px!important;padding:22px 18px!important}.game-grid,.service-grid,.nominal-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}.game-card,.service-card,.nominal-card{border-radius:17px!important}.order-summary,.payment-summary,.checkout-summary{border-radius:19px!important}}
+
+/* VIPayment product description formatting */
+.service-description{margin:16px 0 22px;color:var(--muted,#a9a3b6);line-height:1.65;white-space:normal;overflow-wrap:anywhere}
+.service-description p,.service-description div{margin:0 0 10px}
+.service-description p:last-child,.service-description div:last-child{margin-bottom:0}
+.service-description ul,.service-description ol{margin:10px 0 10px 20px;padding:0}
+.service-description li{margin:5px 0;padding-left:2px}
+.service-description strong,.service-description b{color:var(--text,#fff);font-weight:800}
