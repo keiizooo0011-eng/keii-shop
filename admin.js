@@ -154,6 +154,7 @@
         image_url,
         variants: normalizedVariants(getVariantRows(), price),
         is_active: $("#productActive").checked,
+        delivery_mode: $("#productCategory").value === "apk-premium" ? $("#productDeliveryMode").value : "automatic",
         updated_at: new Date().toISOString()
       };
       if (!payload.variants.length) throw new Error("Tambahkan minimal satu varian/paket.");
@@ -176,6 +177,8 @@
     $("#productForm").reset();
     $("#productId").value = "";
     $("#productActive").checked = true;
+    $("#productDeliveryMode").value = "automatic";
+    updateDeliveryModeUI();
     $("#imagePreview").src = "https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg";
     $("#cancelEditBtn").hidden = true;
     $("#saveProductBtn").textContent = "Simpan Produk";
@@ -196,20 +199,22 @@
         <div>
           <strong>${esc(p.name)}</strong>
           <span>${p.category === "panel-pterodactyl" ? "Panel Pterodactyl" : p.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"} • ${rupiah(p.price)}</span>
-          <small>Stok ${Number(p.stock||0)} • ${p.is_active?"Aktif":"Nonaktif"}</small>
+          <small>${p.delivery_mode==="manual"&&p.category==="apk-premium"?"Pengiriman manual":`Stok ${Number(p.stock||0)}`} • ${p.is_active?"Dibuka":"Ditutup"}</small>
           <div class="variant-badges">${(Array.isArray(p.variants)?p.variants:[]).map(v=>`<span class="variant-badge">${esc(v.name)} · ${rupiah(v.price)}</span>`).join("")}</div>
         </div>
         <div class="item-actions">
+          <button data-toggle-product="${p.id}" class="${p.is_active?"ghost-danger":"ghost"}">${p.is_active?"Tutup Produk":"Buka Produk"}</button>
           <button data-edit="${p.id}">Edit</button>
           <button data-delete="${p.id}" class="danger">Hapus</button>
         </div>
       </article>`).join("") : `<p class="muted">Belum ada produk.</p>`;
 
+    document.querySelectorAll("[data-toggle-product]").forEach(btn=>btn.onclick=()=>toggleProduct(btn.dataset.toggleProduct));
     document.querySelectorAll("[data-edit]").forEach(btn=>btn.onclick=()=>editProduct(btn.dataset.edit));
     document.querySelectorAll("[data-delete]").forEach(btn=>btn.onclick=()=>deleteProduct(btn.dataset.delete));
     const stockSelect=$("#stockProduct");
     if(stockSelect){
-      stockSelect.innerHTML=productsCache.filter(p=>p.category!=="panel-pterodactyl").map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      stockSelect.innerHTML=productsCache.filter(p=>p.category!=="panel-pterodactyl" && !(p.category==="apk-premium" && p.delivery_mode==="manual")).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
       if(stockSelect.options.length){ updateStockVariants(); } else { stockSelect.innerHTML=`<option value="">Tidak ada produk auto-delivery</option>`; stockSelect.disabled=true; }
       loadStockSummary();
     }
@@ -224,6 +229,8 @@
     $("#productPrice").value = p.price;
     $("#productStock").value = p.stock;
     $("#productDescription").value = p.description || "";
+    $("#productDeliveryMode").value = p.delivery_mode || "automatic";
+    updateDeliveryModeUI();
     renderVariantRows(p.variants || []);
     $("#productActive").checked = !!p.is_active;
     $("#imagePreview").src = p.image_url || "";
@@ -232,6 +239,32 @@
     $("#saveProductBtn").textContent = "Update Produk";
     scrollTo({top:0,behavior:"smooth"});
   }
+
+  function updateDeliveryModeUI() {
+    const isApk = $("#productCategory")?.value === "apk-premium";
+    const wrap = $("#apkDeliveryModeWrap");
+    if (wrap) wrap.hidden = !isApk;
+    const manual = isApk && $("#productDeliveryMode")?.value === "manual";
+    const hint = $("#productDeliveryHint");
+    if (hint) hint.textContent = manual
+      ? "Produk manual tidak membutuhkan stok. Setelah pembayaran, pesanan masuk ke menu APK Manual."
+      : "Produk otomatis membutuhkan stok akun pada menu Stok APK.";
+  }
+
+  async function toggleProduct(id) {
+    const product = productsCache.find(p => String(p.id) === String(id));
+    if (!product) return;
+    const next = !product.is_active;
+    if (!confirm(`${next ? "Buka" : "Tutup"} produk "${product.name}"?`)) return;
+    const { error } = await sb.from("products")
+      .update({ is_active: next, updated_at: new Date().toISOString() }).eq("id", id);
+    if (error) return alert(error.message);
+    await loadProducts();
+  }
+
+  $("#productCategory")?.addEventListener("change", updateDeliveryModeUI);
+  $("#productDeliveryMode")?.addEventListener("change", updateDeliveryModeUI);
+  updateDeliveryModeUI();
 
   async function deleteProduct(id) {
     const product = productsCache.find(item => String(item.id) === String(id));

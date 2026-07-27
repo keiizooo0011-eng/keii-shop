@@ -2,7 +2,7 @@
  const list=document.querySelector('#orderHistoryList'),msg=document.querySelector('#historyMessage'),form=document.querySelector('#invoiceHistoryForm'),input=document.querySelector('#invoiceHistoryInput');
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
  const money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
- const statusLabel={pending:'Menunggu pembayaran',paid:'Pembayaran masuk',processing:'Sedang diproses',completed:'Selesai',cancelled:'Dibatalkan',failed:'Gagal'};
+ const statusLabel={pending:'Menunggu pembayaran',paid:'Menunggu data admin',processing:'Sedang diproses',completed:'Selesai',cancelled:'Dibatalkan',failed:'Gagal'};
  const date=v=>v?new Date(v).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'-';
  const parseDelivery=s=>{
   const raw=String(s||'').trim(); if(!raw)return [];

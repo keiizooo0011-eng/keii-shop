@@ -55,6 +55,7 @@
         <button data-admin-page-btn="wallet">💰 Saldo & Deposit</button>
         <button data-admin-page-btn="moderation">💬 Moderasi</button>
         <button data-admin-page-btn="orders">🧾 Pesanan Produk</button>
+        <button data-admin-page-btn="apk-manual-orders">📱 APK Manual <span id="apkManualPendingBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="panel-orders">Panel Orders <span id="panelPendingBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="users">Akun User <span id="userCountBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="customer-service">Customer Service</button>
@@ -126,6 +127,14 @@
               <option value="sewa-bot">Sewa Bot</option>
               <option value="panel-pterodactyl">Panel Pterodactyl</option>
             </select>
+            <div id="apkDeliveryModeWrap" class="apk-delivery-mode-box">
+              <label>Mode pengiriman APK Premium</label>
+              <select id="productDeliveryMode">
+                <option value="automatic">Otomatis — data langsung dari stok</option>
+                <option value="manual">Manual — admin mengirim data setelah pembayaran</option>
+              </select>
+              <small id="productDeliveryHint" class="muted">Produk otomatis membutuhkan stok akun pada menu Stok APK.</small>
+            </div>
             <div class="form-two">
               <div><label>Harga utama</label><input id="productPrice" type="number" min="0" required></div>
               <div><label>Total stok</label><input id="productStock" type="number" min="0" value="0" readonly></div>
@@ -349,6 +358,28 @@
         </section>
       </div>
 
+      <div class="admin-page" data-admin-page="apk-manual-orders">
+        <section class="admin-panel apk-manual-admin">
+          <div class="admin-panel-head">
+            <div><span class="eyebrow">MANUAL APK DELIVERY</span><h2>Pesanan APK Premium Manual</h2>
+              <p class="muted">Pesanan yang sudah dibayar menunggu email, password, dan catatan dikirim melalui website.</p></div>
+            <div class="apk-manual-head-actions">
+              <button id="enableApkManualNotifications" class="ghost" type="button">Aktifkan Notifikasi</button>
+              <button id="refreshApkManualOrders" class="ghost" type="button">Refresh</button>
+            </div>
+          </div>
+          <div id="apkManualNotificationState" class="apk-manual-notification off"><span></span><b>Notifikasi browser nonaktif</b></div>
+          <div class="panel-order-filterbar">
+            <button class="active" data-apk-manual-filter="all">Semua</button>
+            <button data-apk-manual-filter="processing">Perlu Dikirim</button>
+            <button data-apk-manual-filter="completed">Terkirim</button>
+            <button data-apk-manual-filter="pending">Belum Bayar</button>
+          </div>
+          <div id="apkManualOrderMessage" class="admin-message"></div>
+          <div id="apkManualOrderList" class="apk-manual-order-list"></div>
+        </section>
+      </div>
+
       <div class="admin-page" data-admin-page="panel-orders">
         <section class="admin-panel panel-order-admin">
           <div class="admin-panel-head"><div><span class="eyebrow">PTERODACTYL FULFILLMENT</span><h2>Pesanan Panel</h2><p class="muted">Pesanan yang sudah dibayar menunggu data panel dikirim secara manual.</p></div><div class="panel-admin-head-actions"><button id="refreshPanelOrders" class="ghost" type="button">Refresh</button></div></div>
@@ -373,6 +404,7 @@
   <script src="admin.js?v=19.0.0"></script>
   <script src="admin-wallet.js?v=2"></script>
   <script src="panel-admin.js?v=58"></script>
+  <script src="apk-manual-admin.js?v=1"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 </body>
