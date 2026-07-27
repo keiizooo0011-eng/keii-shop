@@ -36,13 +36,37 @@
   return `<article class="history-card"><div class="history-card-top"><div><small>${esc(invoice)}</small><h3>${esc(o.product_name||o.service_name||'APK Premium')}</h3></div><span class="history-status ${esc(status)}">${esc(statusLabel[status]||status)}</span></div><div class="history-meta"><span><b>Paket</b>${esc(o.variant_name||o.package_name||'Paket utama')}</span><span><b>Total</b>${money(o.payment_amount??o.amount)}</span><span><b>Tanggal</b>${esc(date(o.created_at||o.updated_at))}</span></div><div class="history-actions"><a href="detail-apk-premium.html?invoice=${encodeURIComponent(invoice)}">Lihat Detail</a><button type="button" data-copy="${esc(invoice)}">Salin Invoice</button></div>${delivery}</article>`
  }
  function bind(){document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Tersalin ✓'});document.querySelectorAll('[data-copy-value]').forEach(b=>b.onclick=async()=>{await navigator.clipboard.writeText(b.dataset.copyValue);b.textContent='Tersalin ✓'})}
- function render(rows,label='pesanan APK Premium tersimpan'){const unique=[...new Map(rows.filter(isApk).map(o=>[(o.invoice||o.order_id),o])).values()].sort((a,b)=>new Date(b.created_at||b.updated_at||0)-new Date(a.created_at||a.updated_at||0));if(!unique.length){list.innerHTML='';msg.textContent='Belum ada pesanan APK Premium yang tersimpan.';return;}list.innerHTML=unique.map(card).join('');msg.textContent=`${unique.length} ${label}. Riwayat tetap tersedia meski halaman ditutup.`;bind();}
+ const statusRank={pending:1,paid:2,processing:3,completed:4,cancelled:4,failed:4};
+ function preferredOrder(current,next){
+  if(!current)return next;
+  const currentDelivery=String(current.delivery_content||'').trim();
+  const nextDelivery=String(next.delivery_content||'').trim();
+  if(nextDelivery&&!currentDelivery)return next;
+  if(currentDelivery&&!nextDelivery)return current;
+  const currentRank=statusRank[String(current.status||current.payment_status||'pending').toLowerCase()]||0;
+  const nextRank=statusRank[String(next.status||next.payment_status||'pending').toLowerCase()]||0;
+  if(nextRank!==currentRank)return nextRank>currentRank?next:current;
+  const currentTime=new Date(current.updated_at||current.completed_at||current.delivered_at||current.created_at||0).getTime()||0;
+  const nextTime=new Date(next.updated_at||next.completed_at||next.delivered_at||next.created_at||0).getTime()||0;
+  return nextTime>=currentTime?next:current;
+ }
+ function render(rows,label='pesanan APK Premium tersimpan'){
+  const merged=new Map();
+  rows.filter(isApk).forEach(o=>{const key=o.invoice||o.order_id;if(key)merged.set(key,preferredOrder(merged.get(key),o));});
+  const unique=[...merged.values()].sort((a,b)=>new Date(b.created_at||b.updated_at||0)-new Date(a.created_at||a.updated_at||0));
+  unique.forEach(save);
+  if(!unique.length){list.innerHTML='';msg.textContent='Belum ada pesanan APK Premium yang tersimpan.';return;}
+  list.innerHTML=unique.map(card).join('');msg.textContent=`${unique.length} ${label}. Riwayat tetap tersedia meski halaman ditutup.`;bind();
+ }
  async function fetchInvoice(inv){const r=await fetch('/api/check-payment?invoice='+encodeURIComponent(inv),{cache:'no-store'}),d=await r.json().catch(()=>({}));if(!r.ok||!d.order)throw new Error(d.error||'Invoice tidak ditemukan');if(!isApk(d.order))throw new Error('Invoice tersebut bukan pesanan APK Premium.');save(d.order);return d.order}
  async function byInvoice(inv){msg.textContent='Mencari invoice...';try{const order=await fetchInvoice(inv);render([order],'pesanan ditemukan');}catch(e){msg.textContent=e.message||'Invoice tidak ditemukan.'}}
  async function load(){msg.textContent='Menyinkronkan riwayat pesanan...';const local=snapshots();let account=[];try{const session=await KivoAuth.session();if(session){const {data,error}=await KivoAuth.db.from('orders').select('*').eq('user_id',session.user.id).order('created_at',{ascending:false}).limit(100);if(!error)account=(data||[]).filter(isApk);}}catch{}
- const missing=invoices().filter(inv=>![...local,...account].some(o=>o.invoice===inv)).slice(0,30);
+ const knownInvoices=new Set([...local,...account].map(o=>o.invoice).filter(Boolean));
+ const missing=invoices().filter(inv=>!knownInvoices.has(inv)).slice(0,30);
  const fetched=(await Promise.allSettled(missing.map(fetchInvoice))).filter(x=>x.status==='fulfilled').map(x=>x.value);
- render([...account,...fetched,...local]);}
+ // Data server ditempatkan paling akhir dan juga dipilih berdasarkan status/waktu terbaru,
+ // sehingga snapshot localStorage lama tidak dapat menimpa status completed dari database.
+ render([...local,...fetched,...account]);}
  form.onsubmit=e=>{e.preventDefault();const inv=input.value.trim();if(inv)byInvoice(inv)};
  document.querySelector('#refreshHistory').onclick=load;
  const q=new URLSearchParams(location.search).get('invoice');if(q){input.value=q;await byInvoice(q)}else await load();
