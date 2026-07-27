@@ -199,7 +199,7 @@
         <div>
           <strong>${esc(p.name)}</strong>
           <span>${p.category === "panel-pterodactyl" ? "Panel Pterodactyl" : p.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"} • ${rupiah(p.price)}</span>
-          <small>${p.delivery_mode==="manual"&&p.category==="apk-premium"?"Pengiriman manual":`Stok ${Number(p.stock||0)}`} • ${p.is_active?"Dibuka":"Ditutup"}</small>
+          <small>${p.delivery_mode==="manual"&&p.category==="apk-premium"?`Slot manual ${Number(p.stock||0)}`:`Stok ${Number(p.stock||0)}`} • ${p.is_active?"Dibuka":"Ditutup"}</small>
           <div class="variant-badges">${(Array.isArray(p.variants)?p.variants:[]).map(v=>`<span class="variant-badge">${esc(v.name)} · ${rupiah(v.price)}</span>`).join("")}</div>
         </div>
         <div class="item-actions">

@@ -49,7 +49,8 @@
         <button data-admin-page-btn="products">🛍️ Produk</button>
         <button data-admin-page-btn="robux-catalog">💎 Katalog Robux</button>
         <button data-admin-page-btn="robux-orders">🎮 Proses Robux <span id="robuxPendingBadge" class="admin-nav-badge" hidden>0</span></button>
-        <button data-admin-page-btn="stock">📦 Stok APK</button>
+        <button data-admin-page-btn="stock">📦 Stok APK Auto</button>
+        <button data-admin-page-btn="apk-manual-slot">Slot APK Manual</button>
         <button data-admin-page-btn="panel-stock">&gt;_ Kuota Panel</button>
         <a class="admin-game-nav-link" href="admin-games.html">🎮 Game Top Up</a>
         <button data-admin-page-btn="wallet">💰 Saldo & Deposit</button>
@@ -256,6 +257,37 @@
 
       </div>
 
+
+      <div class="admin-page" data-admin-page="apk-manual-slot">
+        <section class="admin-panel panel-stock-manager panel-stock-page" aria-labelledby="apkManualSlotTitle">
+          <div class="panel-stock-manager-head">
+            <div>
+              <span class="eyebrow">MANUAL APK CAPACITY</span>
+              <h2 id="apkManualSlotTitle">Slot APK Premium Manual</h2>
+              <p class="muted">Atur jumlah pesanan manual yang masih siap diterima. Sistem ini tidak memakai data akun auto-delivery.</p>
+            </div>
+            <span class="panel-stock-status">Pengiriman manual</span>
+          </div>
+          <div class="panel-stock-explainer">
+            <article><span>01</span><div><strong>Pilih produk manual</strong><p>Hanya produk APK Premium dengan mode pengiriman manual yang tampil.</p></div></article>
+            <article><span>02</span><div><strong>Masukkan jumlah slot</strong><p>Contoh: isi 10 lalu tekan Tambah Slot.</p></div></article>
+            <article><span>03</span><div><strong>Slot berkurang otomatis</strong><p>Setelah pembayaran berhasil, slot produk akan berkurang satu.</p></div></article>
+          </div>
+          <form id="apkManualSlotForm" class="panel-stock-form">
+            <label>Produk APK Manual<select id="apkManualSlotProduct" required><option value="">Memuat produk manual...</option></select></label>
+            <label>Jumlah slot<input id="apkManualSlotAmount" type="number" inputmode="numeric" min="1" max="10000" value="10" required></label>
+            <div class="panel-stock-actions">
+              <button type="submit" data-apk-slot-action="add">Tambah Slot</button>
+              <button type="button" class="ghost" data-apk-slot-action="set">Atur Jumlah</button>
+              <button type="button" class="danger ghost" data-apk-slot-action="subtract">Kurangi</button>
+            </div>
+          </form>
+          <div class="panel-stock-note"><strong>Informasi yang tampil kepada pelanggan</strong><span>Produk manual akan menampilkan Slot tersedia. Saat slot 0, tombol pembelian otomatis dinonaktifkan.</span></div>
+          <div id="apkManualSlotMessage" class="admin-message"></div>
+          <div id="apkManualSlotList" class="panel-stock-list"></div>
+        </section>
+      </div>
+
       <div class="admin-page" data-admin-page="panel-stock">
         <section class="admin-panel panel-stock-manager panel-stock-page" aria-labelledby="panelStockTitle">
           <div class="panel-stock-manager-head">
@@ -404,6 +436,7 @@
   <script src="admin.js?v=19.0.0"></script>
   <script src="admin-wallet.js?v=2"></script>
   <script src="panel-admin.js?v=58"></script>
+  <script src="apk-manual-slot-admin.js?v=1"></script>
   <script src="apk-manual-admin.js?v=1"></script>
   <script src="robux-admin.js?v=16.6.9"></script>
   <script src="ui-system.js?v=17.1.0"></script>
