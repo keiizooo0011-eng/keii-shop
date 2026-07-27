@@ -1408,6 +1408,35 @@ function initVisitorEntry(){
   },5200);
 }
 
+function initHomeStoreVideo(){
+  const video=$("#homeStoreVideo");
+  const toggle=$("#homeStoreSoundToggle");
+  if(!video || !toggle) return;
+
+  const setSoundState=(enabled)=>{
+    video.muted=!enabled;
+    video.volume=enabled ? 0.75 : 0;
+    toggle.classList.toggle("sound-on",enabled);
+    toggle.setAttribute("aria-pressed",String(enabled));
+    toggle.setAttribute("aria-label",enabled ? "Matikan suara video" : "Aktifkan suara video");
+    const icon=toggle.querySelector(".sound-icon");
+    const label=toggle.querySelector(".sound-label");
+    if(icon) icon.textContent=enabled ? "🔊" : "🔇";
+    if(label) label.textContent=enabled ? "Suara aktif" : "Suara mati";
+  };
+
+  video.muted=true;
+  video.volume=0;
+  video.play().catch(()=>{});
+  toggle.addEventListener("click",async()=>{
+    const enable=video.muted;
+    setSoundState(enable);
+    if(enable){
+      try{ await video.play(); }catch(_){ setSoundState(false); }
+    }
+  });
+}
+
 function initWelcome(){
   const overlay=$("#welcomeOverlay");
   const textEl=$("#welcomeText");
@@ -1487,6 +1516,7 @@ function initWelcome(){
   };
 }
 document.addEventListener("DOMContentLoaded",initWelcome);
+document.addEventListener("DOMContentLoaded",initHomeStoreVideo);
 
 
 function initRotatingHeroText(){

@@ -4214,3 +4214,59 @@ body.support-open .floating-support-v2{
   .welcome-media{min-height:285px}
   .welcome-media video{height:285px}
 }
+
+
+/* V43 — Home store video above wallet */
+.home-store-video{
+  width:min(1180px,calc(100% - 32px));
+  margin:28px auto 18px;
+}
+.home-store-video-frame{
+  position:relative;
+  min-height:360px;
+  overflow:hidden;
+  border:1px solid rgba(139,92,246,.25);
+  border-radius:30px;
+  background:#06050a;
+  box-shadow:0 28px 80px rgba(0,0,0,.35),0 0 55px rgba(99,102,241,.11);
+}
+.home-store-video-frame video{
+  display:block;
+  width:100%;
+  height:360px;
+  object-fit:cover;
+  object-position:center 45%;
+  background:#050407;
+}
+.home-store-video-shade{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(4,4,10,.04) 35%,rgba(5,4,12,.78) 100%);
+}
+.home-store-video-copy{
+  position:absolute;z-index:2;left:26px;right:180px;bottom:24px;
+  display:grid;gap:7px;text-shadow:0 3px 18px rgba(0,0,0,.7);
+}
+.home-store-video-copy span{font-size:10px;font-weight:900;letter-spacing:.18em;color:#c4b5fd}
+.home-store-video-copy strong{font:700 clamp(20px,3vw,34px)/1.12 "Space Grotesk",Inter,sans-serif;color:#fff}
+.home-store-sound-toggle{
+  position:absolute;z-index:3;right:20px;bottom:22px;
+  display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 14px;
+  border:1px solid rgba(255,255,255,.2);border-radius:999px;
+  background:rgba(7,6,13,.76);backdrop-filter:blur(14px);color:#fff;
+  font:800 11px/1 Inter,sans-serif;cursor:pointer;box-shadow:0 12px 32px rgba(0,0,0,.32);
+}
+.home-store-sound-toggle.sound-on{background:linear-gradient(135deg,#7c3aed,#9333ea);border-color:rgba(233,213,255,.55)}
+.home-store-sound-toggle .sound-icon{font-size:16px}
+@media(max-width:640px){
+  .home-store-video{width:calc(100% - 28px);margin:20px auto 14px}
+  .home-store-video-frame{min-height:300px;border-radius:24px}
+  .home-store-video-frame video{height:300px;object-position:center 45%}
+  .home-store-video-copy{left:18px;right:18px;bottom:70px}
+  .home-store-video-copy strong{font-size:23px;max-width:310px}
+  .home-store-sound-toggle{right:14px;bottom:14px;min-height:38px;padding:0 12px}
+}
+@media(max-width:420px){
+  .home-store-video-frame{min-height:270px}
+  .home-store-video-frame video{height:270px}
+  .home-store-video-copy strong{font-size:21px}
+}
