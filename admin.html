@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=11">
-  <link rel="stylesheet" href="admin.css?v=58">
+  <link rel="stylesheet" href="admin.css?v=59">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
@@ -47,6 +47,7 @@
       <nav class="admin-module-nav" aria-label="Menu admin">
         <button class="active" data-admin-page-btn="overview">🏠 Ringkasan</button>
         <button data-admin-page-btn="products">🛍️ Produk</button>
+        <button data-admin-page-btn="announcement">Pengumuman</button>
         <button data-admin-page-btn="robux-catalog">💎 Katalog Robux</button>
         <button data-admin-page-btn="robux-orders">🎮 Proses Robux <span id="robuxPendingBadge" class="admin-nav-badge" hidden>0</span></button>
         <button data-admin-page-btn="stock">📦 Stok APK Auto</button>
@@ -105,6 +106,25 @@
         </section>
       </div>
 
+      </div>
+
+
+      <div class="admin-page" data-admin-page="announcement">
+        <section class="admin-panel announcement-admin-panel">
+          <div class="admin-panel-head"><div><span class="eyebrow">NOTICE CENTER</span><h2>Pengumuman KivoPay</h2><p class="muted">Atur informasi, promo, maintenance, atau restock yang tampil di halaman Semua Produk.</p></div><button id="refreshAnnouncement" class="ghost" type="button">Muat Ulang</button></div>
+          <div class="announcement-admin-grid">
+            <form id="announcementForm" class="announcement-form">
+              <label>Judul pengumuman</label><input id="announcementTitle" maxlength="80" placeholder="Contoh: Restock Netflix tersedia" required>
+              <label>Isi pengumuman</label><textarea id="announcementBody" maxlength="500" rows="5" placeholder="Tulis informasi yang ingin ditampilkan kepada pelanggan." required></textarea>
+              <div class="announcement-form-row"><div><label>Jenis</label><select id="announcementType"><option value="info">Informasi</option><option value="promo">Promo</option><option value="maintenance">Maintenance</option><option value="restock">Restock</option></select></div><div><label>Status</label><select id="announcementActive"><option value="true">Aktif</option><option value="false">Nonaktif</option></select></div></div>
+              <div class="announcement-form-row"><div><label>Teks tombol (opsional)</label><input id="announcementButtonText" maxlength="30" placeholder="Lihat Produk"></div><div><label>Link tombol (opsional)</label><input id="announcementButtonUrl" placeholder="apk-premium.html atau https://..."></div></div>
+              <label>Tanggal berakhir (opsional)</label><input id="announcementExpiresAt" type="datetime-local">
+              <div class="announcement-admin-actions"><button type="button" id="previewAnnouncement" class="ghost">Preview</button><button type="submit">Simpan Pengumuman</button></div>
+              <div id="announcementAdminMessage" class="admin-message"></div>
+            </form>
+            <div><span class="eyebrow">LIVE PREVIEW</span><div id="announcementPreview" class="kivo-announcement-preview"><p class="muted">Isi formulir lalu tekan Preview.</p></div><p class="muted announcement-admin-note">Hanya satu pengumuman utama yang tampil. Pengumuman nonaktif atau kedaluwarsa otomatis disembunyikan.</p></div>
+          </div>
+        </section>
       </div>
 
       <div class="admin-page" data-admin-page="products">
@@ -437,6 +457,7 @@
   <script src="config.js"></script>
   <script src="admin.js?v=19.1.0"></script>
   <script src="admin-wallet.js?v=2"></script>
+  <script src="admin-announcement.js?v=1"></script>
   <script src="panel-admin.js?v=58"></script>
   <script src="apk-manual-slot-admin.js?v=1"></script>
   <script src="apk-manual-admin.js?v=1"></script>
