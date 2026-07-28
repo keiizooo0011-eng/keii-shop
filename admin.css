@@ -236,3 +236,120 @@ body.kivo-light.admin-body{background:#f4f5fb;color:#171a22}body.kivo-light .adm
 
 /* KivoPay Notice Center */
 .announcement-admin-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:24px;margin-top:20px}.announcement-form{display:grid;gap:12px}.announcement-form textarea{resize:vertical;min-height:130px}.announcement-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.announcement-form-row>div{display:grid;gap:8px}.announcement-admin-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}.announcement-admin-note{margin-top:14px}.kivo-announcement-preview{margin-top:12px}.kivo-announcement-card{position:relative;display:flex;gap:14px;padding:20px;border:1px solid rgba(151,110,255,.24);border-radius:22px;background:linear-gradient(135deg,rgba(23,16,38,.97),rgba(9,18,30,.95));overflow:hidden}.kivo-announcement-card:before{content:"";position:absolute;inset:auto -50px -70px auto;width:170px;height:170px;border-radius:50%;background:rgba(127,72,255,.18);filter:blur(24px)}.kivo-announcement-icon{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border-radius:14px;background:rgba(128,76,255,.2);border:1px solid rgba(174,139,255,.25);font-weight:900}.kivo-announcement-copy{position:relative;min-width:0}.kivo-announcement-copy small{font-weight:800;letter-spacing:.14em;color:#bfa3ff}.kivo-announcement-copy h3{margin:7px 0 6px}.kivo-announcement-copy p{margin:0;color:var(--muted);line-height:1.65;white-space:pre-line}.kivo-announcement-button{display:inline-flex;margin-top:13px;padding:9px 12px;border-radius:10px;background:rgba(132,75,255,.18);font-weight:700}.kivo-announcement-state{position:absolute;top:14px;right:14px;font-size:11px;font-weight:800;padding:6px 9px;border-radius:999px;background:rgba(50,210,139,.13);color:#72e6b3}.type-promo .kivo-announcement-icon{background:rgba(255,80,175,.16)}.type-maintenance .kivo-announcement-icon{background:rgba(255,176,55,.16)}.type-restock .kivo-announcement-icon{background:rgba(43,211,181,.16)}@media(max-width:780px){.announcement-admin-grid,.announcement-form-row{grid-template-columns:1fr}.announcement-admin-actions{flex-direction:column-reverse}.announcement-admin-actions button{width:100%}}
+
+/* Notice Center form polish */
+.announcement-admin-panel .announcement-form label{
+  display:block;
+  margin:0 0 7px;
+  color:#ddd6eb;
+  font-size:13px;
+  font-weight:750;
+  letter-spacing:.01em;
+}
+.announcement-admin-panel .announcement-form input,
+.announcement-admin-panel .announcement-form textarea,
+.announcement-admin-panel .announcement-form select{
+  width:100%;
+  box-sizing:border-box;
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid rgba(167,139,250,.24);
+  border-radius:14px;
+  background:linear-gradient(180deg,rgba(18,13,31,.98),rgba(10,7,19,.98));
+  color:#f8f5ff;
+  padding:14px 15px;
+  font:inherit;
+  font-size:14px;
+  line-height:1.45;
+  outline:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease,background .2s ease;
+}
+.announcement-admin-panel .announcement-form input:hover,
+.announcement-admin-panel .announcement-form textarea:hover,
+.announcement-admin-panel .announcement-form select:hover{
+  border-color:rgba(167,139,250,.42);
+}
+.announcement-admin-panel .announcement-form input:focus,
+.announcement-admin-panel .announcement-form textarea:focus,
+.announcement-admin-panel .announcement-form select:focus{
+  border-color:#8b5cf6;
+  background:linear-gradient(180deg,rgba(24,16,42,.99),rgba(12,8,23,.99));
+  box-shadow:0 0 0 4px rgba(139,92,246,.13),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.announcement-admin-panel .announcement-form input::placeholder,
+.announcement-admin-panel .announcement-form textarea::placeholder{
+  color:rgba(205,196,220,.43);
+  opacity:1;
+}
+.announcement-admin-panel .announcement-form textarea{
+  min-height:150px;
+  resize:vertical;
+}
+.announcement-admin-panel .announcement-form select{
+  cursor:pointer;
+  padding-right:44px;
+  background-image:
+    linear-gradient(45deg,transparent 50%,#b9a2ff 50%),
+    linear-gradient(135deg,#b9a2ff 50%,transparent 50%),
+    linear-gradient(180deg,rgba(18,13,31,.98),rgba(10,7,19,.98));
+  background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%,0 0;
+  background-size:6px 6px,6px 6px,100% 100%;
+  background-repeat:no-repeat;
+}
+.announcement-admin-panel .announcement-form select:focus{
+  background-image:
+    linear-gradient(45deg,transparent 50%,#d7c9ff 50%),
+    linear-gradient(135deg,#d7c9ff 50%,transparent 50%),
+    linear-gradient(180deg,rgba(24,16,42,.99),rgba(12,8,23,.99));
+}
+.announcement-admin-panel .announcement-form select option{
+  color:#f8f5ff;
+  background:#100b1b;
+}
+.announcement-admin-panel .announcement-form input[type="datetime-local"]{
+  min-height:50px;
+  color-scheme:dark;
+}
+.announcement-admin-panel .announcement-form input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+  cursor:pointer;
+  opacity:.8;
+  filter:invert(78%) sepia(21%) saturate(910%) hue-rotate(211deg) brightness(104%);
+}
+.announcement-admin-panel .announcement-admin-actions{
+  display:grid;
+  grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);
+  gap:10px;
+  margin-top:6px;
+}
+.announcement-admin-panel .announcement-admin-actions button{
+  min-height:50px;
+  border-radius:14px;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform .2s ease,filter .2s ease,border-color .2s ease;
+}
+.announcement-admin-panel .announcement-admin-actions button[type="submit"]{
+  border:0;
+  color:#fff;
+  background:linear-gradient(135deg,#7c3aed,#9d4edd);
+  box-shadow:0 12px 28px rgba(124,58,237,.24);
+}
+.announcement-admin-panel .announcement-admin-actions button:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.06);
+}
+.announcement-admin-panel .announcement-admin-actions button:active{
+  transform:translateY(0) scale(.99);
+}
+.announcement-admin-panel .admin-message{
+  min-height:20px;
+  margin-top:2px;
+  font-size:13px;
+}
+@media(max-width:780px){
+  .announcement-admin-panel .announcement-form{gap:14px}
+  .announcement-admin-panel .announcement-admin-actions{grid-template-columns:1fr}
+  .announcement-admin-panel .announcement-admin-actions button{width:100%}
+}
