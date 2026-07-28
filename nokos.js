@@ -11,13 +11,28 @@
   let selected={service:null,country:null,price:null,operator:null};
 
   function getErrorMessage(value,fallback='Permintaan gagal.'){
-    if(!value) return fallback;
-    if(typeof value==='string') return value;
+    if(value==null||value==='') return fallback;
+    if(typeof value==='string'||typeof value==='number'||typeof value==='boolean') return String(value);
     if(value instanceof Error) return getErrorMessage(value.message,fallback);
-    if(typeof value==='object'){
-      return getErrorMessage(value.message||value.error||value.detail||value.data,fallback);
+    if(Array.isArray(value)){
+      const messages=value.map(item=>getErrorMessage(item,'')).filter(Boolean);
+      return messages.join(' · ')||fallback;
     }
-    return String(value);
+    if(typeof value==='object'){
+      for(const key of ['message','error','detail','description','msg','reason']){
+        if(value[key]!=null&&value[key]!==value){
+          const message=getErrorMessage(value[key],'');
+          if(message) return message;
+        }
+      }
+      const primitive=Object.values(value).find(item=>['string','number','boolean'].includes(typeof item));
+      if(primitive!=null) return String(primitive);
+      try{
+        const json=JSON.stringify(value);
+        if(json&&json!=='{}') return json;
+      }catch(_){ }
+    }
+    return fallback;
   }
 
   function normalizeList(value,keys=[]){
@@ -43,7 +58,7 @@
       }
     });
     const body=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(getErrorMessage(body.error||body.message,`HTTP ${response.status}`));
+    if(!response.ok||body?.success===false) throw new Error(getErrorMessage(body,`HTTP ${response.status}`));
     return body;
   }
 
