@@ -1,1 +1,35 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>Riwayat Nokos — KivoPay</title><link rel="stylesheet" href="style.css?v=41"><link rel="stylesheet" href="nokos.css?v=1"><link rel="stylesheet" href="bottom-nav.css?v=30"></head><body class="nokos-page"><header class="nokos-header"><a href="nokos.html">← Katalog</a><div><small>KIVOPAY</small><strong>Riwayat Nokos</strong></div><button id="refreshHistory">Refresh</button></header><main class="nokos-shell"><section class="nokos-hero compact"><span>STATUS REAL-TIME</span><h1>Nomor dan kode OTP kamu</h1><p>Halaman ini diperbarui otomatis selama pesanan masih aktif.</p></section><section id="nokosHistory" class="nokos-history"><div class="nokos-loading">Memuat riwayat...</div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="riwayat-nokos.js?v=1"></script><script src="bottom-nav.js?v=63"></script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>Riwayat Nokos — KivoPay</title>
+  <link rel="stylesheet" href="style.css?v=41">
+  <link rel="stylesheet" href="nokos.css?v=3">
+  <link rel="stylesheet" href="bottom-nav.css?v=30">
+</head>
+<body class="nokos-page nokos-history-page">
+  <header class="nokos-header">
+    <a href="nokos.html">← Katalog</a>
+    <div><small>KIVOPAY</small><strong>Riwayat Nokos</strong></div>
+    <button id="refreshHistory" class="history-refresh" type="button">Refresh</button>
+  </header>
+
+  <main class="nokos-shell">
+    <section class="nokos-hero compact">
+      <span>STATUS REAL-TIME</span>
+      <h1>Nomor dan kode OTP kamu</h1>
+      <p>Halaman diperbarui otomatis selama pesanan masih aktif.</p>
+    </section>
+    <section id="nokosHistory" class="nokos-history">
+      <div class="nokos-loading"><span class="spinner"></span>Memuat riwayat...</div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="riwayat-nokos.js?v=3"></script>
+  <script src="bottom-nav.js?v=63"></script>
+</body>
+</html>
