@@ -1,8 +1,65 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>Nokos OTP — KivoPay</title><link rel="stylesheet" href="style.css?v=41"><link rel="stylesheet" href="nokos.css?v=1"><link rel="stylesheet" href="bottom-nav.css?v=30"></head>
-<body class="nokos-page"><header class="nokos-header"><a href="all-products.html">← Kembali</a><div><small>KIVOPAY</small><strong>Nokos OTP</strong></div><a href="riwayat-nokos.html">Riwayat</a></header>
-<main class="nokos-shell"><section class="nokos-hero"><span>OTP OTOMATIS</span><h1>Pesan nomor virtual dengan saldo KivoPay</h1><p>Pilih aplikasi, negara, dan operator. Nomor serta kode OTP akan tampil langsung di riwayat pesanan.</p><div class="nokos-badges"><b>Bayar pakai saldo</b><b>Stok real-time</b><b>OTP otomatis</b></div></section>
-<section class="nokos-panel"><div class="step-head"><span>01</span><div><small>LANGKAH PERTAMA</small><h2>Pilih aplikasi</h2></div></div><div id="serviceGrid" class="service-grid"><div class="nokos-loading">Memuat aplikasi...</div></div></section>
-<section id="countrySection" class="nokos-panel" hidden><div class="step-head"><span>02</span><div><small>LANGKAH KEDUA</small><h2>Pilih negara dan harga</h2></div></div><div class="search-wrap"><input id="countrySearch" placeholder="Cari negara..."></div><div id="countryGrid" class="country-grid"></div></section>
-<section id="operatorSection" class="nokos-panel" hidden><div class="step-head"><span>03</span><div><small>LANGKAH KETIGA</small><h2>Pilih operator</h2></div></div><div id="operatorGrid" class="operator-grid"></div></section>
-<section id="checkoutSection" class="nokos-checkout" hidden><div><small>RINGKASAN PESANAN</small><h2 id="checkoutTitle">-</h2><p id="checkoutMeta">-</p></div><div class="checkout-price"><small>Total saldo</small><strong id="checkoutPrice">Rp0</strong></div><button id="orderBtn">Pesan Sekarang</button><p id="checkoutMessage"></p></section>
-</main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="nokos.js?v=1"></script><script src="bottom-nav.js?v=63"></script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>Nokos OTP — KivoPay</title>
+  <link rel="stylesheet" href="style.css?v=41">
+  <link rel="stylesheet" href="nokos.css?v=2">
+  <link rel="stylesheet" href="bottom-nav.css?v=30">
+</head>
+<body class="nokos-page">
+  <header class="nokos-header">
+    <a href="all-products.html">← Kembali</a>
+    <div><small>KIVOPAY</small><strong>Nokos OTP</strong></div>
+    <a href="riwayat-nokos.html">Riwayat</a>
+  </header>
+
+  <main class="nokos-shell">
+    <section class="nokos-hero compact">
+      <span>NOMOR VIRTUAL</span>
+      <h1>Beli nomor virtual</h1>
+      <p>Pilih aplikasi, negara, server, dan operator. Pembayaran langsung memakai saldo KivoPay.</p>
+    </section>
+
+    <section id="appPicker" class="nokos-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title"><div><h2>Pilih aplikasi</h2><p>Cari layanan OTP yang kamu perlukan</p></div></div>
+      <label class="search-box"><span>⌕</span><input id="serviceSearch" placeholder="Cari nama aplikasi..."></label>
+
+      <div id="popularSection">
+        <h3>Aplikasi populer</h3>
+        <div id="popularGrid" class="popular-grid"></div>
+      </div>
+
+      <h3>Semua aplikasi</h3>
+      <div id="serviceGrid" class="service-list"><div class="nokos-loading"><span class="spinner"></span>Memuat aplikasi...</div></div>
+    </section>
+
+    <section id="countryPicker" class="nokos-sheet" hidden>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">
+        <div><h2>Pilih negara dan server</h2><p>Harga telah termasuk margin layanan KivoPay</p></div>
+        <button id="changeServiceBtn" class="text-button">Ganti aplikasi</button>
+      </div>
+      <div id="selectedService" class="selected-service"></div>
+      <label class="search-box"><span>⌕</span><input id="countrySearch" placeholder="Cari nama negara..."></label>
+      <div class="sort-tabs"><button class="active">Rate</button><button disabled>Harga</button></div>
+      <div id="countryGrid" class="country-list"></div>
+    </section>
+
+    <section id="checkoutSection" class="nokos-checkout" hidden>
+      <div><small>RINGKASAN PESANAN</small><h2 id="checkoutTitle">-</h2><p id="checkoutMeta">-</p></div>
+      <div class="checkout-price"><small>Total saldo</small><strong id="checkoutPrice">Rp0</strong></div>
+      <button id="orderBtn">Pesan Sekarang</button>
+      <p id="checkoutMessage"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="nokos.js?v=2"></script>
+  <script src="bottom-nav.js?v=63"></script>
+</body>
+</html>
