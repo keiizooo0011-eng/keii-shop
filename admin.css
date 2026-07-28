@@ -226,3 +226,10 @@ body.kivo-light.admin-body{background:#f4f5fb;color:#171a22}body.kivo-light .adm
 .apk-manual-confirm{display:flex!important;align-items:center!important}.apk-manual-confirm input{width:auto!important}.apk-manual-send{min-height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;font-weight:800}
 .apk-manual-delivered{padding:16px;border-radius:16px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)}.apk-manual-delivered pre{white-space:pre-wrap;word-break:break-word}
 @media(max-width:720px){.apk-manual-head-actions{width:100%}.apk-manual-head-actions button{flex:1}.apk-manual-order-head{display:grid}.apk-manual-customer,.apk-manual-field-grid{grid-template-columns:1fr}.apk-manual-order-card{padding:16px}}
+
+/* APK auto stock cleanup */
+.stock-cleanup-note{display:grid;gap:4px;margin-top:16px;padding:13px 14px;border:1px solid rgba(248,113,113,.2);border-radius:14px;background:rgba(127,29,29,.12)}
+.stock-cleanup-note strong{color:#fecaca;font-size:13px}.stock-cleanup-note span{color:#a9a2b5;font-size:12px;line-height:1.55}
+.stock-row{grid-template-columns:minmax(0,1fr) auto auto auto}.stock-row-main{display:grid;gap:4px;min-width:0}.stock-row-main strong,.stock-row-main span{overflow-wrap:anywhere}
+.stock-delete-available{border:1px solid rgba(248,113,113,.28);border-radius:10px;padding:9px 11px;background:rgba(127,29,29,.18);color:#fecaca;font-size:11px;font-weight:800;cursor:pointer}.stock-delete-available:hover{background:rgba(153,27,27,.3)}.stock-delete-available:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:620px){.stock-row{grid-template-columns:1fr auto}.stock-row-main{grid-column:1/-1}.stock-delete-available{grid-column:1/-1;width:100%}}

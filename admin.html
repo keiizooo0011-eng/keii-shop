@@ -231,7 +231,7 @@
 
       <div class="admin-page" data-admin-page="stock">
       <section class="admin-panel orders-panel">
-        <div class="admin-panel-head"><div><span class="eyebrow">AUTO DELIVERY</span><h2>Tambah Stok Produk</h2></div></div>
+        <div class="admin-panel-head"><div><span class="eyebrow">AUTO DELIVERY</span><h2>Kelola Stok APK Auto</h2><p class="muted">Tambahkan stok baru atau hapus stok lama yang masih tersedia agar akun yang dijual selalu fresh.</p></div></div>
         <form id="stockForm" class="stock-form">
           <label>Produk</label><select id="stockProduct" required></select>
           <label>Varian/paket</label><select id="stockVariant" required></select>
@@ -250,7 +250,9 @@
           <small id="stockFormatHelp" class="muted">Mode massal: setiap baris yang tidak kosong akan disimpan sebagai satu stok. Cocok untuk format <b>email|password</b>.</small>
           <button id="stockSubmitButton" type="submit">Tambahkan Stok</button>
         </form>
-        <div id="stockMessage" class="admin-message"></div><div id="stockSummary" class="stock-summary"></div>
+        <div id="stockMessage" class="admin-message"></div>
+        <div class="stock-cleanup-note"><strong>Hapus stok lama</strong><span>Tombol hapus hanya menghapus stok berstatus tersedia. Riwayat stok yang sudah terjual tetap aman.</span></div>
+        <div id="stockSummary" class="stock-summary"></div>
 
       </section>
 
@@ -433,7 +435,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=19.0.0"></script>
+  <script src="admin.js?v=19.1.0"></script>
   <script src="admin-wallet.js?v=2"></script>
   <script src="panel-admin.js?v=58"></script>
   <script src="apk-manual-slot-admin.js?v=1"></script>

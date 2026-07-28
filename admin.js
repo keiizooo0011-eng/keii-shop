@@ -416,8 +416,56 @@
     }
     root.innerHTML=Object.values(groups).length?Object.values(groups).map(g=>{
       const product=productsCache.find(p=>String(p.id)===String(g.product_id));
-      return `<div class="stock-row"><strong>${esc(product?.name||"Produk")}</strong><span>${esc(g.variant)}</span><b>${g.available} tersedia</b><small>${g.sold} terjual</small></div>`;
+      return `<div class="stock-row">
+        <div class="stock-row-main"><strong>${esc(product?.name||"Produk")}</strong><span>${esc(g.variant)}</span></div>
+        <b>${g.available} tersedia</b>
+        <small>${g.sold} terjual</small>
+        <button type="button" class="danger stock-delete-available" data-stock-delete-product="${esc(g.product_id)}" data-stock-delete-variant="${esc(g.variant)}" data-stock-delete-count="${g.available}" ${g.available<1?"disabled":""}>Hapus stok tersedia</button>
+      </div>`;
     }).join(""):`<p class="muted">Belum ada stok auto-delivery.</p>`;
+
+    root.querySelectorAll("[data-stock-delete-product]").forEach(button=>{
+      button.addEventListener("click",()=>deleteAvailableStock(
+        button.dataset.stockDeleteProduct,
+        button.dataset.stockDeleteVariant,
+        Number(button.dataset.stockDeleteCount||0)
+      ));
+    });
+  }
+
+  async function syncProductStockCount(productId){
+    const {count,error}=await sb.from("stock_items")
+      .select("id",{count:"exact",head:true})
+      .eq("product_id",productId)
+      .eq("status","available");
+    if(error) throw error;
+    const {error:updateError}=await sb.from("products")
+      .update({stock:Number(count||0),updated_at:new Date().toISOString()})
+      .eq("id",productId);
+    if(updateError) throw updateError;
+  }
+
+  async function deleteAvailableStock(productId,variantName,availableCount){
+    if(!productId||!variantName||availableCount<1)return;
+    const product=productsCache.find(p=>String(p.id)===String(productId));
+    const productName=product?.name||"produk ini";
+    const approved=confirm(`Hapus ${availableCount} stok tersedia untuk "${productName}" — ${variantName}?\n\nStok yang sudah terjual tidak akan dihapus.`);
+    if(!approved)return;
+
+    msg($("#stockMessage"),`Menghapus ${availableCount} stok lama...`);
+    try{
+      const {error}=await sb.from("stock_items")
+        .delete()
+        .eq("product_id",productId)
+        .eq("variant_name",variantName)
+        .eq("status","available");
+      if(error)throw error;
+      await syncProductStockCount(productId);
+      msg($("#stockMessage"),`${availableCount} stok tersedia berhasil dihapus. Kamu sekarang bisa menambahkan stok fresh.`,"success");
+      await loadProducts();
+    }catch(error){
+      msg($("#stockMessage"),`Stok gagal dihapus: ${error.message}`,"error");
+    }
   }
 
 
