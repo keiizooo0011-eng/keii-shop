@@ -124,7 +124,7 @@
     if(act==='cancel'&&cancelRemaining(btn.dataset.created)>0)return;
     if(act!=='resend'&&!confirm(`Yakin ${names[act]} pesanan ini?`))return;
     btn.disabled=true;
-    try{await api('/api/nokos-orders',{method:'POST',body:JSON.stringify({invoice,action:act})});await load()}
+    try{const result=await api('/api/nokos-orders',{method:'POST',body:JSON.stringify({invoice,action:act})});if(act==='cancel'&&result.refunded)alert(`Pesanan dibatalkan. Saldo ${rp(result.refund_amount)} sudah dikembalikan.`);await load()}
     catch(e){alert(e.message)}
     finally{btn.disabled=false}
   }
