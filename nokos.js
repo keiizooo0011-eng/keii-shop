@@ -227,6 +227,8 @@
     selected.country=country;
     selected.price=price;
     selected.operator=null;
+    $('#checkoutSection').hidden=true;
+    setMessage('');
     document.querySelectorAll('.provider-order').forEach(item=>item.classList.remove('active'));
     button.classList.add('active');
     const slot=document.querySelector(`[data-operator-slot="${CSS.escape(String(numberId))}"]`);
