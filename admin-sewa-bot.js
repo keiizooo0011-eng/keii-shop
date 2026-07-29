@@ -96,24 +96,31 @@
       button.onclick = async () => {
         button.disabled = true;
         const oldText = button.textContent;
-        button.textContent = 'Menyiapkan...';
+        button.textContent = 'Membuat link...';
         try {
-          const response = await fetch(`/api/admin-bot-backups?action=download&name=${encodeURIComponent(button.dataset.download)}`, { headers: await headers(false) });
-          if (!response.ok) {
-            const body = await response.json().catch(() => ({}));
-            throw new Error(body.error || 'Download gagal.');
-          }
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
+          const body = await backupApi(`?action=download-ticket&name=${encodeURIComponent(button.dataset.download)}`);
+          if (!body.downloadUrl) throw new Error('Link download tidak tersedia.');
+
           const anchor = document.createElement('a');
-          anchor.href = url;
+          anchor.href = body.downloadUrl;
           anchor.download = button.dataset.download;
+          anchor.rel = 'noopener';
           document.body.appendChild(anchor);
           anchor.click();
           anchor.remove();
-          URL.revokeObjectURL(url);
-        } catch (error) { alert(error.message); }
-        finally { button.disabled = false; button.textContent = oldText; }
+
+          button.textContent = 'Download dimulai';
+          backupMessage.textContent = `Download ${button.dataset.download} dimulai langsung dari Bot Controller.`;
+          setTimeout(() => {
+            button.disabled = false;
+            button.textContent = oldText;
+          }, 1800);
+          return;
+        } catch (error) {
+          alert(error.message);
+          button.disabled = false;
+          button.textContent = oldText;
+        }
       };
     });
 
