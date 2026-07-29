@@ -6,7 +6,11 @@
   const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
   const dt=v=>v?new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'}).format(new Date(v)):'-';
   const CANCEL_WAIT_MS=2*60*1000;
+  const FINAL_STATUSES=new Set(['completed','done','canceled','cancel','failed','expired']);
   let busy=false;
+  let currentRows=[];
+  let pollingTimer=null;
+  let countdownTimer=null;
 
   async function api(url,opt={}){
     const {data:{session}}=await sb.auth.getSession();
@@ -23,13 +27,24 @@
     expiring:'Hampir Kedaluwarsa',failed:'Gagal'
   })[String(s||'').toLowerCase()]||String(s||'Menunggu');
 
-  const activeStatus=s=>['creating','waiting','received','expiring'].includes(String(s||'').toLowerCase());
+  const normalizeStatus=s=>String(s||'').trim().toLowerCase();
+  const activeStatus=s=>['creating','waiting','received','expiring'].includes(normalizeStatus(s));
+  const finalStatus=s=>FINAL_STATUSES.has(normalizeStatus(s));
 
-  function remaining(v){
+  function remaining(v,status){
+    const normalized=normalizeStatus(status);
+    if(normalized==='completed'||normalized==='done')return 'Selesai';
+    if(normalized==='canceled'||normalized==='cancel')return 'Dibatalkan';
+    if(normalized==='failed')return 'Gagal';
+    if(normalized==='expired')return 'Kedaluwarsa';
     const ms=new Date(v).getTime()-Date.now();
     if(!Number.isFinite(ms)||ms<=0)return 'Kedaluwarsa';
     const m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000);
     return `${m}:${String(s).padStart(2,'0')}`;
+  }
+
+  function timeLabel(status){
+    return finalStatus(status)?'Status waktu':'Kedaluwarsa';
   }
 
   function cancelRemaining(createdAt){
@@ -43,7 +58,8 @@
   }
 
   function render(rows){
-    $('#nokosHistory').innerHTML=rows.length?rows.map(o=>{
+    currentRows=Array.isArray(rows)?rows:[];
+    $('#nokosHistory').innerHTML=currentRows.length?currentRows.map(o=>{
       const canAct=activeStatus(o.status);
       const cancelMs=cancelRemaining(o.created_at);
       const cancelDisabled=cancelMs>0;
@@ -76,7 +92,7 @@
 
         <div class="order-meta">
           <span><small>Total</small><b>${rp(o.sell_price)}</b></span>
-          <span><small>Kedaluwarsa</small><b data-exp="${esc(o.expires_at)}">${remaining(o.expires_at)}</b></span>
+          <span><small data-time-label>${timeLabel(o.status)}</small><b data-exp="${esc(o.expires_at)}" data-status="${esc(o.status)}">${remaining(o.expires_at,o.status)}</b></span>
           <span><small>Dibuat</small><b>${esc(dt(o.created_at))}</b></span>
         </div>
 
@@ -89,6 +105,7 @@
         ${o.note?`<p class="order-note">${esc(o.note)}</p>`:''}
       </article>`;
     }).join(''):'<div class="nokos-empty"><h2>Belum ada pesanan Nokos</h2><p>Pesanan nomor virtual akan tampil di sini.</p><a href="nokos.html">Buka Katalog Nokos</a></div>';
+    syncBackgroundTimers();
 
     document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>{
       if(!b.dataset.copy)return;
@@ -101,12 +118,32 @@
   }
 
   function updateTimers(){
-    document.querySelectorAll('[data-exp]').forEach(x=>x.textContent=remaining(x.dataset.exp));
+    document.querySelectorAll('[data-exp]').forEach(x=>{
+      x.textContent=remaining(x.dataset.exp,x.dataset.status);
+      const labelNode=x.parentElement?.querySelector('[data-time-label]');
+      if(labelNode)labelNode.textContent=timeLabel(x.dataset.status);
+    });
     document.querySelectorAll('[data-action="cancel"]').forEach(btn=>{
       const ms=cancelRemaining(btn.dataset.created);
       if(ms>0){btn.disabled=true;btn.textContent=cancelText(ms)}
       else{btn.disabled=false;btn.textContent='Batalkan Pesanan'}
     });
+  }
+
+
+  function hasActiveOrders(){
+    return currentRows.some(o=>activeStatus(o.status));
+  }
+
+  function syncBackgroundTimers(){
+    const shouldRun=hasActiveOrders();
+    if(shouldRun){
+      if(!pollingTimer)pollingTimer=setInterval(()=>{if(!document.hidden)load()},7000);
+      if(!countdownTimer)countdownTimer=setInterval(updateTimers,1000);
+    }else{
+      if(pollingTimer){clearInterval(pollingTimer);pollingTimer=null}
+      if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}
+    }
   }
 
   async function load(){
@@ -130,7 +167,8 @@
   }
 
   $('#refreshHistory').onclick=load;
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden&&hasActiveOrders())load();
+  });
   load();
-  setInterval(()=>{updateTimers();if(!document.hidden)load()},7000);
-  setInterval(updateTimers,1000);
 })();
