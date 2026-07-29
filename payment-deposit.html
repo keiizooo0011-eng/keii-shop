@@ -1,0 +1,27 @@
+<!doctype html><html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0a0710">
+<title>Pembayaran Deposit — KivoPay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=40"><link rel="stylesheet" href="deposit.css?v=4"><link rel="stylesheet" href="payment-deposit.css?v=1">
+<style id="authGateStyle">html{background:#090611}body{visibility:hidden}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js?v=2"></script>
+<script>(async()=>{try{if(!window.KivoAuth||!KivoAuth.db)return location.replace('login.html');const s=await KivoAuth.session();if(!s)return location.replace('login.html');document.getElementById('authGateStyle')?.remove()}catch(e){location.replace('login.html')}})();</script>
+</head><body class="deposit-page payment-deposit-page"><div class="deposit-glow one"></div><div class="deposit-glow two"></div>
+<header class="deposit-header payment-header"><a href="deposit.html" class="deposit-history-link">← Kembali</a><div class="payment-brand"><small>KIVOPAY</small><strong>Pembayaran Deposit</strong></div><a href="riwayat-deposit.html" class="deposit-history-link">Riwayat</a></header>
+<main class="payment-deposit-shell">
+<section class="payment-deposit-card" id="paymentCard">
+<div class="payment-loading" id="paymentLoading"><span></span><p>Menyiapkan pembayaran...</p></div>
+<div id="paymentContent" hidden>
+<div class="payment-invoice-head"><div><small>INVOICE DEPOSIT</small><h1 id="paymentInvoice">-</h1></div><span id="paymentStatusBadge" class="payment-status pending">Menunggu</span></div>
+<p class="payment-instruction">Scan QRIS dan bayar tepat sesuai nominal yang tertera.</p>
+<div id="paymentQr" class="payment-qr"></div>
+<div class="payment-total"><span>Total pembayaran</span><strong id="paymentTotal">Rp0</strong><small>Saldo yang masuk: <b id="paymentAmount">Rp0</b></small></div>
+<div id="paymentLiveStatus" class="deposit-live pending">Menunggu pembayaran dan mencocokkan mutasi...</div>
+<div class="payment-countdown"><span>Batas pembayaran</span><strong id="paymentCountdown">--:--</strong></div>
+<div class="payment-actions"><button type="button" id="copyDepositInvoice">Salin Invoice</button><button type="button" id="cancelDepositBtn" class="danger">Batalkan Deposit</button></div>
+<p id="paymentMessage" class="payment-message" aria-live="polite"></p>
+<div class="payment-note"><b>!</b><p>Jangan membayar QRIS setelah deposit dibatalkan. Pembayaran pada invoice yang sudah dibatalkan tidak dapat dicocokkan otomatis.</p></div>
+</div>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="payment-deposit.js?v=1"></script></body></html>

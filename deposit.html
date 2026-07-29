@@ -2,7 +2,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0a0710">
 <title>Deposit Saldo — KivoPay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=40"><link rel="stylesheet" href="bottom-nav.css?v=63"><link rel="stylesheet" href="deposit.css?v=2">
+<link rel="stylesheet" href="style.css?v=40"><link rel="stylesheet" href="bottom-nav.css?v=63"><link rel="stylesheet" href="deposit.css?v=4">
 <style id="authGateStyle">html{background:#090611}body{visibility:hidden}</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js?v=2"></script>
 <script>(async()=>{try{if(!window.KivoAuth||!KivoAuth.db)return location.replace('login.html');const s=await KivoAuth.session();if(!s)return location.replace('login.html');document.getElementById('authGateStyle')?.remove()}catch(e){location.replace('login.html')}})();</script>
@@ -19,4 +19,4 @@
 <aside class="deposit-summary"><div class="section-head compact"><span>2</span><div><small>RINGKASAN</small><h2>Detail pembayaran</h2></div></div><dl><div><dt>Saldo masuk</dt><dd id="summaryAmount">Rp0</dd></div><div><dt>Kode unik</dt><dd>Dihitung saat invoice dibuat</dd></div><div class="total"><dt>Total bayar</dt><dd id="summaryTotal">Rp0</dd></div></dl><div class="safe-note"><b>!</b><p>Bayar tepat sesuai total pada invoice. Selisih nominal dapat membuat mutasi tidak cocok.</p></div></aside>
 </section>
 
-</main><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="deposit.js?v=2"></script><script src="bottom-nav.js?v=63"></script></body></html>
+</main><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="deposit.js?v=4"></script><script src="bottom-nav.js?v=63"></script></body></html>
