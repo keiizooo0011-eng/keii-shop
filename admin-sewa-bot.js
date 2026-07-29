@@ -101,13 +101,18 @@
           const body = await backupApi(`?action=download-ticket&name=${encodeURIComponent(button.dataset.download)}`);
           if (!body.downloadUrl) throw new Error('Link download tidak tersedia.');
 
-          // Buka sebagai navigasi browser biasa. File dikirim dengan Content-Disposition: attachment,
-          // jadi Chrome/Android memakai download manager bawaan tanpa menampung ZIP di JavaScript.
-          const popup = window.open(body.downloadUrl, '_blank', 'noopener,noreferrer');
-          if (!popup) window.location.assign(body.downloadUrl);
+          // Navigasi langsung memicu download manager bawaan Chrome/Android.
+          // Tidak memakai fetch/blob dan tidak membuka tab kosong yang bisa tertahan popup blocker.
+          const link = document.createElement('a');
+          link.href = body.downloadUrl;
+          link.rel = 'noopener noreferrer';
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
 
           button.textContent = 'Cek Download';
-          backupMessage.textContent = `Browser sedang membuka download ${button.dataset.download}. Cek notifikasi unduhan.`;
+          backupMessage.textContent = `Unduhan ${button.dataset.download} sudah dikirim ke browser. Cek notifikasi/download manager.`;
           setTimeout(() => {
             button.disabled = false;
             button.textContent = oldText;
