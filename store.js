@@ -537,15 +537,11 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         </select>
         <label>Nama pembeli</label>
         <input id="checkoutName" placeholder="Nama kamu">
-        <label>Nomor WhatsApp / Telegram</label>
-        <input id="checkoutContact" placeholder="Contoh: 62812xxxx">
-        <label>Metode pembayaran</label>
-        <div class="wallet-payment-options">
-          <label><input type="radio" name="checkoutPayment" value="balance" checked><span><b>Saldo KivoPay</b><small>Bayar langsung dari saldo akun</small></span></label>
-          <label><input type="radio" name="checkoutPayment" value="qris"><span><b>QRIS</b><small>Bayar dengan kode QR</small></span></label>
-        </div>
+        <label>${product.category === "sewa-bot" ? "Nomor WhatsApp yang akan dijadikan bot" : "Nomor WhatsApp / Telegram"}</label>
+        <input id="checkoutContact" inputmode="numeric" placeholder="Contoh: 62812xxxx">
+        ${product.category === "sewa-bot" ? `<label>Nama bot</label><input id="checkoutBotName" maxlength="60" value="KEIINEXUS" placeholder="Nama bot"><label>Prefix perintah</label><input id="checkoutPrefix" maxlength="5" value="." placeholder="."><label>Metode pembayaran</label><div class="wallet-payment-options"><label><input type="radio" name="checkoutPayment" value="balance" checked><span><b>Saldo KivoPay</b><small>Bot dibuat otomatis setelah saldo dipotong</small></span></label></div>` : `<label>Metode pembayaran</label><div class="wallet-payment-options"><label><input type="radio" name="checkoutPayment" value="balance" checked><span><b>Saldo KivoPay</b><small>Bayar langsung dari saldo akun</small></span></label><label><input type="radio" name="checkoutPayment" value="qris"><span><b>QRIS</b><small>Bayar dengan kode QR</small></span></label></div>`}
         <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>
-        <small class="checkout-auto-note">${product.category === "apk-premium" && product.delivery_mode === "manual" ? "Setelah pembayaran berhasil, pesanan masuk ke admin dan data akun dikirim melalui Riwayat APK Premium." : product.category === "panel-pterodactyl" ? "Setelah pembayaran berhasil, pesanan masuk ke antrean admin dan akses panel dikirim melalui Riwayat Panel." : "Setelah pembayaran berhasil, data produk dikirim otomatis dari stok yang tersedia."}</small>`;
+        <small class="checkout-auto-note">${product.category === "apk-premium" && product.delivery_mode === "manual" ? "Setelah pembayaran berhasil, pesanan masuk ke admin dan data akun dikirim melalui Riwayat APK Premium." : product.category === "panel-pterodactyl" ? "Setelah pembayaran berhasil, pesanan masuk ke antrean admin dan akses panel dikirim melalui Riwayat Panel." : product.category === "sewa-bot" ? "Setelah saldo dibayar, pairing code dibuat otomatis. Masukkan kode tersebut di WhatsApp milikmu." : "Setelah pembayaran berhasil, data produk dikirim otomatis dari stok yang tersedia."}</small>`;
 
       body.querySelector(".shop-close").onclick = closeModal;
       body.querySelector(".checkout-back").onclick = renderProductDetail;
@@ -555,7 +551,9 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         const contact = body.querySelector("#checkoutContact").value.trim();
         const checkoutContact = contact;
         const variantIndex = Number(body.querySelector("#checkoutVariant").value);
-        const paymentMethod = body.querySelector('input[name="checkoutPayment"]:checked')?.value || "qris";
+        const paymentMethod = body.querySelector('input[name="checkoutPayment"]:checked')?.value || "balance";
+        const botName = body.querySelector("#checkoutBotName")?.value.trim() || "KEIINEXUS";
+        const prefix = body.querySelector("#checkoutPrefix")?.value.trim() || ".";
         if (!name || !contact) return alert("Nama dan kontak wajib diisi.");
 
         const submit = body.querySelector("#checkoutSubmit");
@@ -563,7 +561,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         submit.textContent = paymentMethod === "balance" ? "Memproses Saldo..." : "Membuat QRIS...";
 
         try {
-          const response = await fetch("/api/create-order", {
+          const response = await fetch(product.category === "sewa-bot" ? "/api/create-bot-order" : "/api/create-order", {
             method: "POST",
             headers: await kivoAuthHeaders({"Content-Type":"application/json"}),
             body: JSON.stringify({
@@ -571,7 +569,9 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
               variant_index: variantIndex,
               customer_name: name,
               customer_contact: contact,
-              payment_method: paymentMethod
+              payment_method: paymentMethod,
+              bot_name: botName,
+              prefix
             })
           });
           const raw = await response.text();
@@ -592,9 +592,11 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
             sessionStorage.setItem("kivopay_payment_" + invoice, JSON.stringify(data));
             localStorage.setItem("kivopay_order_category_" + invoice, product.category || "apk-premium");
           } catch (_) {}
-          location.href = data.payment_method === "balance"
-            ? "riwayat-order.html?invoice=" + encodeURIComponent(invoice)
-            : "payment-order.html?invoice=" + encodeURIComponent(invoice);
+          location.href = product.category === "sewa-bot"
+            ? "riwayat-sewa-bot.html?invoice=" + encodeURIComponent(invoice)
+            : data.payment_method === "balance"
+              ? "riwayat-order.html?invoice=" + encodeURIComponent(invoice)
+              : "payment-order.html?invoice=" + encodeURIComponent(invoice);
         } catch (e) {
           if (/saldo/i.test(e.message)) {
             if (confirm(e.message + "\n\nBuka halaman Deposit Saldo?")) location.href = "deposit.html";
