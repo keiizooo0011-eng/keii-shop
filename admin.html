@@ -290,17 +290,17 @@
             <div>
               <span class="eyebrow">MANUAL APK CAPACITY</span>
               <h2 id="apkManualSlotTitle">Slot APK Premium Manual</h2>
-              <p class="muted">Atur jumlah pesanan manual yang masih siap diterima. Sistem ini tidak memakai data akun auto-delivery.</p>
+              <p class="muted">Atur kapasitas pesanan Manual Akun dan Manual Invite Email. Keduanya memakai sistem slot, bukan stok akun auto-delivery.</p>
             </div>
             <span class="panel-stock-status">Pengiriman manual</span>
           </div>
           <div class="panel-stock-explainer">
-            <article><span>01</span><div><strong>Pilih produk manual</strong><p>Hanya produk APK Premium dengan mode pengiriman manual yang tampil.</p></div></article>
+            <article><span>01</span><div><strong>Pilih produk manual</strong><p>Produk APK Premium mode Manual dan Manual Invite Email tampil dalam satu pengelolaan slot.</p></div></article>
             <article><span>02</span><div><strong>Masukkan jumlah slot</strong><p>Contoh: isi 10 lalu tekan Tambah Slot.</p></div></article>
             <article><span>03</span><div><strong>Slot berkurang otomatis</strong><p>Setelah pembayaran berhasil, slot produk akan berkurang satu.</p></div></article>
           </div>
           <form id="apkManualSlotForm" class="panel-stock-form">
-            <label>Produk APK Manual<select id="apkManualSlotProduct" required><option value="">Memuat produk manual...</option></select></label>
+            <label>Produk APK Manual / Invite<select id="apkManualSlotProduct" required><option value="">Memuat produk manual dan invite...</option></select></label>
             <label>Jumlah slot<input id="apkManualSlotAmount" type="number" inputmode="numeric" min="1" max="10000" value="10" required></label>
             <div class="panel-stock-actions">
               <button type="submit" data-apk-slot-action="add">Tambah Slot</button>
@@ -308,7 +308,7 @@
               <button type="button" class="danger ghost" data-apk-slot-action="subtract">Kurangi</button>
             </div>
           </form>
-          <div class="panel-stock-note"><strong>Informasi yang tampil kepada pelanggan</strong><span>Produk manual akan menampilkan Slot tersedia. Saat slot 0, tombol pembelian otomatis dinonaktifkan.</span></div>
+          <div class="panel-stock-note"><strong>Informasi yang tampil kepada pelanggan</strong><span>Produk Manual Akun dan Manual Invite akan menampilkan Slot tersedia. Saat slot 0, tombol pembelian otomatis dinonaktifkan.</span></div>
           <div id="apkManualSlotMessage" class="admin-message"></div>
           <div id="apkManualSlotList" class="panel-stock-list"></div>
         </section>
