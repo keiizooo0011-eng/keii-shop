@@ -3,37 +3,36 @@
   const output = document.getElementById('apkTypingText');
   if (!copy || !output) return;
 
-  const text = copy.dataset.apkTyping || '';
+  const messages = [
+    'Nikmati pengalaman berlangganan aplikasi premium dengan sistem pemesanan modern.',
+    'Proses cepat, pembayaran praktis, dan dukungan layanan yang siap membantu setiap saat.',
+    'Tersedia pilihan akun otomatis, layanan manual, hingga sistem invite email.',
+    'Semua kebutuhan premium dalam satu katalog yang aman, praktis, dan terpercaya.'
+  ];
+
   const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  let index = 0;
+
+  const show = (message) => {
+    output.textContent = message;
+    copy.classList.remove('is-leaving');
+    requestAnimationFrame(() => copy.classList.add('is-visible'));
+  };
 
   if (reduceMotion) {
-    output.textContent = text;
+    show(messages[0]);
     return;
   }
 
-  const TYPE_DELAY = 34;
-  const DELETE_DELAY = 14;
-  const HOLD_DELAY = 50000;
-  const RESTART_DELAY = 650;
-  let index = 0;
-
-  const type = () => {
-    if (index < text.length) {
-      output.textContent += text.charAt(index++);
-      window.setTimeout(type, TYPE_DELAY);
-      return;
-    }
-    window.setTimeout(erase, HOLD_DELAY);
-  };
-
-  const erase = () => {
-    if (index > 0) {
-      output.textContent = text.slice(0, --index);
-      window.setTimeout(erase, DELETE_DELAY);
-      return;
-    }
-    window.setTimeout(type, RESTART_DELAY);
-  };
-
-  type();
+  show(messages[0]);
+  window.setInterval(() => {
+    copy.classList.remove('is-visible');
+    copy.classList.add('is-leaving');
+    window.setTimeout(() => {
+      index = (index + 1) % messages.length;
+      output.textContent = messages[index];
+      copy.classList.remove('is-leaving');
+      requestAnimationFrame(() => copy.classList.add('is-visible'));
+    }, 460);
+  }, 9000);
 })();

@@ -9,3 +9,38 @@
 @keyframes apkCaretBlink{50%{opacity:0}}
 @media(max-width:720px){.apk-typing-copy{min-height:5.1em;font-size:15px!important;line-height:1.48!important}}
 @media(prefers-reduced-motion:reduce){.apk-typing-caret{animation:none}}
+
+/* V3: premium rotating hero copy — smooth, stable, no typewriter jitter */
+.apk-typing-copy{
+  position:relative;
+  display:block;
+  min-height:3.35em;
+  max-width:720px;
+  margin:10px 0 0;
+  line-height:1.55!important;
+  overflow:hidden;
+}
+.apk-typing-copy #apkTypingText{
+  display:block;
+  opacity:0;
+  transform:translateY(10px);
+  filter:blur(5px);
+  transition:opacity .55s ease,transform .55s cubic-bezier(.2,.75,.25,1),filter .55s ease;
+}
+.apk-typing-copy.is-visible #apkTypingText{
+  opacity:1;
+  transform:translateY(0);
+  filter:blur(0);
+}
+.apk-typing-copy.is-leaving #apkTypingText{
+  opacity:0;
+  transform:translateY(-8px);
+  filter:blur(4px);
+}
+.apk-typing-caret{display:none!important}
+@media(max-width:720px){
+  .apk-typing-copy{min-height:5.1em;font-size:15px!important;line-height:1.48!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .apk-typing-copy #apkTypingText{opacity:1;transform:none;filter:none;transition:none}
+}

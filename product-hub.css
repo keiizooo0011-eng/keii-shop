@@ -129,3 +129,47 @@ body.product-hub-page{margin:0;min-height:100vh;background:#08050e;color:#fff;fo
     font-size:20px;
   }
 }
+
+/* Product Hub V3 — visual-only enhancement */
+.product-hub-v3{position:relative;overflow-x:hidden;background:#090611}
+.product-hub-v3 .hub-shell{position:relative;z-index:2}
+.hub-aurora{position:fixed;z-index:0;pointer-events:none;border-radius:50%;filter:blur(95px);opacity:.36;will-change:transform}
+.hub-aurora.c{width:300px;height:300px;left:-120px;top:42%;background:rgba(73,46,255,.34);animation:hubAuroraOne 13s ease-in-out infinite alternate}
+.hub-aurora.d{width:260px;height:260px;right:-110px;top:58%;background:rgba(173,48,255,.24);animation:hubAuroraTwo 16s ease-in-out infinite alternate}
+.product-hub-v3 .hub-hero{position:relative;isolation:isolate;padding-top:42px;padding-bottom:42px}
+.product-hub-v3 .hub-hero:before{content:"";position:absolute;z-index:-1;width:min(520px,88vw);height:210px;left:50%;top:48%;transform:translate(-50%,-50%);background:radial-gradient(ellipse,rgba(117,66,255,.2),transparent 68%);filter:blur(12px)}
+.product-hub-v3 .hub-hero>span{background:linear-gradient(90deg,#c6a8ff,#8eb7ff,#e1b6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.product-hub-v3 .hub-hero h1{max-width:760px;margin-inline:auto;text-wrap:balance;text-shadow:0 12px 45px rgba(123,67,255,.18)}
+.product-hub-v3 .hub-hero p{max-width:720px;margin-inline:auto;line-height:1.75;text-wrap:balance}
+.product-hub-v3 .hero-pills span{backdrop-filter:blur(12px);background:rgba(28,17,45,.72);border-color:rgba(178,129,255,.16)}
+.product-hub-v3 .hub-grid{perspective:1200px}
+.product-hub-v3 .hub-card{position:relative;overflow:hidden;isolation:isolate;opacity:0;transform:translateY(24px) scale(.975);border-color:rgba(184,132,255,.14);background:linear-gradient(145deg,rgba(29,20,45,.92),rgba(15,11,27,.96));box-shadow:0 18px 48px rgba(0,0,0,.18);transition:transform .32s cubic-bezier(.2,.75,.25,1),border-color .32s ease,box-shadow .32s ease,background .32s ease;transition-delay:calc(var(--card-index,0) * 45ms)}
+.product-hub-v3 .hub-card:before{content:"";position:absolute;z-index:-1;inset:-1px;background:radial-gradient(280px circle at var(--tap-x,50%) var(--tap-y,30%),rgba(144,87,255,.2),transparent 54%);opacity:.55;transition:opacity .25s}
+.product-hub-v3 .hub-card:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-95px;top:-95px;background:rgba(124,70,255,.15);filter:blur(12px);transition:transform .45s ease,opacity .45s ease}
+.product-hub-v3 .hub-card.is-revealed{opacity:1;transform:none}
+.product-hub-v3 .hub-card:hover{transform:translateY(-7px) rotateX(1.2deg);border-color:rgba(177,113,255,.34);box-shadow:0 26px 62px rgba(58,21,117,.24)}
+.product-hub-v3 .hub-card:hover:after{transform:translate(-14px,14px) scale(1.12);opacity:.9}
+.product-hub-v3 .hub-card.is-tapped{transform:scale(.975)}
+.product-hub-v3 .hub-symbol{animation:hubIconFloat 4s ease-in-out infinite;box-shadow:0 15px 38px rgba(88,43,176,.2)}
+.product-hub-v3 .hub-card:nth-child(even) .hub-symbol{animation-delay:-1.5s}
+.product-hub-v3 .hub-card small{letter-spacing:.2em}
+.product-hub-v3 .hub-card h2{letter-spacing:-.02em}
+.product-hub-v3 .hub-card p{line-height:1.58;color:rgba(222,213,235,.68)}
+.product-hub-v3 .hub-card b span{display:inline-block;transition:transform .25s ease}
+.product-hub-v3 .hub-card:hover b span{transform:translateX(5px)}
+.product-hub-v3 .hub-live-purchases,.product-hub-v3 .reveal-section{opacity:0;transform:translateY(22px);filter:blur(4px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.75,.25,1),filter .7s ease}
+.product-hub-v3 .hub-live-purchases.is-revealed,.product-hub-v3 .reveal-section.is-revealed{opacity:1;transform:none;filter:none}
+@keyframes hubIconFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1.5deg)}}
+@keyframes hubAuroraOne{to{transform:translate(90px,-45px) scale(1.15)}}
+@keyframes hubAuroraTwo{to{transform:translate(-80px,55px) scale(.92)}}
+@media(max-width:680px){
+ .product-hub-v3 .hub-hero{padding-top:28px;padding-bottom:34px}
+ .product-hub-v3 .hub-hero h1{font-size:clamp(34px,10vw,48px);line-height:1.08}
+ .product-hub-v3 .hub-hero p{font-size:15px;line-height:1.65}
+ .product-hub-v3 .hub-card:hover{transform:none}
+ .product-hub-v3 .hub-card{transition-delay:calc(var(--card-index,0) * 35ms)}
+}
+@media(prefers-reduced-motion:reduce){
+ .hub-aurora,.product-hub-v3 .hub-symbol{animation:none!important}
+ .product-hub-v3 .hub-card,.product-hub-v3 .hub-live-purchases,.product-hub-v3 .reveal-section{opacity:1;transform:none;filter:none;transition:none}
+}
