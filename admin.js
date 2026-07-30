@@ -199,7 +199,7 @@
         <div>
           <strong>${esc(p.name)}</strong>
           <span>${p.category === "panel-pterodactyl" ? "Panel Pterodactyl" : p.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"} • ${rupiah(p.price)}</span>
-          <small>${p.delivery_mode==="manual"&&p.category==="apk-premium"?`Slot manual ${Number(p.stock||0)}`:`Stok ${Number(p.stock||0)}`} • ${p.is_active?"Dibuka":"Ditutup"}</small>
+          <small>${["manual","invite"].includes(p.delivery_mode)&&p.category==="apk-premium"?`Slot manual ${Number(p.stock||0)}`:`Stok ${Number(p.stock||0)}`} • ${p.is_active?"Dibuka":"Ditutup"}</small>
           <div class="variant-badges">${(Array.isArray(p.variants)?p.variants:[]).map(v=>`<span class="variant-badge">${esc(v.name)} · ${rupiah(v.price)}</span>`).join("")}</div>
         </div>
         <div class="item-actions">
@@ -214,7 +214,7 @@
     document.querySelectorAll("[data-delete]").forEach(btn=>btn.onclick=()=>deleteProduct(btn.dataset.delete));
     const stockSelect=$("#stockProduct");
     if(stockSelect){
-      stockSelect.innerHTML=productsCache.filter(p=>p.category!=="panel-pterodactyl" && !(p.category==="apk-premium" && p.delivery_mode==="manual")).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      stockSelect.innerHTML=productsCache.filter(p=>p.category!=="panel-pterodactyl" && !(p.category==="apk-premium" && ["manual","invite"].includes(p.delivery_mode))).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
       if(stockSelect.options.length){ updateStockVariants(); } else { stockSelect.innerHTML=`<option value="">Tidak ada produk auto-delivery</option>`; stockSelect.disabled=true; }
       loadStockSummary();
     }
@@ -244,11 +244,13 @@
     const isApk = $("#productCategory")?.value === "apk-premium";
     const wrap = $("#apkDeliveryModeWrap");
     if (wrap) wrap.hidden = !isApk;
-    const manual = isApk && $("#productDeliveryMode")?.value === "manual";
+    const mode = isApk ? $("#productDeliveryMode")?.value : "automatic";
     const hint = $("#productDeliveryHint");
-    if (hint) hint.textContent = manual
-      ? "Produk manual tidak membutuhkan stok. Setelah pembayaran, pesanan masuk ke menu APK Manual."
-      : "Produk otomatis membutuhkan stok akun pada menu Stok APK.";
+    if (hint) hint.textContent = mode === "invite"
+      ? "Pembeli wajib mengisi email aktif. Admin memproses undangan dan memperbarui status serta catatan."
+      : mode === "manual"
+        ? "Produk manual tidak membutuhkan stok. Setelah pembayaran, pesanan masuk ke menu APK Manual."
+        : "Produk otomatis membutuhkan stok akun pada menu Stok APK.";
   }
 
   async function toggleProduct(id) {

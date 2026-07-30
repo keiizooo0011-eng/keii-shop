@@ -389,6 +389,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
           <span class="store-category">${cat}</span>
         </div>
         <div class="store-card-body">
+          ${p.category === "apk-premium" ? `<div class="apk-mode-badge ${esc(p.delivery_mode || "automatic")}">${p.delivery_mode === "invite" ? "INVITE EMAIL" : p.delivery_mode === "manual" ? "DIPROSES ADMIN" : "OTOMATIS"}</div>` : ""}
           <h3>${esc(p.name)}</h3>
           <p>${esc(p.description || "Produk digital KivoPay.")}</p>
           <div class="product-rating-mini">
@@ -397,9 +398,9 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
           </div>
           <div class="store-meta">
             <strong>${rupiah(p.price)}</strong>
-            <span>${p.category === "panel-pterodactyl" ? (Number(p.stock || 0) > 0 ? `Kuota tersedia ${Number(p.stock || 0)}` : "Kuota penuh") : (p.category === "apk-premium" && p.delivery_mode === "manual") ? (Number(p.stock || 0) > 0 ? `Slot tersedia ${Number(p.stock || 0)}` : "Slot penuh") : (Number(p.stock || 0) > 0 ? `Stok ${Number(p.stock || 0)}` : "Stok habis")}</span>
+            <span>${p.category === "panel-pterodactyl" ? (Number(p.stock || 0) > 0 ? `Kuota tersedia ${Number(p.stock || 0)}` : "Kuota penuh") : (p.category === "apk-premium" && ["manual","invite"].includes(p.delivery_mode)) ? (Number(p.stock || 0) > 0 ? `Slot tersedia ${Number(p.stock || 0)}` : "Slot penuh") : (Number(p.stock || 0) > 0 ? `Stok ${Number(p.stock || 0)}` : "Stok habis")}</span>
           </div>
-          <button class="store-buy" data-product-id="${esc(p.id)}" ${Number(p.stock || 0) > 0 ? "" : "disabled"}>${Number(p.stock || 0) > 0 ? (p.category === "panel-pterodactyl" ? "Pesan Panel" : "Beli Sekarang") : (p.category === "panel-pterodactyl" ? "Kuota Penuh" : (p.category === "apk-premium" && p.delivery_mode === "manual") ? "Slot Penuh" : "Stok Habis")}</button>
+          <button class="store-buy" data-product-id="${esc(p.id)}" ${Number(p.stock || 0) > 0 ? "" : "disabled"}>${Number(p.stock || 0) > 0 ? (p.category === "panel-pterodactyl" ? "Pesan Panel" : "Beli Sekarang") : (p.category === "panel-pterodactyl" ? "Kuota Penuh" : (p.category === "apk-premium" && ["manual","invite"].includes(p.delivery_mode)) ? "Slot Penuh" : "Stok Habis")}</button>
         </div>
       </article>`;
   }
@@ -412,7 +413,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
       const [products, inventory] = await Promise.all([loadProducts(), loadInventory()]);
       products.forEach(product => {
         const info = inventory[String(product.id)] || null;
-        if (info && !(product.category === "panel-pterodactyl" || (product.category === "apk-premium" && product.delivery_mode === "manual"))) {
+        if (info && !(product.category === "panel-pterodactyl" || (product.category === "apk-premium" && ["manual","invite"].includes(product.delivery_mode)))) {
           product.stock = Number(info.available || 0);
           product.stock_reserved = Number(info.reserved || 0);
           product.variant_stock = info.variants || {};
@@ -451,7 +452,14 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
                ${categorySection("apk-premium", "APK Premium", "Akun dan akses aplikasi premium dengan proses cepat.", "APP", apkProducts)}`)
         : `<div class="store-empty">Belum ada paket Panel Pterodactyl yang aktif. Silakan hubungi admin atau kembali lagi nanti.</div>`;
       document.querySelectorAll(".store-buy").forEach(btn => {
-        btn.onclick = () => openCheckout(btn.dataset.productId);
+        btn.onclick = () => {
+          const selected = (window.__KIVO_PRODUCTS__ || []).find(item => String(item.id) === String(btn.dataset.productId));
+          if (selected?.category === "apk-premium") {
+            location.href = "apk-product-detail.html?id=" + encodeURIComponent(selected.id);
+            return;
+          }
+          openCheckout(btn.dataset.productId);
+        };
       });
     } catch (e) {
       root.innerHTML = `<div class="store-empty">Produk gagal dimuat: ${esc(e.message)}</div>`;
@@ -491,14 +499,14 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
               <span class="product-detail-kicker">PRODUK KIVOPAY</span>
               <h2>${esc(product.name)}</h2>
               <div class="product-detail-rating">${stars(product.rating_average || 0)} <span>${Number(product.rating_count || 0) ? `${Number(product.rating_average || 0).toFixed(1)} • ${Number(product.rating_count)} ulasan` : "Belum ada ulasan"}</span></div>
-              <div class="product-detail-price"><div><small>Harga mulai</small><strong>${rupiah(startPrice)}</strong></div><span>${product.category === "panel-pterodactyl" ? (Number(product.stock || 0) > 0 ? `Kuota pesanan ${Number(product.stock || 0)}` : "Kuota sedang penuh") : (product.category === "apk-premium" && product.delivery_mode === "manual") ? (Number(product.stock || 0) > 0 ? `Slot pesanan ${Number(product.stock || 0)}` : "Slot sedang penuh") : (Number(product.stock || 0) > 0 ? `Stok ${Number(product.stock || 0)}` : "Cek pilihan paket")}</span></div>
+              <div class="product-detail-price"><div><small>Harga mulai</small><strong>${rupiah(startPrice)}</strong></div><span>${product.category === "panel-pterodactyl" ? (Number(product.stock || 0) > 0 ? `Kuota pesanan ${Number(product.stock || 0)}` : "Kuota sedang penuh") : (product.category === "apk-premium" && ["manual","invite"].includes(product.delivery_mode)) ? (Number(product.stock || 0) > 0 ? `Slot pesanan ${Number(product.stock || 0)}` : "Slot sedang penuh") : (Number(product.stock || 0) > 0 ? `Stok ${Number(product.stock || 0)}` : "Cek pilihan paket")}</span></div>
             </div>
           </div>
           <div class="product-detail-content">
             <div class="product-info-strip">
               <span><b class="mini-line-icon">AUTO</b><small>Proses</small><strong>Cepat</strong></span>
               <span><b class="mini-line-icon">QRIS</b><small>Pembayaran</small><strong>Aman</strong></span>
-              <span><b>📦</b><small>Pengiriman</small><strong>${product.category === "apk-premium" && product.delivery_mode === "manual" ? "Diproses Admin" : product.category === "panel-pterodactyl" ? "Diproses Admin" : "Otomatis"}</strong></span>
+              <span><b>📦</b><small>Pengiriman</small><strong>${product.category === "apk-premium" && ["manual","invite"].includes(product.delivery_mode) ? "Diproses Admin" : product.category === "panel-pterodactyl" ? "Diproses Admin" : "Otomatis"}</strong></span>
             </div>
             <section class="product-description-box product-description-v2">
               <div class="product-section-title"><span>01</span><div><small>INFORMASI PRODUK</small><h3>Deskripsi lengkap</h3></div></div>
@@ -541,7 +549,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
         <input id="checkoutContact" inputmode="numeric" placeholder="Contoh: 62812xxxx">
         ${product.category === "sewa-bot" ? `<label>Nama bot</label><input id="checkoutBotName" maxlength="60" value="KEIINEXUS" placeholder="Nama bot"><label>Prefix perintah</label><input id="checkoutPrefix" maxlength="5" value="." placeholder="."><label>Metode pembayaran</label><div class="wallet-payment-options"><label><input type="radio" name="checkoutPayment" value="balance" checked><span><b>Saldo KivoPay</b><small>Bot dibuat otomatis setelah saldo dipotong</small></span></label></div>` : `<label>Metode pembayaran</label><div class="wallet-payment-options"><label><input type="radio" name="checkoutPayment" value="balance" checked><span><b>Saldo KivoPay</b><small>Bayar langsung dari saldo akun</small></span></label><label><input type="radio" name="checkoutPayment" value="qris"><span><b>QRIS</b><small>Bayar dengan kode QR</small></span></label></div>`}
         <button id="checkoutSubmit" class="checkout-submit">Buat Pesanan</button>
-        <small class="checkout-auto-note">${product.category === "apk-premium" && product.delivery_mode === "manual" ? "Setelah pembayaran berhasil, pesanan masuk ke admin dan data akun dikirim melalui Riwayat APK Premium." : product.category === "panel-pterodactyl" ? "Setelah pembayaran berhasil, pesanan masuk ke antrean admin dan akses panel dikirim melalui Riwayat Panel." : product.category === "sewa-bot" ? "Setelah saldo dibayar, pairing code dibuat otomatis. Masukkan kode tersebut di WhatsApp milikmu." : "Setelah pembayaran berhasil, data produk dikirim otomatis dari stok yang tersedia."}</small>`;
+        <small class="checkout-auto-note">${product.category === "apk-premium" && ["manual","invite"].includes(product.delivery_mode) ? "Setelah pembayaran berhasil, pesanan masuk ke admin dan data akun dikirim melalui Riwayat APK Premium." : product.category === "panel-pterodactyl" ? "Setelah pembayaran berhasil, pesanan masuk ke antrean admin dan akses panel dikirim melalui Riwayat Panel." : product.category === "sewa-bot" ? "Setelah saldo dibayar, pairing code dibuat otomatis. Masukkan kode tersebut di WhatsApp milikmu." : "Setelah pembayaran berhasil, data produk dikirim otomatis dari stok yang tersedia."}</small>`;
 
       body.querySelector(".shop-close").onclick = closeModal;
       body.querySelector(".checkout-back").onclick = renderProductDetail;
