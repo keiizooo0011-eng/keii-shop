@@ -155,9 +155,12 @@
               <label>Mode pengiriman APK Premium</label>
               <select id="productDeliveryMode">
                 <option value="automatic">Otomatis — data langsung dari stok</option>
-                <option value="manual">Manual — admin mengirim data akun setelah pembayaran</option>
-                <option value="invite">Manual Invite — pembeli wajib mengisi email aktif</option>
+                <option value="manual">Manual — admin memproses pesanan setelah pembayaran</option>
               </select>
+              <label id="productRequireEmailWrap" class="apk-require-email-option" hidden>
+                <input id="productRequireEmail" type="checkbox">
+                <span><strong>Wajib isi email aktif (Invite)</strong><small>Email pembeli akan tampil di antrean APK Manual untuk proses invite anggota/family.</small></span>
+              </label>
               <small id="productDeliveryHint" class="muted">Produk otomatis membutuhkan stok akun pada menu Stok APK.</small>
             </div>
             <div class="form-two">
@@ -300,7 +303,7 @@
             <article><span>03</span><div><strong>Slot berkurang otomatis</strong><p>Setelah pembayaran berhasil, slot produk akan berkurang satu.</p></div></article>
           </div>
           <form id="apkManualSlotForm" class="panel-stock-form">
-            <label>Produk APK Manual / Invite<select id="apkManualSlotProduct" required><option value="">Memuat produk manual dan invite...</option></select></label>
+            <label>Produk APK Manual<select id="apkManualSlotProduct" required><option value="">Memuat produk manual...</option></select></label>
             <label>Jumlah slot<input id="apkManualSlotAmount" type="number" inputmode="numeric" min="1" max="10000" value="10" required></label>
             <div class="panel-stock-actions">
               <button type="submit" data-apk-slot-action="add">Tambah Slot</button>

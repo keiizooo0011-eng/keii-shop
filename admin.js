@@ -155,6 +155,7 @@
         variants: normalizedVariants(getVariantRows(), price),
         is_active: $("#productActive").checked,
         delivery_mode: $("#productCategory").value === "apk-premium" ? $("#productDeliveryMode").value : "automatic",
+        requires_email: $("#productCategory").value === "apk-premium" && $("#productDeliveryMode").value === "manual" ? !!$("#productRequireEmail")?.checked : false,
         updated_at: new Date().toISOString()
       };
       if (!payload.variants.length) throw new Error("Tambahkan minimal satu varian/paket.");
@@ -178,6 +179,7 @@
     $("#productId").value = "";
     $("#productActive").checked = true;
     $("#productDeliveryMode").value = "automatic";
+    if ($("#productRequireEmail")) $("#productRequireEmail").checked = false;
     updateDeliveryModeUI();
     $("#imagePreview").src = "https://img2.pixhost.to/images/9481/751089580_papaqueen.jpg";
     $("#cancelEditBtn").hidden = true;
@@ -199,7 +201,7 @@
         <div>
           <strong>${esc(p.name)}</strong>
           <span>${p.category === "panel-pterodactyl" ? "Panel Pterodactyl" : p.category === "sewa-bot" ? "Sewa Bot" : "APK Premium"} • ${rupiah(p.price)}</span>
-          <small>${["manual","invite"].includes(p.delivery_mode)&&p.category==="apk-premium"?`Slot manual ${Number(p.stock||0)}`:`Stok ${Number(p.stock||0)}`} • ${p.is_active?"Dibuka":"Ditutup"}</small>
+          <small>${p.delivery_mode==="manual"&&p.category==="apk-premium"?`Slot manual ${Number(p.stock||0)}`:`Stok ${Number(p.stock||0)}`} • ${p.is_active?"Dibuka":"Ditutup"}</small>
           <div class="variant-badges">${(Array.isArray(p.variants)?p.variants:[]).map(v=>`<span class="variant-badge">${esc(v.name)} · ${rupiah(v.price)}</span>`).join("")}</div>
         </div>
         <div class="item-actions">
@@ -214,7 +216,7 @@
     document.querySelectorAll("[data-delete]").forEach(btn=>btn.onclick=()=>deleteProduct(btn.dataset.delete));
     const stockSelect=$("#stockProduct");
     if(stockSelect){
-      stockSelect.innerHTML=productsCache.filter(p=>p.category!=="panel-pterodactyl" && !(p.category==="apk-premium" && ["manual","invite"].includes(p.delivery_mode))).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      stockSelect.innerHTML=productsCache.filter(p=>p.category!=="panel-pterodactyl" && !(p.category==="apk-premium" && p.delivery_mode==="manual")).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
       if(stockSelect.options.length){ updateStockVariants(); } else { stockSelect.innerHTML=`<option value="">Tidak ada produk auto-delivery</option>`; stockSelect.disabled=true; }
       loadStockSummary();
     }
@@ -229,7 +231,8 @@
     $("#productPrice").value = p.price;
     $("#productStock").value = p.stock;
     $("#productDescription").value = p.description || "";
-    $("#productDeliveryMode").value = p.delivery_mode || "automatic";
+    $("#productDeliveryMode").value = p.delivery_mode === "invite" ? "manual" : (p.delivery_mode || "automatic");
+    if ($("#productRequireEmail")) $("#productRequireEmail").checked = !!p.requires_email || p.delivery_mode === "invite";
     updateDeliveryModeUI();
     renderVariantRows(p.variants || []);
     $("#productActive").checked = !!p.is_active;
@@ -245,11 +248,15 @@
     const wrap = $("#apkDeliveryModeWrap");
     if (wrap) wrap.hidden = !isApk;
     const mode = isApk ? $("#productDeliveryMode")?.value : "automatic";
+    const emailWrap = $("#productRequireEmailWrap");
+    if (emailWrap) emailWrap.hidden = !(isApk && mode === "manual");
+    if (mode !== "manual" && $("#productRequireEmail")) $("#productRequireEmail").checked = false;
+    const needsEmail = mode === "manual" && !!$("#productRequireEmail")?.checked;
     const hint = $("#productDeliveryHint");
-    if (hint) hint.textContent = mode === "invite"
-      ? "Pembeli wajib mengisi email aktif. Admin memproses undangan dan memperbarui status serta catatan."
+    if (hint) hint.textContent = needsEmail
+      ? "Pesanan tetap masuk ke APK Manual, tetapi pembeli wajib mengisi email aktif untuk proses invite."
       : mode === "manual"
-        ? "Produk manual tidak membutuhkan stok. Setelah pembayaran, pesanan masuk ke menu APK Manual."
+        ? "Produk manual memakai slot APK Manual dan diproses admin setelah pembayaran."
         : "Produk otomatis membutuhkan stok akun pada menu Stok APK.";
   }
 
@@ -266,6 +273,7 @@
 
   $("#productCategory")?.addEventListener("change", updateDeliveryModeUI);
   $("#productDeliveryMode")?.addEventListener("change", updateDeliveryModeUI);
+  $("#productRequireEmail")?.addEventListener("change", updateDeliveryModeUI);
   updateDeliveryModeUI();
 
   async function deleteProduct(id) {

@@ -389,7 +389,7 @@ async function kivoAuthHeaders(extra={}){try{return window.KivoAuth?await KivoAu
           <span class="store-category">${cat}</span>
         </div>
         <div class="store-card-body">
-          ${p.category === "apk-premium" ? `<div class="apk-mode-badge ${esc(p.delivery_mode || "automatic")}">${p.delivery_mode === "invite" ? "INVITE EMAIL" : p.delivery_mode === "manual" ? "DIPROSES ADMIN" : "OTOMATIS"}</div>` : ""}
+          ${p.category === "apk-premium" ? `<div class="apk-mode-badge ${esc(p.delivery_mode || "automatic")}">${(p.requires_email || p.delivery_mode === "invite") ? "INVITE EMAIL" : p.delivery_mode === "manual" ? "DIPROSES ADMIN" : "OTOMATIS"}</div>` : ""}
           <h3>${esc(p.name)}</h3>
           <p>${esc(p.description || "Produk digital KivoPay.")}</p>
           <div class="product-rating-mini">
