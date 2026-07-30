@@ -1442,6 +1442,7 @@ function initWelcome(){
   const textEl=$("#welcomeText");
   const closeBtn=$("#welcomeClose");
   const video=$("#welcomeVideo");
+  const videoIntro=$("#welcomeVideoIntro");
   const soundToggle=$("#welcomeSoundToggle");
   const loadingLabel=$("#welcomeLoadingLabel");
   const loadingPercent=$("#welcomeLoadingPercent");
@@ -1464,6 +1465,7 @@ function initWelcome(){
   if(video){
     video.muted=true;
     video.volume=0;
+    video.currentTime=0;
     video.play().catch(()=>{});
   }
 
@@ -1478,7 +1480,7 @@ function initWelcome(){
     };
   }
 
-  const message="Menyiapkan pengalaman belanja digital yang cepat, aman, dan nyaman khusus untukmu.";
+  const message="Temukan berbagai layanan digital premium dengan proses cepat, pembayaran aman, dan pengalaman belanja yang nyaman.";
   const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
 
   initVisitorEntry();
@@ -1490,12 +1492,19 @@ function initWelcome(){
   }
 
   document.body.classList.add("welcome-active");
+  let progressTimer;
+  const introTimers=[];
 
-  let timer;
-  let index=0;
+  const scheduleIntro=(className,delay)=>{
+    if(!videoIntro) return;
+    introTimers.push(setTimeout(()=>videoIntro.classList.add(className),delay));
+  };
+
+  const clearIntroTimers=()=>introTimers.forEach(clearTimeout);
 
   const closeWelcome=()=>{
-    clearInterval(timer);
+    clearInterval(progressTimer);
+    clearIntroTimers();
     if(video){
       video.pause();
       video.muted=true;
@@ -1508,37 +1517,49 @@ function initWelcome(){
 
   overlay.classList.add("welcome-show");
   overlay.setAttribute("aria-hidden","false");
+  textEl.textContent=message;
 
+  if(videoIntro){
+    videoIntro.className="welcome-video-intro";
+    scheduleIntro("show-kicker",800);
+    scheduleIntro("show-brand",1600);
+    scheduleIntro("show-tagline",2800);
+    scheduleIntro("show-message",4000);
+    scheduleIntro("show-closing",5800);
+    scheduleIntro("intro-fade",7200);
+  }
+
+  const duration=7600;
+  const startedAt=performance.now();
   const updateLoading=(percent)=>{
     const value=Math.max(0,Math.min(100,Math.round(percent)));
     if(loadingPercent) loadingPercent.textContent=`${value}%`;
     if(loadingBar) loadingBar.style.width=`${value}%`;
     if(loadingLabel){
       loadingLabel.textContent=value < 35
-        ? "Menyiapkan etalase digital"
+        ? "Memulai pengalaman KivoPay"
         : value < 70
-          ? "Menghubungkan layanan KivoPay"
+          ? "Menyiapkan layanan digital"
           : value < 100
-            ? "Memastikan semuanya siap"
+            ? "Hampir siap"
             : "KivoPay siap digunakan";
     }
   };
 
   updateLoading(0);
-  timer=setInterval(()=>{
-    textEl.textContent=message.slice(0,index++);
-    const progress=(index/message.length)*100;
+  progressTimer=setInterval(()=>{
+    const elapsed=performance.now()-startedAt;
+    const progress=Math.min(100,(elapsed/duration)*100);
     updateLoading(progress);
-    if(index>message.length){
-      clearInterval(timer);
-      updateLoading(100);
+    if(progress>=100){
+      clearInterval(progressTimer);
       closeBtn.classList.add("welcome-button-show");
     }
-  },32);
+  },80);
 
   closeBtn.onclick=closeWelcome;
   overlay.onclick=e=>{
-    if(e.target===overlay && index>message.length) closeWelcome();
+    if(e.target===overlay && closeBtn.classList.contains("welcome-button-show")) closeWelcome();
   };
 }
 document.addEventListener("DOMContentLoaded",initWelcome);

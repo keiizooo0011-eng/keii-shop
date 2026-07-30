@@ -4298,3 +4298,97 @@ body.welcome-active .floating-support{
   .welcome-media{min-height:325px}
   .welcome-media video{height:325px;object-position:center 42%}
 }
+
+/* V45 — Cinematic text sequence over welcome video */
+.welcome-media::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(124,58,237,.08),transparent 42%),
+    linear-gradient(180deg,rgba(2,4,12,.16),rgba(3,2,9,.18) 44%,rgba(5,3,10,.72));
+  pointer-events:none;
+}
+.welcome-video-intro{
+  position:absolute;
+  z-index:2;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:28px 24px 54px;
+  text-align:center;
+  pointer-events:none;
+}
+.welcome-video-intro>*{
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity .75s ease,transform .75s cubic-bezier(.2,.8,.2,1),filter .75s ease;
+  filter:blur(5px);
+}
+.welcome-intro-kicker{
+  color:#d9ccff;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.32em;
+  text-shadow:0 0 18px rgba(167,139,250,.7);
+}
+.welcome-intro-brand{
+  margin-top:8px;
+  color:#fff;
+  font-family:"Space Grotesk",Inter,sans-serif;
+  font-size:clamp(34px,9vw,58px);
+  line-height:1;
+  letter-spacing:.08em;
+  text-shadow:0 0 12px rgba(255,255,255,.2),0 0 34px rgba(139,92,246,.82);
+}
+.welcome-intro-tagline{
+  margin-top:12px;
+  color:#f0ebff;
+  font-size:clamp(12px,3.4vw,17px);
+  font-weight:800;
+  letter-spacing:.025em;
+}
+.welcome-intro-message{
+  max-width:430px;
+  margin:16px 0 0;
+  color:rgba(239,235,247,.9);
+  font-size:clamp(11px,3vw,14px);
+  line-height:1.6;
+}
+.welcome-intro-closing{
+  margin-top:12px;
+  color:#c4b5fd;
+  font-size:clamp(11px,2.8vw,13px);
+  font-weight:800;
+}
+.welcome-video-intro.show-kicker .welcome-intro-kicker,
+.welcome-video-intro.show-brand .welcome-intro-brand,
+.welcome-video-intro.show-tagline .welcome-intro-tagline,
+.welcome-video-intro.show-message .welcome-intro-message,
+.welcome-video-intro.show-closing .welcome-intro-closing{
+  opacity:1;
+  transform:translateY(0);
+  filter:blur(0);
+}
+.welcome-video-intro.show-brand .welcome-intro-brand{
+  animation:welcomeBrandGlow 2.4s ease-in-out infinite alternate;
+}
+.welcome-video-intro.intro-fade>*{
+  opacity:0!important;
+  transform:translateY(-8px)!important;
+  filter:blur(5px)!important;
+}
+@keyframes welcomeBrandGlow{
+  from{transform:scale(.985);text-shadow:0 0 12px rgba(255,255,255,.18),0 0 24px rgba(139,92,246,.58)}
+  to{transform:scale(1.025);text-shadow:0 0 16px rgba(255,255,255,.3),0 0 42px rgba(139,92,246,.94)}
+}
+@media(max-width:420px){
+  .welcome-video-intro{padding:24px 18px 48px}
+  .welcome-intro-message{max-width:290px;line-height:1.52}
+}
+@media(prefers-reduced-motion:reduce){
+  .welcome-video-intro>*{transition:none!important;animation:none!important}
+}
