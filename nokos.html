@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07111f">
   <title>Nokos OTP — KivoPay</title>
   <link rel="stylesheet" href="style.css?v=41">
-  <link rel="stylesheet" href="nokos.css?v=20260729-checkout-flow">
+  <link rel="stylesheet" href="nokos.css?v=20260730-notice-popup">
 </head>
 <body class="nokos-page">
   <header class="nokos-header">
@@ -56,8 +56,46 @@
     </section>
   </main>
 
+
+  <div id="nokosNoticeModal" class="nokos-notice" hidden aria-hidden="true">
+    <div class="nokos-notice-backdrop"></div>
+    <section class="nokos-notice-card" role="dialog" aria-modal="true" aria-labelledby="nokosNoticeTitle">
+      <div class="nokos-notice-icon" aria-hidden="true">!</div>
+      <div class="nokos-notice-heading">
+        <small>WAJIB DIBACA</small>
+        <h2 id="nokosNoticeTitle">Penting Sebelum Membeli Nokos</h2>
+      </div>
+
+      <p class="nokos-notice-lead">Layanan <strong>Nomor Kosong (Nokos)</strong> diproses sepenuhnya secara otomatis oleh sistem, bukan secara manual oleh admin.</p>
+
+      <ul class="nokos-notice-list">
+        <li>OTP tidak langsung masuk setelah nomor dibeli.</li>
+        <li>Salin nomor yang diperoleh, masukkan ke aplikasi tujuan, lalu tekan <strong>Kirim Kode Verifikasi / Send Code</strong>.</li>
+        <li>Kecepatan OTP bergantung pada kondisi server dan operator yang kamu pilih.</li>
+        <li>Jika OTP belum masuk, tunggu minimal <strong>2 menit</strong>.</li>
+        <li>Setelah 2 menit, gunakan tombol <strong>Batal</strong> pada halaman pesanan.</li>
+        <li>Lakukan pemesanan ulang menggunakan <strong>operator yang berbeda</strong>.</li>
+        <li>Jangan meninggalkan halaman pesanan selama proses penerimaan OTP berlangsung.</li>
+      </ul>
+
+      <div class="nokos-notice-warning">
+        OTP tidak akan diterima apabila kamu belum meminta kode verifikasi dari aplikasi tujuan.
+      </div>
+
+      <label class="nokos-notice-check">
+        <input id="nokosNoticeDontShow" type="checkbox">
+        <span class="nokos-notice-checkbox" aria-hidden="true"></span>
+        <span>Jangan tampilkan lagi hari ini</span>
+      </label>
+
+      <button id="nokosNoticeClose" class="nokos-notice-close" type="button" disabled>
+        Mohon baca terlebih dahulu (7)
+      </button>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="nokos.js?v=20260729-checkout-flow"></script>
+  <script src="nokos.js?v=20260730-notice-popup"></script>
 </body>
 </html>
