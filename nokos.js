@@ -9,7 +9,60 @@
   let countries=[];
   let margin=0;
   let selected={service:null,country:null,price:null,operator:null};
-\n\n  function initNokosNotice(){\n    const modal=$('#nokosNoticeModal');\n    const closeButton=$('#nokosNoticeClose');\n    const dontShow=$('#nokosNoticeDontShow');\n    if(!modal||!closeButton||!dontShow) return;\n\n    const storageKey='kivopay_nokos_notice_hidden_until';\n    const oneDay=24*60*60*1000;\n    let hiddenUntil=0;\n\n    try{ hiddenUntil=Number(localStorage.getItem(storageKey)||0); }catch(_){ }\n    if(Number.isFinite(hiddenUntil)&&hiddenUntil>Date.now()) return;\n    if(hiddenUntil){\n      try{ localStorage.removeItem(storageKey); }catch(_){ }\n    }\n\n    modal.hidden=false;\n    modal.setAttribute('aria-hidden','false');\n    document.body.classList.add('nokos-notice-open');\n\n    let remaining=7;\n    const updateButton=()=>{\n      if(remaining>0){\n        closeButton.disabled=true;\n        closeButton.textContent=`Mohon baca terlebih dahulu (${remaining})`;\n        return;\n      }\n      closeButton.disabled=false;\n      closeButton.textContent='Saya Sudah Mengerti';\n      closeButton.focus({preventScroll:true});\n    };\n\n    updateButton();\n    const timer=setInterval(()=>{\n      remaining-=1;\n      updateButton();\n      if(remaining<=0) clearInterval(timer);\n    },1000);\n\n    closeButton.addEventListener('click',()=>{\n      if(closeButton.disabled) return;\n      clearInterval(timer);\n      try{\n        if(dontShow.checked) localStorage.setItem(storageKey,String(Date.now()+oneDay));\n        else localStorage.removeItem(storageKey);\n      }catch(_){ }\n      modal.hidden=true;\n      modal.setAttribute('aria-hidden','true');\n      document.body.classList.remove('nokos-notice-open');\n    });\n  }\n\n  initNokosNotice();\n
+
+  function initNokosNotice(){
+    const modal=$('#nokosNoticeModal');
+    const closeButton=$('#nokosNoticeClose');
+    const dontShow=$('#nokosNoticeDontShow');
+    if(!modal||!closeButton||!dontShow) return;
+
+    const storageKey='kivopay_nokos_notice_hidden_until';
+    const oneDay=24*60*60*1000;
+    let hiddenUntil=0;
+
+    try{ hiddenUntil=Number(localStorage.getItem(storageKey)||0); }catch(_){ }
+    if(Number.isFinite(hiddenUntil)&&hiddenUntil>Date.now()) return;
+    if(hiddenUntil){
+      try{ localStorage.removeItem(storageKey); }catch(_){ }
+    }
+
+    modal.hidden=false;
+    modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('nokos-notice-open');
+
+    let remaining=7;
+    const updateButton=()=>{
+      if(remaining>0){
+        closeButton.disabled=true;
+        closeButton.textContent=`Mohon baca terlebih dahulu (${remaining})`;
+      }else{
+        closeButton.disabled=false;
+        closeButton.textContent='Saya Sudah Mengerti';
+      }
+    };
+
+    updateButton();
+    const timer=setInterval(()=>{
+      remaining-=1;
+      updateButton();
+      if(remaining<=0) clearInterval(timer);
+    },1000);
+
+    closeButton.addEventListener('click',()=>{
+      if(closeButton.disabled) return;
+      clearInterval(timer);
+      try{
+        if(dontShow.checked) localStorage.setItem(storageKey,String(Date.now()+oneDay));
+        else localStorage.removeItem(storageKey);
+      }catch(_){ }
+      modal.hidden=true;
+      modal.setAttribute('aria-hidden','true');
+      document.body.classList.remove('nokos-notice-open');
+    });
+  }
+
+  initNokosNotice();
+
   function getErrorMessage(value,fallback='Permintaan gagal.'){
     if(value==null||value==='') return fallback;
     if(typeof value==='string'||typeof value==='number'||typeof value==='boolean') return String(value);
@@ -49,14 +102,25 @@
 
   async function api(url,opt={}){
     const {data:{session}}=await sb.auth.getSession();
-    const response=await fetch(url,{
-      ...opt,
-      headers:{
-        'Content-Type':'application/json',
-        ...(session?{Authorization:`Bearer ${session.access_token}`}:{ }),
-        ...(opt.headers||{})
-      }
-    });
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),15000);
+    let response;
+    try{
+      response=await fetch(url,{
+        ...opt,
+        signal:opt.signal||controller.signal,
+        headers:{
+          'Content-Type':'application/json',
+          ...(session?{Authorization:`Bearer ${session.access_token}`}:{ }),
+          ...(opt.headers||{})
+        }
+      });
+    }catch(error){
+      if(error?.name==='AbortError') throw new Error('Server katalog terlalu lama merespons. Silakan coba lagi.');
+      throw error;
+    }finally{
+      clearTimeout(timeout);
+    }
     const body=await response.json().catch(()=>({}));
     if(!response.ok||body?.success===false) throw new Error(getErrorMessage(body,`HTTP ${response.status}`));
     return body;
@@ -86,8 +150,28 @@
     </button>`;
   }
 
+  const servicesCacheKey='kivopay_nokos_services_cache_v1';
+
+  function readServicesCache(){
+    try{
+      const cached=JSON.parse(localStorage.getItem(servicesCacheKey)||'null');
+      if(!cached||!Array.isArray(cached.services)||Date.now()-Number(cached.savedAt||0)>6*60*60*1000) return null;
+      return cached;
+    }catch(_){ return null; }
+  }
+
+  function writeServicesCache(){
+    try{ localStorage.setItem(servicesCacheKey,JSON.stringify({services,margin,savedAt:Date.now()})); }catch(_){ }
+  }
+
   async function loadServices(){
     const grid=$('#serviceGrid');
+    const cached=readServicesCache();
+    if(cached){
+      services=cached.services;
+      margin=Number(cached.margin||0);
+      renderServices();
+    }
     try{
       const body=await api('/api/nokos-catalog?type=services');
       services=normalizeList(body.data,['services','items','list']).map(item=>({
@@ -97,9 +181,17 @@
         service_img:item.service_img??item.image??item.img??item.icon
       })).filter(item=>item.service_code!=null&&item.service_name);
       margin=Number(body.margin||0);
+      writeServicesCache();
       renderServices();
     }catch(error){
-      grid.innerHTML=`<div class="nokos-error">${esc(getErrorMessage(error))}</div>`;
+      if(!services.length){
+        grid.innerHTML=`<div class="nokos-error">${esc(getErrorMessage(error))}<button id="retryServicesBtn" class="nokos-retry" type="button">Coba Lagi</button></div>`;
+        const retry=$('#retryServicesBtn');
+        if(retry) retry.onclick=()=>{
+          grid.innerHTML='<div class="nokos-loading"><span class="spinner"></span>Memuat aplikasi...</div>';
+          loadServices();
+        };
+      }
     }
   }
 
