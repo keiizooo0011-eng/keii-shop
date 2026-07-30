@@ -1439,26 +1439,36 @@ function initHomeStoreVideo(){
 
 function initWelcome(){
   const overlay=$("#welcomeOverlay");
-  const textEl=$("#welcomeText");
   const closeBtn=$("#welcomeClose");
   const video=$("#welcomeVideo");
-  const videoIntro=$("#welcomeVideoIntro");
   const soundToggle=$("#welcomeSoundToggle");
   const loadingLabel=$("#welcomeLoadingLabel");
   const loadingPercent=$("#welcomeLoadingPercent");
   const loadingBar=$("#welcomeLoadingBar");
-  if(!overlay || !textEl || !closeBtn) return;
+  if(!overlay || !closeBtn) return;
+
+  initVisitorEntry();
+  const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
+  if(hasSeenWelcome){
+    document.body.classList.remove("welcome-active");
+    overlay.remove();
+    return;
+  }
+
+  document.body.classList.add("welcome-active");
+  overlay.classList.add("welcome-show");
+  overlay.setAttribute("aria-hidden","false");
 
   const setSoundState=(enabled)=>{
     if(!video || !soundToggle) return;
     video.muted=!enabled;
-    video.volume=enabled ? 0.75 : 0;
+    video.volume=enabled ? 0.72 : 0;
     soundToggle.classList.toggle("sound-on",enabled);
     soundToggle.setAttribute("aria-pressed",String(enabled));
     soundToggle.setAttribute("aria-label",enabled ? "Matikan suara video" : "Aktifkan suara video");
     const icon=soundToggle.querySelector(".sound-icon");
     const label=soundToggle.querySelector(".sound-label");
-    if(icon) icon.textContent=enabled ? "🔊" : "🔇";
+    if(icon) icon.textContent=enabled ? "◉" : "◌";
     if(label) label.textContent=enabled ? "Suara aktif" : "Suara mati";
   };
 
@@ -1470,97 +1480,74 @@ function initWelcome(){
   }
 
   if(soundToggle && video){
-    soundToggle.onclick=async(e)=>{
+    soundToggle.addEventListener("click",async(e)=>{
       e.stopPropagation();
       const enable=video.muted;
       setSoundState(enable);
       if(enable){
         try{ await video.play(); }catch(_){ setSoundState(false); }
       }
-    };
+    });
   }
 
-  const message="Temukan berbagai layanan digital premium dengan proses cepat, pembayaran aman, dan pengalaman belanja yang nyaman.";
-  const hasSeenWelcome=sessionStorage.getItem("kivo_welcome_seen")==="1";
-
-  initVisitorEntry();
-
-  if(hasSeenWelcome){
-    document.body.classList.remove("welcome-active");
-    overlay.remove();
-    return;
-  }
-
-  document.body.classList.add("welcome-active");
-  let progressTimer;
-  const introTimers=[];
-
-  const scheduleIntro=(className,delay)=>{
-    if(!videoIntro) return;
-    introTimers.push(setTimeout(()=>videoIntro.classList.add(className),delay));
-  };
-
-  const clearIntroTimers=()=>introTimers.forEach(clearTimeout);
-
-  const closeWelcome=()=>{
-    clearInterval(progressTimer);
-    clearIntroTimers();
-    if(video){
-      video.pause();
-      video.muted=true;
-    }
-    sessionStorage.setItem("kivo_welcome_seen","1");
-    document.body.classList.remove("welcome-active");
-    overlay.classList.add("welcome-hide");
-    setTimeout(()=>overlay.remove(),450);
-  };
-
-  overlay.classList.add("welcome-show");
-  overlay.setAttribute("aria-hidden","false");
-  textEl.textContent=message;
-
-  if(videoIntro){
-    videoIntro.className="welcome-video-intro";
-    scheduleIntro("show-kicker",800);
-    scheduleIntro("show-brand",1600);
-    scheduleIntro("show-tagline",2800);
-    scheduleIntro("show-message",4000);
-    scheduleIntro("show-closing",5800);
-    scheduleIntro("intro-fade",7200);
-  }
-
-  const duration=7600;
-  const startedAt=performance.now();
-  const updateLoading=(percent)=>{
-    const value=Math.max(0,Math.min(100,Math.round(percent)));
-    if(loadingPercent) loadingPercent.textContent=`${value}%`;
-    if(loadingBar) loadingBar.style.width=`${value}%`;
+  let progress=0;
+  let finished=false;
+  const updateLoading=(value)=>{
+    progress=Math.max(0,Math.min(100,Math.round(value)));
+    if(loadingPercent) loadingPercent.textContent=`${progress}%`;
+    if(loadingBar) loadingBar.style.width=`${progress}%`;
     if(loadingLabel){
-      loadingLabel.textContent=value < 35
-        ? "Memulai pengalaman KivoPay"
-        : value < 70
-          ? "Menyiapkan layanan digital"
-          : value < 100
-            ? "Hampir siap"
+      loadingLabel.textContent=progress < 35
+        ? "Menyiapkan pengalaman KivoPay"
+        : progress < 72
+          ? "Menghubungkan layanan digital"
+          : progress < 100
+            ? "Memastikan semuanya siap"
             : "KivoPay siap digunakan";
     }
   };
 
-  updateLoading(0);
-  progressTimer=setInterval(()=>{
-    const elapsed=performance.now()-startedAt;
-    const progress=Math.min(100,(elapsed/duration)*100);
-    updateLoading(progress);
-    if(progress>=100){
-      clearInterval(progressTimer);
-      closeBtn.classList.add("welcome-button-show");
-    }
-  },80);
-
-  closeBtn.onclick=closeWelcome;
-  overlay.onclick=e=>{
-    if(e.target===overlay && closeBtn.classList.contains("welcome-button-show")) closeWelcome();
+  const finishLoading=()=>{
+    if(finished) return;
+    finished=true;
+    updateLoading(100);
+    closeBtn.disabled=false;
+    closeBtn.classList.add("welcome-button-show");
+    const label=closeBtn.querySelector("span");
+    if(label) label.textContent="Mulai Belanja";
   };
+
+  const startedAt=performance.now();
+  const duration=3400;
+  const animate=(now)=>{
+    if(finished) return;
+    const elapsed=now-startedAt;
+    const linear=Math.min(1,elapsed/duration);
+    const eased=1-Math.pow(1-linear,3);
+    updateLoading(eased*100);
+    if(linear>=1) finishLoading();
+    else requestAnimationFrame(animate);
+  };
+  requestAnimationFrame(animate);
+  setTimeout(finishLoading,4200);
+
+  const closeWelcome=()=>{
+    if(!finished) return;
+    if(video){ video.pause(); video.muted=true; }
+    sessionStorage.setItem("kivo_welcome_seen","1");
+    document.body.classList.remove("welcome-active");
+    overlay.classList.add("welcome-hide");
+    setTimeout(()=>overlay.remove(),520);
+  };
+
+  closeBtn.addEventListener("click",closeWelcome);
+
+  // Welcome hanya boleh ditutup lewat tombol "Mulai Belanja".
+  // Klik pada latar belakang sengaja tidak melakukan apa pun agar pengguna
+  // tidak melewati layar pembuka secara tidak sengaja.
+  overlay.addEventListener("click",e=>{
+    if(e.target===overlay) e.preventDefault();
+  });
 }
 document.addEventListener("DOMContentLoaded",initWelcome);
 document.addEventListener("DOMContentLoaded",initHomeStoreVideo);
