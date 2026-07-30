@@ -72,3 +72,17 @@ body{background:
 @media(prefers-reduced-motion:reduce){.welcome-v4-orb,.welcome-v4-card,.welcome-v4-media video,.welcome-v4-title>*,.welcome-v4-content .welcome-loading-track span,.welcome-v4-content #welcomeClose{animation:none!important}.welcome-v4-card,.welcome-v4-title>*{opacity:1;transform:none}.welcome-v4-message:first-of-type{opacity:1;transform:none}}
 
 .welcome-v4-ripple{position:absolute;width:14px;height:14px;margin:-7px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:welcomeV4Ripple .62s ease-out forwards}@keyframes welcomeV4Ripple{to{transform:scale(28);opacity:0}}
+
+/* V4.2 — reliable welcome-video rendering */
+.welcome-v4-media{isolation:isolate;background:#06030c}
+.welcome-v4-poster,.welcome-v4-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%}
+.welcome-v4-poster{z-index:0;display:block;opacity:1;transform:scale(1.035);filter:saturate(1.04) contrast(1.03);transition:opacity .45s ease}
+.welcome-v4-media video{z-index:1;display:block!important;visibility:visible!important;opacity:0;background:transparent!important;transition:opacity .45s ease;animation:none!important}
+.welcome-v4-media.is-video-ready video{opacity:1;animation:welcomeV4Video 13s ease-in-out infinite alternate!important}
+.welcome-v4-media.is-video-ready .welcome-v4-poster{opacity:0}
+.welcome-v4-video-overlay{z-index:2;background:linear-gradient(180deg,rgba(2,1,7,.12) 0%,rgba(3,2,9,.08) 40%,rgba(4,2,11,.62) 100%)!important}
+.welcome-v4-intro{z-index:3}
+.welcome-v4-sound{z-index:4}
+.welcome-v4-media.video-fallback .welcome-v4-poster{opacity:1}
+.welcome-v4-media.video-fallback video{display:none!important}
+@media(max-width:820px){.welcome-v4-poster,.welcome-v4-media video{object-position:center 42%}}
