@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="clean-commerce.css?v=62">
   <link rel="stylesheet" href="chat-entry.css?v=1">
   <link rel="stylesheet" href="home-wallet.css?v=2">
+  <link rel="stylesheet" href="landing-v4.css?v=1">
 </head>
 <body>
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
@@ -427,39 +428,53 @@
   </footer>
 
 
-  <div id="welcomeOverlay" class="welcome-overlay welcome-v14" aria-hidden="true">
-    <div class="welcome-box welcome-premium-card">
-      <div class="welcome-ambient"></div>
-      <div class="welcome-media">
-        <video id="welcomeVideo" autoplay muted loop playsinline preload="metadata" poster="" aria-label="Video animasi KivoPay">
-          <source src="assets/welcome-anime.mp4" type="video/mp4">
+  <div id="welcomeOverlay" class="welcome-overlay welcome-v4" aria-hidden="true">
+    <div class="welcome-v4-orb welcome-v4-orb-a" aria-hidden="true"></div>
+    <div class="welcome-v4-orb welcome-v4-orb-b" aria-hidden="true"></div>
+    <div class="welcome-box welcome-v4-card">
+      <div class="welcome-v4-media">
+        <video id="welcomeVideo" autoplay muted loop playsinline preload="auto" aria-label="Video pembuka KivoPay">
+          <source src="assets/welcome-kivopay-v4.mp4" type="video/mp4">
         </video>
-        <div id="welcomeVideoIntro" class="welcome-video-intro" aria-hidden="true">
-          <span class="welcome-intro-kicker">WELCOME TO</span>
-          <strong class="welcome-intro-brand">KIVOPAY</strong>
-          <span class="welcome-intro-tagline">Your Trusted Digital Premium Store</span>
-          <p class="welcome-intro-message">Nikmati berbagai layanan digital dengan proses yang cepat, aman, dan terpercaya.</p>
-          <span class="welcome-intro-closing">Selamat datang, dan selamat berbelanja.</span>
+        <div class="welcome-v4-video-overlay" aria-hidden="true"></div>
+        <div class="welcome-v4-intro" aria-hidden="true">
+          <div class="welcome-v4-title">
+            <span class="welcome-v4-eyebrow">WELCOME TO</span>
+            <strong>KIVOPAY</strong>
+          </div>
+          <div class="welcome-v4-message" data-welcome-step="1">Your Trusted Digital Premium Store</div>
+          <div class="welcome-v4-message" data-welcome-step="2">Nikmati berbagai layanan digital dengan proses yang cepat, aman, dan terpercaya.</div>
+          <div class="welcome-v4-message" data-welcome-step="3">Selamat datang, dan selamat berbelanja.</div>
         </div>
-        <button id="welcomeSoundToggle" class="welcome-sound-toggle" type="button" aria-label="Aktifkan suara video" aria-pressed="false">
-          <span class="sound-icon sound-off" aria-hidden="true">🔇</span>
+        <button id="welcomeSoundToggle" class="welcome-sound-toggle welcome-v4-sound" type="button" aria-label="Aktifkan suara video" aria-pressed="false">
+          <span class="sound-icon" aria-hidden="true">◌</span>
           <span class="sound-label">Suara mati</span>
         </button>
       </div>
-      <span class="welcome-kicker">KIVOPAY DIGITAL STORE</span>
-      <div class="welcome-brand-row"><span class="welcome-logo-v14">K</span><div><strong>KivoPay</strong><small>Premium Digital Store</small></div></div>
-      <h2>Digital Essentials.<br><span>One Trusted Store.</span></h2>
-      <p id="welcomeText" class="welcome-caption"></p>
-      <div class="welcome-loading" aria-live="polite">
-        <div class="welcome-loading-head">
-          <span id="welcomeLoadingLabel">Menyiapkan etalase digital</span>
-          <strong id="welcomeLoadingPercent">0%</strong>
+
+      <div class="welcome-v4-content">
+        <span class="welcome-kicker">KIVOPAY DIGITAL STORE</span>
+        <div class="welcome-brand-row welcome-v4-brand">
+          <span class="welcome-logo-v14">K</span>
+          <div><strong>KivoPay</strong><small>Premium Digital Store</small></div>
         </div>
-        <div class="welcome-loading-track"><span id="welcomeLoadingBar"></span></div>
+        <h2>Premium Digital Services.<br><span>Fast. Secure. Trusted.</span></h2>
+        <p id="welcomeText" class="welcome-caption">Temukan berbagai layanan digital premium dengan proses cepat, pembayaran aman, dan dukungan profesional untuk setiap kebutuhanmu.</p>
+        <div class="welcome-loading" aria-live="polite">
+          <div class="welcome-loading-head">
+            <span id="welcomeLoadingLabel">Menyiapkan pengalaman KivoPay</span>
+            <strong id="welcomeLoadingPercent">0%</strong>
+          </div>
+          <div class="welcome-loading-track"><span id="welcomeLoadingBar"></span></div>
+        </div>
+        <div class="welcome-benefits welcome-v4-benefits">
+          <span><i data-kivo-icon="shopping-bag"></i> Produk pilihan</span>
+          <span><i data-kivo-icon="zap"></i> Proses cepat</span>
+          <span><i data-kivo-icon="shield"></i> Transaksi aman</span>
+        </div>
+        <button id="welcomeClose" type="button" disabled><span>Menyiapkan KivoPay</span><b>→</b></button>
+        <small class="welcome-note">KEII OFFICIAL • KIVOPAY 2026</small>
       </div>
-      <div class="welcome-benefits"><span><i data-kivo-icon="shopping-bag"></i> Produk pilihan</span><span><i data-kivo-icon="zap"></i> Proses cepat</span><span><i data-kivo-icon="shield"></i> Transaksi aman</span></div>
-      <button id="welcomeClose" type="button">Mulai Belanja <b>→</b></button>
-      <small class="welcome-note">KEII OFFICIAL • KIVOPAY 2026</small>
     </div>
   </div>
 
@@ -494,6 +509,7 @@
   <script src="script.js?v=44-intro"></script>
   <script src="ui-system.js?v=40"></script>
   <script src="home-premium.js?v=18.0.0"></script>
+  <script src="landing-v4.js?v=1"></script>
   <script src="account-entry.js?v=1"></script>
   <script src="bottom-nav.js?v=31"></script>
   <script src="home-engagement.js?v=31"></script>
