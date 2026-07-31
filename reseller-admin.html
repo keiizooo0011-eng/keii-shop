@@ -1,8 +1,91 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Reseller KivoPay</title><link rel="stylesheet" href="reseller-admin.css?v=34"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js"></script></head><body><header><a href="admin.html">← Admin Panel</a><div><strong>Reseller Center</strong><small>Katalog reseller berdiri sendiri</small></div><a href="reseller.html">Lihat Reseller</a></header><main>
-<section class="card"><div class="head"><div><small>PENGATURAN</small><h2>Pendaftaran Reseller</h2></div><button id="saveSettings">Simpan</button></div><div class="form-grid"><label>Harga bergabung<input id="joinPrice" type="number" min="0"></label><label>Judul<input id="settingTitle"></label><label class="wide">Subjudul<input id="settingSubtitle"></label><label class="toggle"><input id="registrationOpen" type="checkbox"><span>Pendaftaran dibuka</span></label></div></section>
-<section class="card"><div class="head"><div><small>KATALOG TERPISAH</small><h2 id="productFormTitle">Tambah Produk Reseller</h2><p>Produk ini tidak mengambil katalog user.</p></div><button id="resetProduct" type="button">Produk Baru</button></div><input id="editingId" type="hidden"><div class="product-editor">
-<label class="image-uploader">Foto produk<img id="imagePreview" src="icons/icon-512.png" alt="Preview"><input id="productImage" type="file" accept="image/*"></label>
-<div class="product-fields"><label>Nama produk<input id="productName" placeholder="Contoh: Netflix Crack Reseller"></label><label>Kategori<select id="productCategory"><option value="apk-premium">APK Premium</option><option value="bot">Bot / Tools</option><option value="digital">Produk Digital</option></select></label><label>Harga reseller<input id="productPrice" type="number" min="0"></label><label>Stok / slot<input id="productStock" type="number" min="0"></label><label>Mode pengiriman<select id="deliveryMode"><option value="manual">Manual / diproses admin</option><option value="automatic">Otomatis dari stok akun</option></select></label><label class="toggle"><input id="requiresEmail" type="checkbox"><span>Wajib email aktif</span></label><label>Urutan<input id="sortOrder" type="number" value="0"></label><label class="toggle"><input id="activeProduct" type="checkbox" checked><span>Produk aktif</span></label><label class="wide">Deskripsi<textarea id="productDescription" rows="4"></textarea></label><label class="wide">Teks promo<input id="promoText" placeholder="Benefit singkat untuk reseller"></label><label class="wide">Varian (satu baris: Nama|Harga)<textarea id="productVariants" rows="4" placeholder="1 Bulan|15000\n2 Bulan|28000"></textarea></label><label class="wide" id="stockDataWrap">Stok akun otomatis (satu baris: varian|email|password|catatan)<textarea id="stockData" rows="5"></textarea></label><button id="saveProduct" class="primary wide">Simpan Produk Reseller</button></div></div><div id="productList" class="list product-list"></div></section>
-<section class="card"><div class="head"><div><small>ORDER</small><h2>Pesanan Reseller</h2></div><button id="refreshOrders">Refresh</button></div><div id="orderList" class="list"></div></section>
-<section class="card"><div class="head"><div><small>MEMBER</small><h2>Daftar Reseller</h2></div></div><div id="memberList" class="list"></div></section>
-</main><script src="reseller-admin.js?v=34"></script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Reseller KivoPay</title>
+  <link rel="stylesheet" href="reseller-admin.css?v=38">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+</head>
+<body>
+<header class="admin-topbar">
+  <a href="admin.html">← Admin</a>
+  <div class="topbar-title"><strong>Reseller Center</strong><small>Katalog reseller terpisah</small></div>
+  <a href="reseller.html">Lihat</a>
+</header>
+
+<main>
+  <section id="adminStatus" class="system-state loading" aria-live="polite">
+    <span class="state-spinner"></span>
+    <div><strong>Memuat Reseller Center...</strong><small id="adminStatusText">Memeriksa database dan data reseller.</small></div>
+    <button id="retryAdmin" type="button" hidden>Coba Lagi</button>
+  </section>
+
+  <div id="adminContent" hidden>
+    <section class="overview-grid">
+      <article><small>Produk reseller</small><strong id="statProducts">0</strong></article>
+      <article><small>Reseller aktif</small><strong id="statMembers">0</strong></article>
+      <article><small>Order masuk</small><strong id="statOrders">0</strong></article>
+    </section>
+
+    <section class="card">
+      <div class="head">
+        <div><small>PENGATURAN</small><h2>Pendaftaran Reseller</h2><p>Atur biaya dan informasi yang tampil di halaman join.</p></div>
+        <button id="saveSettings" class="primary" type="button">Simpan</button>
+      </div>
+      <div class="form-grid">
+        <label>Harga bergabung<input id="joinPrice" type="number" min="0" inputmode="numeric" placeholder="50000"></label>
+        <label>Judul<input id="settingTitle" placeholder="Jual lebih mudah. Harga lebih rendah."></label>
+        <label class="wide">Subjudul<input id="settingSubtitle" placeholder="Akses katalog khusus reseller dari satu dashboard."></label>
+        <label class="toggle"><input id="registrationOpen" type="checkbox"><span>Pendaftaran dibuka</span></label>
+      </div>
+    </section>
+
+    <section class="card product-card">
+      <div class="head">
+        <div><small>KATALOG TERPISAH</small><h2 id="productFormTitle">Tambah Produk Reseller</h2><p>Produk di sini tidak tercampur dengan katalog user.</p></div>
+        <button id="resetProduct" type="button">Produk Baru</button>
+      </div>
+      <input id="editingId" type="hidden">
+      <div class="product-editor">
+        <label class="image-uploader">Foto produk
+          <span class="image-frame"><img id="imagePreview" src="icons/icon-512.png" alt="Preview produk"></span>
+          <input id="productImage" type="file" accept="image/*">
+          <small>JPG/PNG/WebP, disarankan rasio 1:1.</small>
+        </label>
+        <div class="product-fields">
+          <label>Nama produk<input id="productName" placeholder="Contoh: Netflix Crack Reseller"></label>
+          <label>Kategori<select id="productCategory"><option value="apk-premium">APK Premium</option><option value="bot">Bot / Tools</option><option value="digital">Produk Digital</option></select></label>
+          <label>Harga reseller<input id="productPrice" type="number" min="0" inputmode="numeric" placeholder="15000"></label>
+          <label>Stok / slot<input id="productStock" type="number" min="0" inputmode="numeric" placeholder="10"></label>
+          <label>Mode pengiriman<select id="deliveryMode"><option value="manual">Manual — diproses admin</option><option value="automatic">Otomatis — dari stok akun</option></select></label>
+          <label class="toggle"><input id="requiresEmail" type="checkbox"><span>Wajib email aktif</span></label>
+          <label>Urutan<input id="sortOrder" type="number" value="0"></label>
+          <label class="toggle"><input id="activeProduct" type="checkbox" checked><span>Produk aktif</span></label>
+          <label class="wide">Deskripsi<textarea id="productDescription" rows="4" placeholder="Jelaskan isi produk, durasi, dan ketentuan."></textarea></label>
+          <label class="wide">Teks promo<input id="promoText" placeholder="Benefit singkat untuk reseller"></label>
+          <label class="wide">Varian <small>(Nama|Harga, satu baris satu varian)</small><textarea id="productVariants" rows="4" placeholder="1 Bulan|15000&#10;2 Bulan|28000"></textarea></label>
+          <label class="wide" id="stockDataWrap" hidden>Stok akun otomatis <small>(varian|email|password|catatan)</small><textarea id="stockData" rows="5" placeholder="1 Bulan|email@gmail.com|password|catatan"></textarea></label>
+          <button id="saveProduct" class="primary wide save-product" type="button">Simpan Produk Reseller</button>
+        </div>
+      </div>
+      <div class="section-title"><div><small>PRODUK TERSIMPAN</small><h3>Daftar Produk Reseller</h3></div><span id="productListCount" class="count-pill">0</span></div>
+      <div id="productList" class="list product-list"><div class="empty-state">Memuat produk...</div></div>
+    </section>
+
+    <section class="card">
+      <div class="head"><div><small>ORDER</small><h2>Pesanan Reseller</h2><p>Kelola pesanan manual dan catatan pembeli.</p></div><button id="refreshOrders" type="button">Refresh</button></div>
+      <div id="orderList" class="list"><div class="empty-state">Memuat pesanan...</div></div>
+    </section>
+
+    <section class="card">
+      <div class="head"><div><small>MEMBER</small><h2>Daftar Reseller</h2><p>Aktifkan atau suspend akses reseller.</p></div></div>
+      <div id="memberList" class="list"><div class="empty-state">Memuat reseller...</div></div>
+    </section>
+  </div>
+</main>
+<script src="reseller-admin.js?v=38"></script>
+</body>
+</html>
