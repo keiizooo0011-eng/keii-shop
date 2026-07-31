@@ -6,11 +6,13 @@ export default async function handler(req,res){
  const user=await optionalAuthUser(req); if(!user)return res.status(401).json({error:'Silakan masuk terlebih dahulu.'});
  try{
   const db=adminClient();
-  const [{data:settings},{data:membership},{data:profile}]=await Promise.all([
+  const [{data:settings},{data:membership},profileByUser]=await Promise.all([
    db.from('reseller_settings').select('*').eq('id','main').maybeSingle(),
    db.from('reseller_memberships').select('*').eq('user_id',user.id).maybeSingle(),
    db.from('profiles').select('balance').eq('user_id',user.id).maybeSingle()
   ]);
+  let profile=profileByUser?.data||null;
+  if(!profile){const fallback=await db.from('profiles').select('balance').eq('id',user.id).maybeSingle();profile=fallback.data||null;}
   return res.json({settings:settings||{is_open:true,join_price:50000},membership:membership||null,balance:Number(profile?.balance||0)});
  }catch(e){return res.status(500).json({error:e.message||'Gagal memuat status reseller.'});}
 }
