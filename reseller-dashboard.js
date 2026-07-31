@@ -1,8 +1,9 @@
 (()=>{
   const $=s=>document.querySelector(s);
   const fmt=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
+  const date=v=>v?new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v)):'-';
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  let state={items:[],membership:null,balance:0,current:null};
+  let state={items:[],membership:null,balance:0,orders:[]};
 
   async function waitAuth(timeout=12000){
     const started=Date.now();
@@ -55,19 +56,76 @@
       renderCatalog();
       setView('ready');
       petals(); animateCharacter(); rotateTips(); bindUI();
+      openRequestedTab();
     }catch(e){
       if(e.status===401){location.replace('login.html?next=reseller-dashboard.html');return;}
       setView('error',e.message);
     }
   }
 
-  function renderCatalog(q=''){const list=state.items.filter(x=>(x.product?.name||'').toLowerCase().includes(q.toLowerCase()));$('#catalogGrid').innerHTML=list.length?list.map((x,i)=>{const normal=Number(x.normal_price??x.product.normal_price??x.reseller_price),reseller=Number(x.reseller_price||0),showNormal=normal>reseller;return `<article class="rs-product" style="animation-delay:${i*55}ms"><img src="${x.product.image_url||'icons/icon-512.png'}" alt=""><small>${x.is_exclusive?'KHUSUS RESELLER':'HARGA RESELLER'}</small><h3>${esc(x.product.name)}</h3><p>${esc(x.promo_text||x.product.description||'Produk digital pilihan KivoPay.')}</p><div class="price"><div><strong>${fmt(reseller)}</strong>${showNormal?`<del>${fmt(normal)}</del>`:''}</div><span>Stok ${Number(x.product.stock||0)}</span></div><button data-buy="${x.product_id}">Order Sekarang</button></article>`}).join(''):'<p>Produk reseller belum tersedia.</p>'}
-  async function loadOrders(){const r=await api('/api/reseller-orders');const data=r.orders||[];$('#orderCount').textContent=data.length;$('#orderList').innerHTML=data.map(o=>`<article class="rs-order"><div><strong>${esc(o.product_name)}</strong><small>${esc(o.invoice)} · ${esc(o.variant_name||'Paket')}</small>${o.admin_note?`<small>${esc(o.admin_note)}</small>`:''}</div><div><strong>${fmt(o.amount)}</strong><small>${esc(o.status)}</small></div></article>`).join('')||'<p>Belum ada order reseller.</p>'}
-  function openOrder(id){state.current=state.items.find(x=>String(x.product_id)===String(id));if(!state.current)return;const p=state.current.product,v=Array.isArray(p.variants)&&p.variants.length?p.variants:[{name:'Paket utama'}];$('#modalTitle').textContent=p.name;$('#variantSelect').innerHTML=v.map((x,i)=>`<option value="${i}">${esc(x.name||'Paket utama')}</option>`).join('');$('#emailField').hidden=!p.requires_email;updatePrice();$('#orderModal').hidden=false}
-  function updatePrice(){const p=state.current.product,v=p.variants?.[$('#variantSelect').value]||{name:'Paket utama'};const vp=state.current.variant_prices?.[v.name];$('#modalPrice').textContent=fmt(vp?.reseller_price??state.current.reseller_price)}
-  function bindUI(){if(window.__resellerUiBound)return;window.__resellerUiBound=true;document.addEventListener('click',e=>{const b=e.target.closest('[data-buy]');if(b)openOrder(b.dataset.buy)});$('#variantSelect').onchange=updatePrice;$('#closeModal').onclick=()=>$('#orderModal').hidden=true;$('#orderModal').onclick=e=>{if(e.target===$('#orderModal'))$('#orderModal').hidden=true};$('#searchProduct').oninput=e=>renderCatalog(e.target.value);document.querySelectorAll('.rs-tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.rs-tabs button,.rs-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#'+b.dataset.tab+'Tab').classList.add('active')});$('#copyPromo').onclick=async()=>{await navigator.clipboard.writeText($('#promoText').value);$('#copyPromo').textContent='Tersalin';setTimeout(()=>$('#copyPromo').textContent='Salin Teks',1300)};$('#submitOrder').onclick=submitOrder}
-  async function submitOrder(){const msg=$('#orderMessage');msg.textContent='';const body={product_id:state.current.product_id,variant_index:Number($('#variantSelect').value),customer_name:$('#buyerName').value.trim(),customer_contact:$('#buyerWhatsapp').value.trim(),customer_email:$('#buyerEmail').value.trim()};try{$('#submitOrder').disabled=true;$('#submitOrder').textContent='Memproses...';const r=await api('/api/create-reseller-order',{method:'POST',body:JSON.stringify(body)},0);state.balance=Number(r.balance_after??state.balance);$('#mainBalance').textContent=fmt(state.balance);$('#orderModal').hidden=true;await loadOrders();alert('Order reseller berhasil dibuat.')}catch(e){msg.textContent=e.message;if(e.data?.need_deposit)msg.innerHTML+=` <a href="deposit.html">Deposit saldo</a>`}finally{$('#submitOrder').disabled=false;$('#submitOrder').textContent='Bayar dengan Saldo'}}
+  function renderCatalog(q=''){
+    const list=state.items.filter(x=>(x.product?.name||'').toLowerCase().includes(q.toLowerCase()));
+    $('#catalogGrid').innerHTML=list.length?list.map((x,i)=>{
+      const normal=Number(x.normal_price??x.product.normal_price??x.reseller_price),reseller=Number(x.reseller_price||0),showNormal=normal>reseller;
+      return `<article class="rs-product" style="animation-delay:${i*55}ms"><img src="${escAttr(x.product.image_url||'icons/icon-512.png')}" alt=""><small>${x.is_exclusive?'KHUSUS RESELLER':'HARGA RESELLER'}</small><h3>${esc(x.product.name)}</h3><p>${esc(x.promo_text||x.product.description||'Produk digital pilihan KivoPay.')}</p><div class="price"><div><strong>${fmt(reseller)}</strong>${showNormal?`<del>${fmt(normal)}</del>`:''}</div><span>Stok ${Number(x.product.stock||0)}</span></div><a class="rs-order-link" href="reseller-checkout.html?product=${encodeURIComponent(x.product_id)}">Lihat & Order</a></article>`
+    }).join(''):'<div class="rs-empty-state"><strong>Produk reseller belum tersedia</strong><p>Produk yang ditambahkan admin akan muncul di sini.</p></div>';
+  }
+
+  function statusMeta(status){
+    const s=String(status||'pending').toLowerCase();
+    if(s==='completed')return{label:'Selesai',cls:'completed',step:3};
+    if(s==='processing')return{label:'Sedang Diproses',cls:'processing',step:2};
+    if(['cancelled','canceled','failed'].includes(s))return{label:'Dibatalkan',cls:'cancelled',step:0};
+    return{label:'Menunggu Diproses',cls:'pending',step:1};
+  }
+  function parseDelivery(raw){
+    return String(raw||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map((line,i)=>{
+      const m=line.match(/^([^:]{2,45}):\s*(.+)$/);
+      return m?{key:m[1],value:m[2]}:{key:`Data ${i+1}`,value:line};
+    });
+  }
+  function orderCard(o){
+    const meta=statusMeta(o.status),fields=parseDelivery(o.delivery_content),hasData=fields.length>0;
+    const note=String(o.admin_note||'').trim();
+    return `<article class="rs-history-card ${meta.cls}" id="order-${escAttr(o.invoice)}">
+      <div class="rs-history-head"><div><span class="rs-history-label">ORDER RESELLER</span><h3>${esc(o.product_name)}</h3><p>${esc(o.variant_name||'Paket utama')}</p></div><span class="rs-history-status ${meta.cls}">${meta.label}</span></div>
+      <div class="rs-history-meta"><div><span>Invoice</span><strong>${esc(o.invoice)}</strong></div><div><span>Total</span><strong>${fmt(o.amount)}</strong></div><div><span>Dibuat</span><strong>${date(o.created_at)}</strong></div><div><span>Pembayaran</span><strong>Saldo KivoPay</strong></div></div>
+      <div class="rs-timeline"><i class="done"></i><span class="${meta.step>=1?'done':''}">Pembayaran</span><i class="${meta.step>=2?'done':''}"></i><span class="${meta.step>=2?'done':''}">Diproses</span><i class="${meta.step>=3?'done':''}"></i><span class="${meta.step>=3?'done':''}">Selesai</span></div>
+      ${hasData?`<section class="rs-delivery-box"><div class="rs-delivery-title"><div><small>DATA AKUN</small><strong>Produk siap digunakan</strong></div><button type="button" data-copy-all="${escAttr(o.delivery_content)}">Salin Semua</button></div>${fields.map(f=>`<div class="rs-delivery-row"><div><span>${esc(f.key)}</span><strong>${esc(f.value)}</strong></div><button type="button" data-copy="${escAttr(f.value)}">Salin</button></div>`).join('')}</section>`:`<section class="rs-progress-box"><strong>${meta.cls==='cancelled'?'Pesanan dibatalkan':meta.cls==='processing'?'Admin sedang memproses pesananmu':'Pesanan sudah masuk antrean'}</strong><p>${meta.cls==='cancelled'?'Lihat catatan admin atau hubungi Customer Service jika diperlukan.':meta.cls==='processing'?'Muat ulang halaman untuk melihat pembaruan data akun.':'Produk manual akan diproses admin. Produk otomatis langsung menampilkan data akun setelah berhasil.'}</p></section>`}
+      ${note?`<section class="rs-admin-note"><small>CATATAN ADMIN</small><p>${esc(note)}</p></section>`:''}
+      <div class="rs-history-actions"><button type="button" data-copy="${escAttr(o.invoice)}">Salin Invoice</button><button type="button" data-toggle-detail="${escAttr(o.invoice)}">${hasData?'Tutup Detail':'Lihat Detail'}</button></div>
+    </article>`;
+  }
+  async function loadOrders(){
+    const r=await api('/api/reseller-orders');
+    state.orders=r.orders||[];
+    $('#orderCount').textContent=state.orders.length;
+    $('#orderList').innerHTML=state.orders.length?state.orders.map(orderCard).join(''):'<div class="rs-empty-state"><strong>Belum ada order reseller</strong><p>Order yang berhasil dibuat akan tersimpan permanen di sini.</p></div>';
+  }
+  function openRequestedTab(){
+    const p=new URLSearchParams(location.search),tab=p.get('tab'),invoice=p.get('invoice');
+    if(tab==='orders'||invoice)activateTab('orders');
+    if(invoice)setTimeout(()=>document.getElementById(`order-${invoice}`)?.scrollIntoView({behavior:'smooth',block:'center'}),200);
+  }
+  function activateTab(name){
+    document.querySelectorAll('.rs-tabs button,.rs-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelector(`.rs-tabs button[data-tab="${name}"]`)?.classList.add('active');
+    $(`#${name}Tab`)?.classList.add('active');
+  }
+  function bindUI(){
+    if(window.__resellerUiBound)return;window.__resellerUiBound=true;
+    $('#searchProduct').oninput=e=>renderCatalog(e.target.value);
+    document.querySelectorAll('.rs-tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.tab));
+    $('#copyPromo').onclick=async()=>{await navigator.clipboard.writeText($('#promoText').value);$('#copyPromo').textContent='Tersalin';setTimeout(()=>$('#copyPromo').textContent='Salin Teks',1300)};
+    $('#orderList').addEventListener('click',async e=>{
+      const copy=e.target.closest('[data-copy],[data-copy-all]');
+      if(copy){const value=copy.dataset.copy??copy.dataset.copyAll;await navigator.clipboard.writeText(value);const old=copy.textContent;copy.textContent='Tersalin';setTimeout(()=>copy.textContent=old,1200);return;}
+      const toggle=e.target.closest('[data-toggle-detail]');
+      if(toggle){const card=toggle.closest('.rs-history-card');card.classList.toggle('detail-hidden');toggle.textContent=card.classList.contains('detail-hidden')?'Lihat Detail':'Tutup Detail';}
+    });
+  }
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  function escAttr(v){return esc(v).replace(/`/g,'&#96;')}
   $('#retryDashboard')?.addEventListener('click',boot);
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot):boot();
 })();

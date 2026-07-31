@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Checkout Reseller KivoPay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="reseller.css?v=40">
+  <link rel="stylesheet" href="reseller-checkout.css?v=40">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+</head>
+<body class="rs-checkout-page">
+  <div class="rs-orb rs-one"></div><div class="rs-orb rs-two"></div><div class="rs-grid"></div>
+  <header class="rs-top"><a href="reseller-dashboard.html" class="rs-brand"><span>K</span><div><strong>KivoPay</strong><small>Checkout Reseller</small></div></a><a href="reseller-dashboard.html" class="rs-back">Kembali</a></header>
+  <main class="rsc-shell">
+    <section id="checkoutLoading" class="rs-load-state"><div class="rs-spinner"></div><strong>Menyiapkan checkout...</strong><small>Memeriksa produk dan saldo utama.</small></section>
+    <section id="checkoutError" class="rs-load-state rs-error-state" hidden><strong>Checkout gagal dimuat</strong><small id="checkoutErrorText">Produk tidak ditemukan.</small><a href="reseller-dashboard.html">Kembali ke katalog</a></section>
+    <section id="checkoutView" class="rsc-layout" hidden>
+      <article class="rsc-product-card">
+        <div class="rsc-product-image"><img id="checkoutImage" src="icons/icon-512.png" alt=""><span>KHUSUS RESELLER</span></div>
+        <div class="rsc-product-copy"><small>PRODUK PILIHAN</small><h1 id="checkoutTitle">Produk Reseller</h1><p id="checkoutDescription">Produk digital pilihan KivoPay.</p><div class="rsc-stock"><span>Stok tersedia</span><strong id="checkoutStock">0</strong></div></div>
+      </article>
+      <article class="rsc-form-card">
+        <div class="rsc-step-head"><span>CHECKOUT AMAN</span><h2>Lengkapi data pembeli</h2><p>Pesanan reseller hanya dibayar menggunakan saldo utama KivoPay.</p></div>
+        <form id="checkoutForm">
+          <label><span>Pilih paket</span><select id="variantSelect" required></select></label>
+          <div class="rsc-grid-fields"><label><span>Nama pembeli</span><input id="buyerName" autocomplete="name" placeholder="Nama penerima" required></label><label><span>Nomor WhatsApp</span><input id="buyerWhatsapp" inputmode="tel" placeholder="08xxxxxxxxxx" required></label></div>
+          <label id="emailField" hidden><span>Email aktif untuk invite</span><input id="buyerEmail" type="email" placeholder="nama@email.com"></label>
+          <section class="rsc-summary"><div><span>Harga normal</span><del id="normalPrice">Rp0</del></div><div><span>Harga reseller</span><strong id="resellerPrice">Rp0</strong></div><div><span>Saldo utama</span><strong id="checkoutBalance">Rp0</strong></div><div class="rsc-total"><span>Total pembayaran</span><strong id="checkoutTotal">Rp0</strong></div></section>
+          <div class="rsc-payment"><div><b>SALDO KIVOPAY</b><small>Pembayaran otomatis tanpa QRIS</small></div><span>Terpilih</span></div>
+          <label class="rsc-confirm"><input id="confirmOrder" type="checkbox" required><span>Saya sudah memastikan paket dan data pembeli benar.</span></label>
+          <button id="submitOrder" type="submit">Bayar dengan Saldo</button>
+          <p id="orderMessage" class="rsc-message"></p>
+        </form>
+      </article>
+    </section>
+  </main>
+  <div id="successView" class="rsc-success" hidden><div><span class="rsc-success-icon">✓</span><small>ORDER BERHASIL</small><h2>Pesanan reseller dibuat</h2><p id="successInvoice">Invoice tersimpan.</p><a id="viewHistory" href="reseller-dashboard.html?tab=orders">Lihat Riwayat & Data Akun</a></div></div>
+  <script src="reseller-checkout.js?v=40"></script>
+</body>
+</html>
