@@ -2,8 +2,12 @@ import { optionalAuthUser } from './_auth-user.js';
 import { adminClient } from './_lib.js';
 
 async function assertAdmin(db,user){
-  const {data}=await db.from('admins').select('user_id').eq('user_id',user.id).maybeSingle();
-  if(!data){const e=new Error('Unauthorized');e.status=403;throw e;}
+  let result=await db.from('admin_users').select('user_id').eq('user_id',user.id).maybeSingle();
+  if(result.error&&/relation .*admin_users|does not exist|schema cache/i.test(result.error.message||'')){
+    result=await db.from('admins').select('user_id').eq('user_id',user.id).maybeSingle();
+  }
+  if(result.error)throw result.error;
+  if(!result.data){const e=new Error('Akses hanya untuk admin.');e.status=403;throw e;}
 }
 const sumStock=variants=>(variants||[]).reduce((n,v)=>n+Math.max(Number(v.stock||0),0),0);
 
@@ -36,8 +40,8 @@ export default async function handler(req,res){
           normal_price:Number(v.normal_price||0),
           reseller_price:Number(v.reseller_price||0),
           delivery_mode:v.delivery_mode==='automatic'?'automatic':'manual',
-          manual_type:v.manual_type==='invite'?'invite':'standard',
-          requires_email:v.manual_type==='invite'||v.requires_email===true,
+          manual_type:(v.manual_type==='invite'||v.delivery_mode==='invite')?'invite':'standard',
+          requires_email:v.manual_type==='invite'||v.delivery_mode==='invite'||v.requires_email===true,
           stock:Math.max(Number(v.stock||0),0)
         }));
         if(!variants.length)throw new Error('Minimal satu varian wajib dibuat.');
