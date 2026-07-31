@@ -5,8 +5,35 @@
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 
-  async function waitAuth(timeout=12000){const start=Date.now();while(Date.now()-start<timeout){if(window.KivoAuth?.db){const s=await KivoAuth.session().catch(()=>null);if(s)return s;}await sleep(180)}return null}
-  async function api(url,opt={}){const h=await KivoAuth.authHeaders({'Content-Type':'application/json',...(opt.headers||{})});const r=await fetch(`${url}${url.includes('?')?'&':'?'}_=${Date.now()}`,{...opt,headers:h,cache:'no-store'});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'Gagal memuat data.'),{status:r.status,data:j});return j}
+  async function waitAuth(timeout=12000){
+    const start=Date.now();
+    while(Date.now()-start<timeout){
+      if(window.KivoAuth?.db){
+        let s=await KivoAuth.session().catch(()=>null);
+        if(!s){const refreshed=await KivoAuth.db.auth.refreshSession().catch(()=>null);s=refreshed?.data?.session||null;}
+        if(s)return s;
+      }
+      await sleep(180);
+    }
+    return null;
+  }
+  async function api(url,opt={},retry=true){
+    const request=async()=>{
+      const session=await KivoAuth.session();
+      if(!session?.access_token)throw Object.assign(new Error('Sesi admin tidak ditemukan.'),{status:401});
+      const headers={'Content-Type':'application/json',...(opt.headers||{}),Authorization:`Bearer ${session.access_token}`};
+      const r=await fetch(`${url}${url.includes('?')?'&':'?'}_=${Date.now()}`,{...opt,headers,cache:'no-store'});
+      const j=await r.json().catch(()=>({}));
+      return {r,j};
+    };
+    let {r,j}=await request();
+    if(r.status===401&&retry){
+      const refreshed=await KivoAuth.db.auth.refreshSession().catch(()=>null);
+      if(refreshed?.data?.session)({r,j}=await request());
+    }
+    if(!r.ok)throw Object.assign(new Error(j.error||'Gagal memuat data.'),{status:r.status,data:j});
+    return j;
+  }
   function setStatus(mode,title,detail=''){const box=$('#adminStatus');box.className=`system-state ${mode}`;box.querySelector('strong').textContent=title;$('#adminStatusText').textContent=detail;$('#retryAdmin').hidden=mode!=='error';$('#adminContent').hidden=mode!=='success'}
   function setupMessage(error){const msg=String(error?.message||'');if(/relation .*reseller_|does not exist|schema cache/i.test(msg))return'Tabel reseller belum terpasang. Jalankan SQL reseller terbaru di Supabase.';return msg||'Gagal memuat Reseller Center.'}
   async function upload(file){if(!file)return currentImage;const sb=KivoAuth.db,cfg=window.KIVOPAY_CONFIG||{},ext=(file.name.split('.').pop()||'jpg').toLowerCase(),path=`reseller-products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;const {error}=await sb.storage.from(cfg.storageBucket||'keiishop').upload(path,file,{cacheControl:'3600',upsert:false});if(error)throw new Error(`Upload foto gagal: ${error.message}`);return sb.storage.from(cfg.storageBucket||'keiishop').getPublicUrl(path).data.publicUrl}
