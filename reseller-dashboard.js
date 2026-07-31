@@ -66,8 +66,11 @@
   function renderCatalog(q=''){
     const list=state.items.filter(x=>(x.product?.name||'').toLowerCase().includes(q.toLowerCase()));
     $('#catalogGrid').innerHTML=list.length?list.map((x,i)=>{
-      const normal=Number(x.normal_price??x.product.normal_price??x.reseller_price),reseller=Number(x.reseller_price||0),showNormal=normal>reseller;
-      return `<article class="rs-product" style="animation-delay:${i*55}ms"><img src="${escAttr(x.product.image_url||'icons/icon-512.png')}" alt=""><small>${x.is_exclusive?'KHUSUS RESELLER':'HARGA RESELLER'}</small><h3>${esc(x.product.name)}</h3><p>${esc(x.promo_text||x.product.description||'Produk digital pilihan KivoPay.')}</p><div class="price"><div><strong>${fmt(reseller)}</strong>${showNormal?`<del>${fmt(normal)}</del>`:''}</div><span>Stok ${Number(x.product.stock||0)}</span></div><a class="rs-order-link" href="reseller-checkout.html?product=${encodeURIComponent(x.product_id)}">Lihat & Order</a></article>`
+      const variants=Array.isArray(x.product.variants)&&x.product.variants.length?x.product.variants:[];
+      const cheapest=variants.length?variants.reduce((best,v)=>Number(v.reseller_price??Infinity)<Number(best.reseller_price??Infinity)?v:best,variants[0]):null;
+      const reseller=Number((cheapest?.reseller_price ?? x.reseller_price) || 0),normal=Number(cheapest?.normal_price??x.normal_price??reseller),showNormal=normal>reseller;
+      const stock=variants.length?variants.reduce((n,v)=>n+Number(v.stock||0),0):Number(x.product.stock||0);
+      return `<article class="rs-product" style="animation-delay:${i*55}ms"><img src="${escAttr(x.product.image_url||'icons/icon-512.png')}" alt=""><small>${x.is_exclusive?'KHUSUS RESELLER':'HARGA RESELLER'}</small><h3>${esc(x.product.name)}</h3><p>${esc(x.promo_text||x.product.description||'Produk digital pilihan KivoPay.')}</p><div class="price"><div class="price-values"><strong>${fmt(reseller)}</strong>${showNormal?`<del>${fmt(normal)}</del>`:''}</div><span class="stock-pill ${stock<=0?'empty':''}">Stok ${stock}</span></div><a class="rs-order-link ${stock<=0?'disabled':''}" href="${stock<=0?'javascript:void(0)':`reseller-checkout.html?product=${encodeURIComponent(x.product_id)}`}">${stock<=0?'Stok Habis':'Lihat & Order'}</a></article>`
     }).join(''):'<div class="rs-empty-state"><strong>Produk reseller belum tersedia</strong><p>Produk yang ditambahkan admin akan muncul di sini.</p></div>';
   }
 

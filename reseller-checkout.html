@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="reseller.css?v=40">
-  <link rel="stylesheet" href="reseller-checkout.css?v=40">
+  <link rel="stylesheet" href="reseller.css?v=41">
+  <link rel="stylesheet" href="reseller-checkout.css?v=41">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="auth.js"></script>
@@ -29,7 +29,7 @@
         <form id="checkoutForm">
           <label><span>Pilih paket</span><select id="variantSelect" required></select></label>
           <div class="rsc-grid-fields"><label><span>Nama pembeli</span><input id="buyerName" autocomplete="name" placeholder="Nama penerima" required></label><label><span>Nomor WhatsApp</span><input id="buyerWhatsapp" inputmode="tel" placeholder="08xxxxxxxxxx" required></label></div>
-          <label id="emailField" hidden><span>Email aktif untuk invite</span><input id="buyerEmail" type="email" placeholder="nama@email.com"></label>
+          <label id="emailField" class="rsc-email-field" hidden><span>Masukkan Email Aktif <b>WAJIB</b></span><input id="buyerEmail" type="email" placeholder="contoh@email.com"></label>
           <section class="rsc-summary"><div><span>Harga normal</span><del id="normalPrice">Rp0</del></div><div><span>Harga reseller</span><strong id="resellerPrice">Rp0</strong></div><div><span>Saldo utama</span><strong id="checkoutBalance">Rp0</strong></div><div class="rsc-total"><span>Total pembayaran</span><strong id="checkoutTotal">Rp0</strong></div></section>
           <div class="rsc-payment"><div><b>SALDO KIVOPAY</b><small>Pembayaran otomatis tanpa QRIS</small></div><span>Terpilih</span></div>
           <label class="rsc-confirm"><input id="confirmOrder" type="checkbox" required><span>Saya sudah memastikan paket dan data pembeli benar.</span></label>
@@ -40,6 +40,6 @@
     </section>
   </main>
   <div id="successView" class="rsc-success" hidden><div><span class="rsc-success-icon">✓</span><small>ORDER BERHASIL</small><h2>Pesanan reseller dibuat</h2><p id="successInvoice">Invoice tersimpan.</p><a id="viewHistory" href="reseller-dashboard.html?tab=orders">Lihat Riwayat & Data Akun</a></div></div>
-  <script src="reseller-checkout.js?v=40"></script>
+  <script src="reseller-checkout.js?v=41"></script>
 </body>
 </html>
