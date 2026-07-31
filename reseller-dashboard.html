@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="reseller.css?v=32">
+  <link rel="stylesheet" href="reseller.css?v=35">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="auth.js"></script>
@@ -27,19 +27,22 @@
           <span class="rs-kicker">RESELLER ACTIVE</span>
           <h1 id="helloReseller">Halo, Reseller</h1>
           <p id="resellerCode">Kode reseller</p>
-          <div class="rs-assistant-bubble" id="assistantBubble">Selamat datang kembali di Reseller Center.</div>
-        </div>
-        <div class="rs-dashboard-character" id="dashboardCharacter">
-          <div class="rs-character-aura"></div>
-          <div class="rs-character-rings"></div>
-          <img src="assets/reseller-dashboard-character.jpg" alt="Maskot Dashboard Reseller KivoPay">
-          <span class="rs-character-status">PARTNER AKTIF</span>
         </div>
         <div class="rs-wallet">
           <small>SALDO UTAMA</small>
           <strong id="mainBalance">Rp0</strong>
           <a href="deposit.html">Deposit</a>
         </div>
+      </section>
+
+      <section class="rs-mascot-panel" id="dashboardCharacter">
+        <div class="rs-mascot-backdrop"></div>
+        <div class="rs-character-aura"></div>
+        <div class="rs-character-rings"></div>
+        <img class="rs-mascot-image" src="assets/reseller-dashboard-character-v35.jpg" alt="Maskot Dashboard Reseller KivoPay">
+        <div class="rs-mascot-light"></div>
+        <div class="rs-assistant-bubble show" id="assistantBubble">Selamat datang kembali di Reseller Center.</div>
+        <span class="rs-character-status">PARTNER AKTIF</span>
       </section>
 
       <div class="rs-stats">
@@ -53,22 +56,12 @@
         <button data-tab="orders">Riwayat</button>
         <button data-tab="promo">Materi Promosi</button>
       </nav>
-
-      <section id="catalogTab" class="rs-tab active">
-        <div class="rs-section-head"><div><small>HARGA KHUSUS</small><h2>Katalog Reseller</h2></div><input id="searchProduct" placeholder="Cari produk..."></div>
-        <div id="catalogGrid" class="rs-catalog"></div>
-      </section>
-      <section id="ordersTab" class="rs-tab">
-        <div class="rs-section-head"><div><small>TRANSAKSI</small><h2>Riwayat Reseller</h2></div></div>
-        <div id="orderList" class="rs-orders"></div>
-      </section>
-      <section id="promoTab" class="rs-tab">
-        <div class="rs-promo-card"><span>Materi Promosi</span><h2>Copy, edit, lalu jual.</h2><p>Gunakan teks berikut untuk promosi produk reseller KivoPay.</p><textarea id="promoText" readonly>Produk digital premium tersedia dengan harga terjangkau dan proses cepat. Order sekarang melalui reseller KivoPay.</textarea><button id="copyPromo">Salin Teks</button></div>
-      </section>
+      <section id="catalogTab" class="rs-tab active"><div class="rs-section-head"><div><small>HARGA KHUSUS</small><h2>Katalog Reseller</h2></div><input id="searchProduct" placeholder="Cari produk..."></div><div id="catalogGrid" class="rs-catalog"></div></section>
+      <section id="ordersTab" class="rs-tab"><div class="rs-section-head"><div><small>TRANSAKSI</small><h2>Riwayat Reseller</h2></div></div><div id="orderList" class="rs-orders"></div></section>
+      <section id="promoTab" class="rs-tab"><div class="rs-promo-card"><span>Materi Promosi</span><h2>Copy, edit, lalu jual.</h2><p>Gunakan teks berikut untuk promosi produk reseller KivoPay.</p><textarea id="promoText" readonly>Produk digital premium tersedia dengan harga terjangkau dan proses cepat. Order sekarang melalui reseller KivoPay.</textarea><button id="copyPromo">Salin Teks</button></div></section>
     </section>
   </main>
-
   <div id="orderModal" class="rs-modal" hidden><div class="rs-modal-card"><button id="closeModal" class="rs-close">×</button><span class="rs-kicker">ORDER RESELLER</span><h2 id="modalTitle">Produk</h2><label>Pilih paket<select id="variantSelect"></select></label><label>Nama pembeli<input id="buyerName" autocomplete="name"></label><label>Nomor WhatsApp<input id="buyerWhatsapp" inputmode="tel"></label><label id="emailField" hidden>Email aktif<input id="buyerEmail" type="email"></label><div class="rs-price"><span>Total dari saldo</span><strong id="modalPrice">Rp0</strong></div><button id="submitOrder">Bayar dengan Saldo</button><small id="orderMessage"></small></div></div>
-  <script src="reseller-dashboard.js?v=32"></script>
+  <script src="reseller-dashboard.js?v=35"></script>
 </body>
 </html>
