@@ -29,7 +29,7 @@ export default async function handler(req,res){
     if(req.method==='POST'){
       const a=String(req.body?.action||'');
       if(a==='settings'){
-        const {data,error}=await db.from('reseller_settings').upsert({id:'main',is_open:!!req.body.is_open,join_price:Number(req.body.join_price||0),title:String(req.body.title||''),subtitle:String(req.body.subtitle||''),updated_at:new Date().toISOString()}).select().single();
+        const {data,error}=await db.from('reseller_settings').upsert({id:'main',is_open:!!req.body.is_open,join_price:Number(req.body.join_price||0),title:String(req.body.title||''),subtitle:String(req.body.subtitle||''),benefits:req.body.benefits&&typeof req.body.benefits==='object'?req.body.benefits:{},updated_at:new Date().toISOString()}).select().single();
         if(error)throw error; return res.json({settings:data});
       }
       if(a==='product'){
