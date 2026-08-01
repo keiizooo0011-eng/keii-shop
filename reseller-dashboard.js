@@ -37,7 +37,7 @@
   }
   function petals(){const host=$('.rs-petal-field');if(!host||host.children.length)return;for(let i=0;i<16;i++){const p=document.createElement('i');p.style.setProperty('--x',`${Math.random()*100}vw`);p.style.setProperty('--d',`${9+Math.random()*13}s`);p.style.setProperty('--delay',`${-Math.random()*18}s`);p.style.setProperty('--size',`${5+Math.random()*8}px`);host.appendChild(p)}}
   function animateCharacter(){const c=$('#dashboardCharacter');if(!c)return;window.addEventListener('pointermove',e=>{if(innerWidth<760)return;const x=(e.clientX/innerWidth-.5)*5,y=(e.clientY/innerHeight-.5)*4;c.style.setProperty('--rx',`${-y}deg`);c.style.setProperty('--ry',`${x}deg`)},{passive:true})}
-  function rotateTips(){const tips=['Harga reseller aktif untuk produk pilihan.','Seluruh order reseller wajib memakai saldo utama.','Cek materi promosi sebelum mulai jualan.'];let i=0;setInterval(()=>{const b=$('#assistantBubble');if(!b)return;b.classList.remove('show');setTimeout(()=>{i=(i+1)%tips.length;b.textContent=tips[i];b.classList.add('show')},250)},5500);$('#assistantBubble')?.classList.add('show')}
+  function rotateTips(){const tips=['Harga reseller aktif untuk produk pilihan.','Seluruh order reseller wajib memakai saldo utama.','Cek tab Benefit untuk melihat semua keuntungan partner.','Riwayat menyimpan invoice, status, data akun, dan catatan admin.'];let i=0;setInterval(()=>{const b=$('#assistantBubble');if(!b)return;b.classList.remove('show');setTimeout(()=>{i=(i+1)%tips.length;b.textContent=tips[i];b.classList.add('show')},250)},5500);$('#assistantBubble')?.classList.add('show')}
 
   async function boot(){
     setView('loading');
@@ -108,6 +108,8 @@
   function openRequestedTab(){
     const p=new URLSearchParams(location.search),tab=p.get('tab'),invoice=p.get('invoice');
     if(tab==='orders'||invoice)activateTab('orders');
+    else if(tab==='benefits')activateTab('benefits');
+    else if(tab==='promo')activateTab('promo');
     if(invoice)setTimeout(()=>document.getElementById(`order-${invoice}`)?.scrollIntoView({behavior:'smooth',block:'center'}),200);
   }
   function activateTab(name){
