@@ -65,3 +65,16 @@
 @media(max-width:480px){
   .rs-character-stage{min-height:500px}.rs-character-video-wrap{border-radius:26px}.rs-dashboard-banner{min-height:500px}.rs-dashboard-character{width:78vw;height:72%;right:-5%}
 }
+
+
+/* Reseller V46 - preserve admin line breaks in benefit detail */
+.rs-benefit-grid article>p{white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.rs-benefit-grid article.benefit-has-lines{grid-column:span 2}
+.rs-benefit-grid article.benefit-has-lines>p{font-size:14px;line-height:1.72}
+@media(max-width:800px){
+  .rs-benefit-grid article.benefit-has-lines{grid-column:1/-1}
+}
+@media(max-width:480px){
+  .rs-benefit-grid article.benefit-has-lines{grid-column:auto}
+  .rs-benefit-grid article>p{font-size:13.5px;line-height:1.7}
+}
