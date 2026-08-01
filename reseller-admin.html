@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin Reseller KivoPay</title>
-  <link rel="stylesheet" href="reseller-admin.css?v=41">
+  <link rel="stylesheet" href="reseller-admin.css?v=44">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="auth.js"></script>
@@ -41,6 +41,24 @@
         <label class="wide">Subjudul<input id="settingSubtitle" placeholder="Akses katalog khusus reseller dari satu dashboard."></label>
         <label class="toggle"><input id="registrationOpen" type="checkbox"><span>Pendaftaran dibuka</span></label>
       </div>
+    </section>
+
+    <section class="card benefit-admin-card">
+      <div class="head">
+        <div><small>DETAIL BENEFIT</small><h2>Benefit Reseller</h2><p>Atur isi halaman “Lihat Detail Benefit” dan tab Benefit di dashboard reseller.</p></div>
+        <button id="saveBenefits" class="primary" type="button">Simpan Benefit</button>
+      </div>
+      <div class="benefit-settings-grid">
+        <label>Judul benefit<input id="benefitAdminTitle" placeholder="Yang kamu dapat sebagai Reseller KivoPay"></label>
+        <label class="wide">Penjelasan singkat<textarea id="benefitAdminIntro" rows="3" placeholder="Jelaskan keuntungan utama reseller..."></textarea></label>
+        <label>Judul catatan bawah<input id="benefitAdminNoteTitle" placeholder="Pembayaran pendaftaran menggunakan Saldo KivoPay."></label>
+        <label>Isi catatan bawah<input id="benefitAdminNoteText" placeholder="Akses reseller aktif otomatis pada akun yang sama."></label>
+      </div>
+      <div class="benefit-admin-head">
+        <div><strong>Daftar Benefit</strong><small>Benefit aktif akan tampil berurutan di halaman join dan dashboard reseller.</small></div>
+        <button id="addBenefit" type="button">+ Tambah Benefit</button>
+      </div>
+      <div id="benefitAdminRows" class="benefit-admin-rows"></div>
     </section>
 
     <section class="card product-card">
@@ -84,6 +102,6 @@
     </section>
   </div>
 </main>
-<script src="reseller-admin.js?v=42"></script>
+<script src="reseller-admin.js?v=44"></script>
 </body>
 </html>

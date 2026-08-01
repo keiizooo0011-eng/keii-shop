@@ -3,7 +3,7 @@
   const fmt=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
   const date=v=>v?new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v)):'-';
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  let state={items:[],membership:null,balance:0,orders:[]};
+  let state={items:[],membership:null,balance:0,orders:[],settings:{}};
 
   async function waitAuth(timeout=12000){
     const started=Date.now();
@@ -39,6 +39,9 @@
   function animateCharacter(){const c=$('#dashboardCharacter');if(!c)return;window.addEventListener('pointermove',e=>{if(innerWidth<760)return;const x=(e.clientX/innerWidth-.5)*5,y=(e.clientY/innerHeight-.5)*4;c.style.setProperty('--rx',`${-y}deg`);c.style.setProperty('--ry',`${x}deg`)},{passive:true})}
   function rotateTips(){const tips=['Harga reseller aktif untuk produk pilihan.','Seluruh order reseller wajib memakai saldo utama.','Cek tab Benefit untuk melihat semua keuntungan partner.','Riwayat menyimpan invoice, status, data akun, dan catatan admin.'];let i=0;setInterval(()=>{const b=$('#assistantBubble');if(!b)return;b.classList.remove('show');setTimeout(()=>{i=(i+1)%tips.length;b.textContent=tips[i];b.classList.add('show')},250)},5500);$('#assistantBubble')?.classList.add('show')}
 
+  const fallbackBenefits=[{"title":"Harga Khusus Reseller","description":"Dapatkan harga khusus pada produk pilihan sehingga kamu punya ruang untuk menentukan margin jual.","active":true},{"title":"Katalog Eksklusif","description":"Akses produk dan varian yang disiapkan khusus untuk reseller dan tidak tercampur dengan katalog user biasa.","active":true},{"title":"Saldo Tetap Satu","description":"Tidak perlu membuat dompet baru. Pembayaran reseller langsung menggunakan Saldo KivoPay utama.","active":true},{"title":"Riwayat & Data Akun","description":"Invoice, status pesanan, data produk, dan catatan admin tersimpan di dashboard reseller.","active":true},{"title":"Materi Promosi","description":"Tersedia area materi promosi yang bisa disalin, diedit, lalu dipakai untuk membantu penjualan.","active":true},{"title":"Dashboard Partner","description":"Kelola katalog, order, saldo, dan informasi reseller dari halaman khusus yang terpisah dari dashboard user.","active":true}];
+  function renderBenefits(cfg={}){const title=$('#dashboardBenefitTitle'),intro=$('#dashboardBenefitIntro'),grid=$('#dashboardBenefitGrid');if(title)title.textContent=cfg.title||'Benefit Reseller KivoPay';if(intro)intro.textContent=cfg.intro||'Semua keuntungan utama akun reseller kamu dalam satu tampilan.';const items=(Array.isArray(cfg.items)&&cfg.items.length?cfg.items:fallbackBenefits).filter(x=>x.active!==false);if(grid)grid.innerHTML=items.map((x,i)=>`<article><span>${String(i+1).padStart(2,'0')}</span><strong>${esc(x.title)}</strong><p>${esc(x.description)}</p></article>`).join('')}
+
   async function boot(){
     setView('loading');
     const session=await waitAuth();
@@ -46,7 +49,7 @@
     try{
       const s=await api('/api/reseller-status');
       if(s.membership?.status!=='active'){location.replace('reseller.html');return;}
-      state.membership=s.membership; state.balance=Number(s.balance||0);
+      state.membership=s.membership; state.balance=Number(s.balance||0); state.settings=s.settings||{}; renderBenefits(state.settings.benefits||{});
       $('#mainBalance').textContent=fmt(state.balance);
       $('#helloReseller').textContent=`Halo, ${session.user.user_metadata?.username||session.user.email?.split('@')[0]||'Reseller'}`;
       $('#resellerCode').textContent=state.membership.reseller_code||'Reseller KivoPay';

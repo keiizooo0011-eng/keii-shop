@@ -44,3 +44,24 @@
 .rs-dashboard-benefit-head{margin:24px 0 18px}.rs-dashboard-benefit-head>small{color:#a98cff;font-weight:900;letter-spacing:.15em}.rs-benefit-grid-dashboard{margin-bottom:30px}
 @media(max-width:800px){.rs-benefit-head{grid-template-columns:1fr;gap:10px}.rs-benefit-grid{grid-template-columns:1fr 1fr}.rs-character-video{object-position:center 32%}.rs-dashboard-video-wrap{inset:0 6% -1% 6%}.rs-benefit-note{display:block}.rs-benefit-note span{display:block;text-align:left;margin-top:6px}}
 @media(max-width:480px){.rs-benefit-section{padding:18px 14px;border-radius:23px}.rs-benefit-grid{grid-template-columns:1fr;gap:10px}.rs-benefit-grid article{min-height:0}.rs-character-video-wrap{border-radius:42% 42% 24px 24px}.rs-character-video{object-position:center 34%}}
+
+
+/* Reseller V44 - full character video + seamless KivoPay stage */
+.rs-character-video-wrap{overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#32145c 0%,#160c2c 42%,#07050f 76%,#05040b 100%);border:1px solid rgba(164,113,255,.18);box-shadow:inset 0 0 85px rgba(116,67,209,.25),0 25px 70px rgba(0,0,0,.42)}
+.rs-character-video-wrap:before{content:"";position:absolute;z-index:2;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(126,70,224,.34),rgba(75,36,143,.18) 48%,transparent 76%);mix-blend-mode:screen}
+.rs-character-video-wrap:after{content:"";position:absolute;z-index:3;inset:-2px;pointer-events:none;background:linear-gradient(90deg,#090611 0%,transparent 13%,transparent 87%,#090611 100%),linear-gradient(180deg,#0d0718 0%,transparent 10%,transparent 82%,#080410 100%)}
+.rs-character-video{object-fit:contain!important;object-position:center bottom!important;transform:none!important;background:#05040b!important;filter:saturate(.96) contrast(1.02) brightness(1.04);animation:characterFloat 6s ease-in-out infinite;mask-image:radial-gradient(ellipse 78% 96% at 50% 48%,#000 73%,rgba(0,0,0,.88) 84%,transparent 100%)}
+.rs-character-video-fade{z-index:4;background:linear-gradient(180deg,transparent 72%,rgba(18,7,33,.18) 84%,#080410 100%);box-shadow:inset 0 0 75px 12px rgba(23,8,44,.38)}
+.rs-character-stage{min-height:620px}
+.rs-character-video-wrap{inset:2% -2% 0 -2%;border-radius:34px}
+.rs-character-backdrop{inset:8% -1% 1%;border-radius:38px;background:radial-gradient(ellipse at center,#6437b843,transparent 68%),linear-gradient(180deg,#28114180,#07142f72)}
+.rs-dashboard-banner{min-height:460px}
+.rs-dashboard-character{width:min(430px,48vw)}
+.rs-dashboard-video-wrap{inset:2% 0 0 0;border-radius:30px}
+@media(max-width:800px){
+  .rs-join-copy{grid-template-columns:1fr}.rs-character-stage{grid-column:1;grid-row:auto;min-height:570px;margin:-8px 0 12px}.rs-character-video-wrap{inset:0;border-radius:32px}.rs-character-video{object-fit:contain!important;object-position:center bottom!important}.rs-character-backdrop{inset:3% 0 0}.rs-join-copy>.rs-kicker,.rs-join-copy>h1,.rs-join-copy>p,.rs-benefits{grid-column:1}.tag-one{left:3%;top:32%}.tag-two{left:9%;bottom:15%}.tag-three{right:2%;top:55%}
+  .rs-dashboard-banner{min-height:520px;padding-bottom:24px}.rs-dashboard-character{right:0;bottom:0;width:min(390px,74vw);height:76%;opacity:.9}.rs-dashboard-video-wrap{inset:0;border-radius:28px}.rs-wallet{z-index:6}
+}
+@media(max-width:480px){
+  .rs-character-stage{min-height:500px}.rs-character-video-wrap{border-radius:26px}.rs-dashboard-banner{min-height:500px}.rs-dashboard-character{width:78vw;height:72%;right:-5%}
+}

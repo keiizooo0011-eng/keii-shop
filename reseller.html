@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="reseller.css?v=43">
+  <link rel="stylesheet" href="reseller.css?v=44">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="auth.js"></script>
@@ -28,7 +28,7 @@
           <div class="rs-character-backdrop"></div><div class="rs-aura"></div><div class="rs-rings"></div>
           <div class="rs-character-video-wrap">
             <video class="rs-character-video" autoplay muted loop playsinline preload="metadata" poster="assets/reseller-join-character.jpg" aria-label="Maskot Reseller KivoPay bergerak">
-              <source src="assets/reseller-character-motion.mp4?v=43" type="video/mp4">
+              <source src="assets/reseller-character-motion.mp4?v=44" type="video/mp4">
             </video>
             <div class="rs-character-video-fade" aria-hidden="true"></div>
           </div>
@@ -50,10 +50,10 @@
 
     <section id="benefitReseller" class="rs-benefit-section" hidden>
       <div class="rs-benefit-head">
-        <div><span class="rs-kicker">BENEFIT PARTNER</span><h2>Yang kamu dapat sebagai Reseller KivoPay</h2></div>
-        <p>Bukan sekadar harga lebih murah. Semua benefit reseller dibuat supaya proses jualan lebih rapi dari satu akun.</p>
+        <div><span class="rs-kicker">BENEFIT PARTNER</span><h2 id="benefitTitle">Yang kamu dapat sebagai Reseller KivoPay</h2></div>
+        <p id="benefitIntro">Bukan sekadar harga lebih murah. Semua benefit reseller dibuat supaya proses jualan lebih rapi dari satu akun.</p>
       </div>
-      <div class="rs-benefit-grid">
+      <div id="benefitGrid" class="rs-benefit-grid">
         <article><span>01</span><strong>Harga Khusus Reseller</strong><p>Dapatkan harga khusus pada produk pilihan sehingga kamu punya ruang untuk menentukan margin jual.</p></article>
         <article><span>02</span><strong>Katalog Eksklusif</strong><p>Akses produk dan varian yang disiapkan khusus untuk reseller dan tidak tercampur dengan katalog user biasa.</p></article>
         <article><span>03</span><strong>Saldo Tetap Satu</strong><p>Tidak perlu membuat dompet baru. Pembayaran reseller langsung menggunakan Saldo KivoPay utama.</p></article>
@@ -61,8 +61,8 @@
         <article><span>05</span><strong>Materi Promosi</strong><p>Tersedia area materi promosi yang bisa disalin, diedit, lalu dipakai untuk membantu penjualan.</p></article>
         <article><span>06</span><strong>Dashboard Partner</strong><p>Kelola katalog, order, saldo, dan informasi reseller dari halaman khusus yang terpisah dari dashboard user.</p></article>
       </div>
-      <div class="rs-benefit-note"><strong>Pembayaran pendaftaran menggunakan Saldo KivoPay.</strong><span>Setelah berhasil, akses reseller aktif otomatis pada akun yang sama.</span></div>
+      <div class="rs-benefit-note"><strong id="benefitNoteTitle">Pembayaran pendaftaran menggunakan Saldo KivoPay.</strong><span id="benefitNoteText">Setelah berhasil, akses reseller aktif otomatis pada akun yang sama.</span></div>
     </section>
   </main>
-  <script src="reseller.js?v=43"></script>
+  <script src="reseller.js?v=44"></script>
 </body></html>
