@@ -1,4 +1,4 @@
-const CACHE='kivopay-v31-discovery-seo';
+const CACHE='kivopay-v50-responsive-hardfix';
 const CORE=['./','index.html','style.css','script.js','manifest.webmanifest'];
 
 self.addEventListener('install', event => {

@@ -131,3 +131,59 @@
   .home-wallet-history-full{display:inline}
   .home-wallet-history-short{display:none}
 }
+
+
+/* V50 hard-fix: prevent duplicated "Riwayat" on any older/newer markup */
+@media (max-width:430px){
+  .home-wallet-actions .home-wallet-history{
+    font-size:0 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+  }
+
+  /* New V49+ markup */
+  .home-wallet-actions .home-wallet-history .home-wallet-history-full{
+    display:none !important;
+  }
+  .home-wallet-actions .home-wallet-history .home-wallet-history-short{
+    display:inline !important;
+    font-size:12px !important;
+    line-height:1 !important;
+    margin:0 !important;
+  }
+  .home-wallet-actions .home-wallet-history .home-wallet-history-arrow{
+    display:inline !important;
+    font-size:12px !important;
+    margin-left:5px !important;
+  }
+
+  /* Old markup fallback: "Riwayat Deposit <span>→</span>" */
+  .home-wallet-actions .home-wallet-history:not(:has(.home-wallet-history-short))::before{
+    content:"Riwayat" !important;
+    display:inline !important;
+    font-size:12px !important;
+    line-height:1 !important;
+  }
+  .home-wallet-actions .home-wallet-history:not(:has(.home-wallet-history-short)) > span{
+    display:inline !important;
+    font-size:12px !important;
+    margin-left:5px !important;
+  }
+}
+
+@media (max-width:350px){
+  .home-wallet-actions .home-wallet-history{
+    font-size:12px !important;
+  }
+  .home-wallet-actions .home-wallet-history::before{
+    content:none !important;
+  }
+  .home-wallet-actions .home-wallet-history .home-wallet-history-full{
+    display:inline !important;
+    font-size:12px !important;
+  }
+  .home-wallet-actions .home-wallet-history .home-wallet-history-short{
+    display:none !important;
+  }
+}
