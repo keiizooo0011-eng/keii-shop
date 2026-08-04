@@ -15,7 +15,7 @@
         sb.from('robux_packages').select('*').eq('is_active',true).order('sort_order')
       ]);
       if (me) throw me; if (pe) throw pe;
-      methods = m || []; packages = p || [];
+      methods = (m || []).filter(x => !String(x.slug || x.form_type || "").toLowerCase().includes("login")); packages = p || [];
       $('#robuxServiceStatus').textContent = methods.length ? '● Layanan tersedia' : '● Layanan ditutup';
       $('#robuxServiceStatus').classList.toggle('is-open', !!methods.length);
       $('#robuxClosedNotice').hidden = !!methods.length;
@@ -30,7 +30,7 @@
   function renderMethods() {
     $('#robuxMethodList').innerHTML = methods.length ? methods.map(m => `
       <button type="button" class="robux-method-card ${selectedMethod?.id===m.id?'active':''}" data-method="${m.id}">
-        <span>${String(m.slug||'').includes('login')?'🔐':String(m.slug||'').includes('gamepass')?'🎟️':'💎'}</span>
+        <span>${String(m.slug||'').includes('gamepass')?'🎟️':'💎'}</span>
         <div><strong>${esc(m.name)}</strong><small>${esc(m.description)}</small></div><b>→</b>
       </button>`).join('') : '<div class="robux-empty">Belum ada metode aktif.</div>';
     document.querySelectorAll('[data-method]').forEach(b => b.onclick = () => selectMethod(b.dataset.method));
@@ -60,24 +60,6 @@
     $('#robuxPackageId').value = selectedPackage.id;
     $('#robuxSelectedPrice').textContent = rupiah(selectedPackage.price);
     $('#robuxSummaryText').textContent = `${selectedMethod.name} • ${selectedPackage.label}`;
-    // Hanya metode Via Login yang boleh menampilkan data sensitif.
-    // Gunakan slug sebagai sumber utama agar salah set form_type di panel admin tidak
-    // membuat form username/gamepass ikut meminta password.
-    const login = String(selectedMethod.slug || '').toLowerCase().includes('login');
-    const passwordWrap = $('#robuxPasswordWrap');
-    const backupWrap = $('#robuxBackupWrap');
-    passwordWrap.hidden = !login;
-    backupWrap.hidden = !login;
-    passwordWrap.style.display = login ? '' : 'none';
-    backupWrap.style.display = login ? '' : 'none';
-    $('#robuxPassword').required = login;
-    ['#robuxBackupCode1','#robuxBackupCode2','#robuxBackupCode3'].forEach(id => $(id).required = login);
-    if (!login) {
-      $('#robuxPassword').value = '';
-      $('#robuxBackupCode1').value = '';
-      $('#robuxBackupCode2').value = '';
-      $('#robuxBackupCode3').value = '';
-    }
     $('#robuxOrderForm').scrollIntoView({behavior:'smooth',block:'center'});
   }
 
@@ -92,11 +74,7 @@
         method:'POST', headers:(window.KivoAuth?await KivoAuth.authHeaders({'Content-Type':'application/json'}):{'Content-Type':'application/json'}),
         body:JSON.stringify({
           method_id:selectedMethod.id, package_id:selectedPackage.id,
-          username:$('#robuxUsername').value.trim(), whatsapp:$('#robuxWhatsapp').value.trim(),
-          password:$('#robuxPassword').value,
-          backup_code_1:$('#robuxBackupCode1').value.trim(),
-          backup_code_2:$('#robuxBackupCode2').value.trim(),
-          backup_code_3:$('#robuxBackupCode3').value.trim(), payment_method:paymentMethod
+          username:$('#robuxUsername').value.trim(), whatsapp:$('#robuxWhatsapp').value.trim(), payment_method:paymentMethod
         })
       });
       const data=await response.json();

@@ -201,7 +201,7 @@
 
       <div class="admin-page" data-admin-page="robux-catalog">
       <section class="admin-panel robux-admin-panel">
-        <div class="admin-panel-head"><div><span class="eyebrow">ROBUX MANAGER</span><h2>Metode & Paket Robux</h2><p class="muted">Kelola Gamepass, Via Username, dan Via Login tanpa mencampurnya dengan stok APK Premium.</p></div><button id="refreshRobuxAdmin" class="ghost">Refresh</button></div>
+        <div class="admin-panel-head"><div><span class="eyebrow">ROBUX MANAGER</span><h2>Metode & Paket Robux</h2><p class="muted">Kelola Gamepass dan Via Username tanpa meminta kredensial akun pengguna.</p></div><button id="refreshRobuxAdmin" class="ghost">Refresh</button></div>
         <div class="robux-admin-grid">
           <form id="robuxMethodForm" class="product-form robux-admin-form">
             <input id="robuxAdminMethodId" type="hidden">
@@ -212,7 +212,6 @@
             <label>Jenis layanan</label><select id="robuxAdminMethodFormType">
               <option value="gamepass">Robux Gamepass</option>
               <option value="username">Robux Via Username</option>
-              <option value="login">Robux Via Login</option>
             </select>
             <div class="form-two"><label>Urutan<input id="robuxAdminMethodSort" type="number" min="0" value="0"></label><label class="switch-row"><input id="robuxAdminMethodActive" type="checkbox" checked> Metode dibuka</label></div>
             <div class="form-actions"><button type="submit">Simpan Metode</button><button id="cancelRobuxMethodEdit" type="button" class="ghost" hidden>Batal</button></div>
@@ -233,7 +232,6 @@
         <div class="robux-admin-tabs" role="tablist">
           <button type="button" class="active" data-robux-admin-filter="gamepass">Gamepass</button>
           <button type="button" data-robux-admin-filter="username">Via Username</button>
-          <button type="button" data-robux-admin-filter="login">Via Login</button>
         </div>
         <div class="robux-admin-lists"><div><h3 id="robuxAdminMethodListTitle">Metode Gamepass</h3><div id="robuxAdminMethodList" class="admin-product-list"></div></div><div><h3 id="robuxAdminPackageListTitle">Paket Gamepass</h3><div id="robuxAdminPackageList" class="admin-product-list"></div></div></div>
       </section>

@@ -35,7 +35,6 @@ function suggestSchemaForBrand(brand){
   const n=String(brand||'').toLowerCase();
   if(n.includes('mobile legends')) return [{...defaultField(),key:'target',label:'User ID',mapTo:'target',placeholder:'Masukkan User ID'},{...defaultField(),id:fieldId(),key:'zone',label:'Zone ID',mapTo:'zone',placeholder:'Masukkan Zone ID'}];
   if(n.includes('genshin')) return [{...defaultField(),key:'target',label:'UID',mapTo:'target',placeholder:'Masukkan UID'},{...defaultField(),id:fieldId(),key:'server',label:'Server',type:'select',mapTo:'zone',placeholder:'Pilih server',options:['America','Asia','Europe','TW_HK_MO']}];
-  if(n.includes('via login')) return [{...defaultField(),key:'account',label:'Email / Username',mapTo:'target',placeholder:'Masukkan email atau username'},{...defaultField(),id:fieldId(),key:'password',label:'Password',type:'password',mapTo:'zone',sensitive:true,placeholder:'Masukkan password'},{...defaultField(),id:fieldId(),key:'additional',label:'Kode keamanan / Catatan',type:'textarea',mapTo:'additional',required:false,sensitive:true,placeholder:'Masukkan backup code, PIN, nickname, atau catatan'}];
   if(/netflix|spotify|viu|vidio|iqiyi|alight|canva|capcut|stream/.test(n)) return [{...defaultField(),key:'email',label:'Email / Nomor Tujuan',type:'email',mapTo:'target',placeholder:'Masukkan email aktif'}];
   return [defaultField()];
 }

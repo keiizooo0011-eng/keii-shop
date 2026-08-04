@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0a0710">
   <title>Top Up Robux — KivoPay</title>
-  <meta name="description" content="Top Up Robux KivoPay melalui Gamepass, Via Username, atau Via Login.">
+  <meta name="description" content="Top Up Robux KivoPay melalui Gamepass atau Via Username tanpa meminta password akun.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -37,7 +37,7 @@
       <div id="robuxClosedNotice" class="robux-closed" hidden>⚠️ Layanan Top Up Robux sedang ditutup sementara.</div>
       <div class="robux-layout robux-layout-page">
         <aside class="robux-method-panel">
-          <div class="robux-stage-title"><span class="robux-step">01</span><div><h3>Pilih metode</h3><small>Gamepass, Username, atau Via Login.</small></div></div>
+          <div class="robux-stage-title"><span class="robux-step">01</span><div><h3>Pilih metode</h3><small>Gamepass atau Username. Tidak pernah meminta password akun.</small></div></div>
           <div id="robuxMethodList" class="robux-method-list"><div class="robux-loading">Memuat metode...</div></div>
         </aside>
         <div class="robux-main-panel">
@@ -48,15 +48,6 @@
             <input id="robuxMethodId" type="hidden"><input id="robuxPackageId" type="hidden">
             <div class="robux-form-grid">
               <label>Username Roblox<input id="robuxUsername" required maxlength="40" placeholder="Contoh: keii_neverlose2"></label>
-              <label id="robuxPasswordWrap" hidden>Password Roblox<input id="robuxPassword" type="password" maxlength="100" autocomplete="off" placeholder="Masukkan password Roblox"></label>
-              <fieldset id="robuxBackupWrap" class="robux-backup-fieldset" hidden>
-                <legend>3 Backup Code</legend>
-                <div class="robux-backup-grid">
-                  <input id="robuxBackupCode1" maxlength="100" placeholder="Backup Code 1">
-                  <input id="robuxBackupCode2" maxlength="100" placeholder="Backup Code 2">
-                  <input id="robuxBackupCode3" maxlength="100" placeholder="Backup Code 3">
-                </div>
-              </fieldset>
               <label>Nomor WhatsApp<input id="robuxWhatsapp" required inputmode="tel" maxlength="20" placeholder="08xxxxxxxxxx"></label>
             </div>
             <div class="robux-summary"><span>Pesanan dipilih</span><strong id="robuxSummaryText">-</strong></div>

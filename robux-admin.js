@@ -18,7 +18,7 @@
     methods=m||[];packages=p||[]; render();
   }
   function render(){
-    const labelMap={gamepass:'Gamepass',username:'Via Username',login:'Via Login'};
+    const labelMap={gamepass:'Gamepass',username:'Via Username',login:'Dinonaktifkan'};
     const filteredMethods=methods.filter(m=>methodKind(m)===activeFilter);
     const filteredIds=new Set(filteredMethods.map(m=>String(m.id)));
     const filteredPackages=packages.filter(p=>filteredIds.has(String(p.method_id)));
