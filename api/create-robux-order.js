@@ -23,10 +23,7 @@ export default async function handler(req,res){
     if(me) throw me; if(pe) throw pe;
     if(!method||!pack) return res.status(404).json({error:'Metode atau paket Robux tidak tersedia.'});
 
-    const isLogin=method.form_type==='login';
-    const password=clean(req.body?.password,120);
-    const backupCodes=[clean(req.body?.backup_code_1,80),clean(req.body?.backup_code_2,80),clean(req.body?.backup_code_3,80)];
-    if(isLogin && (!password || backupCodes.some(x=>!x))) return res.status(400).json({error:'Via Login wajib mengisi password dan 3 backup code.'});
+    if(String(method.form_type||method.slug||'').toLowerCase().includes('login')) return res.status(400).json({error:'Metode Via Login sudah dinonaktifkan demi keamanan akun.'});
 
     const fee=paymentMethod==='balance'?0:uniqueFee(), amount=Number(pack.price||0), paymentAmount=amount+fee;
     const invoice=invoiceId();
@@ -34,7 +31,7 @@ export default async function handler(req,res){
     const {data:order,error:oe}=await db.from('robux_orders').insert({
       invoice,method_id:method.id,package_id:pack.id,method_name:method.name,package_label:pack.label,
       robux_amount:pack.robux_amount,amount,payment_amount:paymentAmount,unique_fee:fee,
-      username,whatsapp,password:isLogin?password:null,backup_codes:isLogin?backupCodes:[],
+      username,whatsapp,password:null,backup_codes:[],
       status:'pending',expires_at:expiresAt,user_id:authUser?.id||null,payment_method:paymentMethod
     }).select('*').single();
     if(oe) throw oe;
