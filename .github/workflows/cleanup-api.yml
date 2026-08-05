@@ -1,0 +1,42 @@
+name: Cleanup API Lama
+
+on:
+  push:
+    paths:
+      - ".github/workflows/cleanup-api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ambil repository
+        uses: actions/checkout@v4
+
+      - name: Hapus API lama
+        run: |
+          echo "Membersihkan folder api..."
+
+          find api -maxdepth 1 -type f -name "*.js" ! -name "index.js" -delete
+
+          echo "Isi folder api sekarang:"
+          ls -la api
+
+      - name: Simpan perubahan ke GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A api
+
+          if git diff --cached --quiet; then
+            echo "Tidak ada API lama yang perlu dihapus."
+            exit 0
+          fi
+
+          git commit -m "Cleanup old Vercel API functions"
+          git push
