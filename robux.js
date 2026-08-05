@@ -15,7 +15,7 @@
         sb.from('robux_packages').select('*').eq('is_active',true).order('sort_order')
       ]);
       if (me) throw me; if (pe) throw pe;
-      methods = (m || []).filter(x => !String(x.slug || x.form_type || "").toLowerCase().includes("login")); packages = p || [];
+      methods = (m || []).filter(x => !String(x.slug || '').toLowerCase().includes('login')); packages = p || [];
       $('#robuxServiceStatus').textContent = methods.length ? '● Layanan tersedia' : '● Layanan ditutup';
       $('#robuxServiceStatus').classList.toggle('is-open', !!methods.length);
       $('#robuxClosedNotice').hidden = !!methods.length;
@@ -30,7 +30,7 @@
   function renderMethods() {
     $('#robuxMethodList').innerHTML = methods.length ? methods.map(m => `
       <button type="button" class="robux-method-card ${selectedMethod?.id===m.id?'active':''}" data-method="${m.id}">
-        <span>${String(m.slug||'').includes('gamepass')?'🎟️':'💎'}</span>
+        <span>${String(m.slug||'').includes('login')?'🔐':String(m.slug||'').includes('gamepass')?'🎟️':'💎'}</span>
         <div><strong>${esc(m.name)}</strong><small>${esc(m.description)}</small></div><b>→</b>
       </button>`).join('') : '<div class="robux-empty">Belum ada metode aktif.</div>';
     document.querySelectorAll('[data-method]').forEach(b => b.onclick = () => selectMethod(b.dataset.method));
@@ -60,6 +60,10 @@
     $('#robuxPackageId').value = selectedPackage.id;
     $('#robuxSelectedPrice').textContent = rupiah(selectedPackage.price);
     $('#robuxSummaryText').textContent = `${selectedMethod.name} • ${selectedPackage.label}`;
+    const slug = String(selectedMethod?.slug || '').toLowerCase();
+    const isUsername = slug.includes('username');
+    const usernameNotice = $('#robuxUsernameNotice');
+    if (usernameNotice) usernameNotice.hidden = !isUsername;
     $('#robuxOrderForm').scrollIntoView({behavior:'smooth',block:'center'});
   }
 
@@ -70,6 +74,11 @@
     const paymentMethod=document.querySelector('input[name="robuxPayment"]:checked')?.value||'qris';
     btn.disabled=true; btn.textContent=paymentMethod==='balance'?'Memproses Saldo...':'Membuat QRIS...';
     try {
+      if (paymentMethod === 'balance') {
+        if (!window.KivoAuth) throw new Error('Sistem login KivoPay belum termuat. Muat ulang halaman lalu coba lagi.');
+        const session = await KivoAuth.session();
+        if (!session?.access_token) throw new Error('Session KivoPay tidak ditemukan. Silakan login ulang untuk menggunakan Saldo KivoPay.');
+      }
       const response = await fetch('/api/create-robux-order', {
         method:'POST', headers:(window.KivoAuth?await KivoAuth.authHeaders({'Content-Type':'application/json'}):{'Content-Type':'application/json'}),
         body:JSON.stringify({
