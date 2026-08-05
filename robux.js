@@ -15,7 +15,7 @@
         sb.from('robux_packages').select('*').eq('is_active',true).order('sort_order')
       ]);
       if (me) throw me; if (pe) throw pe;
-      methods = (m || []).filter(x => !String(x.slug || '').toLowerCase().includes('login')); packages = p || [];
+      methods = m || []; packages = p || [];
       $('#robuxServiceStatus').textContent = methods.length ? '● Layanan tersedia' : '● Layanan ditutup';
       $('#robuxServiceStatus').classList.toggle('is-open', !!methods.length);
       $('#robuxClosedNotice').hidden = !!methods.length;
@@ -60,10 +60,24 @@
     $('#robuxPackageId').value = selectedPackage.id;
     $('#robuxSelectedPrice').textContent = rupiah(selectedPackage.price);
     $('#robuxSummaryText').textContent = `${selectedMethod.name} • ${selectedPackage.label}`;
-    const slug = String(selectedMethod?.slug || '').toLowerCase();
-    const isUsername = slug.includes('username');
-    const usernameNotice = $('#robuxUsernameNotice');
-    if (usernameNotice) usernameNotice.hidden = !isUsername;
+    // Hanya metode Via Login yang boleh menampilkan data sensitif.
+    // Gunakan slug sebagai sumber utama agar salah set form_type di panel admin tidak
+    // membuat form username/gamepass ikut meminta password.
+    const login = String(selectedMethod.slug || '').toLowerCase().includes('login');
+    const passwordWrap = $('#robuxPasswordWrap');
+    const backupWrap = $('#robuxBackupWrap');
+    passwordWrap.hidden = !login;
+    backupWrap.hidden = !login;
+    passwordWrap.style.display = login ? '' : 'none';
+    backupWrap.style.display = login ? '' : 'none';
+    $('#robuxPassword').required = login;
+    ['#robuxBackupCode1','#robuxBackupCode2','#robuxBackupCode3'].forEach(id => $(id).required = login);
+    if (!login) {
+      $('#robuxPassword').value = '';
+      $('#robuxBackupCode1').value = '';
+      $('#robuxBackupCode2').value = '';
+      $('#robuxBackupCode3').value = '';
+    }
     $('#robuxOrderForm').scrollIntoView({behavior:'smooth',block:'center'});
   }
 
@@ -74,27 +88,35 @@
     const paymentMethod=document.querySelector('input[name="robuxPayment"]:checked')?.value||'qris';
     btn.disabled=true; btn.textContent=paymentMethod==='balance'?'Memproses Saldo...':'Membuat QRIS...';
     try {
-      if (paymentMethod === 'balance') {
-        if (!window.KivoAuth) throw new Error('Sistem login KivoPay belum termuat. Muat ulang halaman lalu coba lagi.');
-        const session = await KivoAuth.session();
-        if (!session?.access_token) throw new Error('Session KivoPay tidak ditemukan. Silakan login ulang untuk menggunakan Saldo KivoPay.');
-      }
       const response = await fetch('/api/create-robux-order', {
         method:'POST', headers:(window.KivoAuth?await KivoAuth.authHeaders({'Content-Type':'application/json'}):{'Content-Type':'application/json'}),
         body:JSON.stringify({
           method_id:selectedMethod.id, package_id:selectedPackage.id,
-          username:$('#robuxUsername').value.trim(), whatsapp:$('#robuxWhatsapp').value.trim(), payment_method:paymentMethod
+          username:$('#robuxUsername').value.trim(), whatsapp:$('#robuxWhatsapp').value.trim(),
+          password:$('#robuxPassword').value,
+          backup_code_1:$('#robuxBackupCode1').value.trim(),
+          backup_code_2:$('#robuxBackupCode2').value.trim(),
+          backup_code_3:$('#robuxBackupCode3').value.trim(), payment_method:paymentMethod
         })
       });
       const data=await response.json();
-      if(!response.ok) throw new Error(data.error||'Gagal membuat pembayaran.');
+      if(!response.ok){
+        const err=new Error(data.error||'Gagal membuat pembayaran.'); err.status=response.status; err.payload=data; throw err;
+      }
       const invoice=data.order.invoice;
       localStorage.setItem('kivopay_last_robux_invoice', invoice);
       const invoices=JSON.parse(localStorage.getItem('kivopay_robux_invoices')||'[]');
       localStorage.setItem('kivopay_robux_invoices',JSON.stringify([invoice,...invoices.filter(x=>x!==invoice)].slice(0,30)));
       sessionStorage.setItem('kivopay_robux_payment_'+invoice,JSON.stringify(data));
       location.href=data.payment_method==='balance'?'riwayat-robux.html?invoice='+encodeURIComponent(invoice):'payment-robux.html?invoice='+encodeURIComponent(invoice);
-    } catch(err) { if(/saldo/i.test(err.message)&&confirm(err.message+'\n\nBuka halaman Deposit Saldo?')) location.href='deposit.html'; else alert(err.message); }
+    } catch(err) {
+      if(err.status===401 || err.payload?.code==='AUTH_REQUIRED'){
+        alert('Silakan masuk ke akun KivoPay terlebih dahulu untuk membayar dengan Saldo KivoPay.');
+        location.href='login.html?next='+encodeURIComponent('robux.html');
+      } else if(err.status===402 || err.payload?.need_deposit){
+        if(confirm((err.message||'Saldo KivoPay tidak cukup.')+'\n\nBuka halaman Deposit Saldo?')) location.href='deposit.html';
+      } else alert(err.message||'Gagal membuat pesanan.');
+    }
     finally { btn.disabled=false; btn.textContent='Lanjut ke Pembayaran'; }
   });
 

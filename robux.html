@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0a0710">
   <title>Top Up Robux — KivoPay</title>
-  <meta name="description" content="Top Up Robux KivoPay melalui Gamepass atau Via Username.">
+  <meta name="description" content="Top Up Robux KivoPay melalui Gamepass, Via Username, atau Via Login.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=33-live-orders">
-  <link rel="stylesheet" href="robux-v52.css?v=52">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="bottom-nav.css?v=2"></head>
+<link rel="stylesheet" href="bottom-nav.css?v=2">
+  <link rel="stylesheet" href="robux-v18.css?v=18"></head>
 <body class="robux-page">
   <div class="glow glow-a"></div><div class="glow glow-b"></div>
   <div class="particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -38,7 +38,7 @@
       <div id="robuxClosedNotice" class="robux-closed" hidden>⚠️ Layanan Top Up Robux sedang ditutup sementara.</div>
       <div class="robux-layout robux-layout-page">
         <aside class="robux-method-panel">
-          <div class="robux-stage-title"><span class="robux-step">01</span><div><h3>Pilih metode</h3><small>Gamepass atau Via Username.</small></div></div>
+          <div class="robux-stage-title"><span class="robux-step">01</span><div><h3>Pilih metode</h3><small>Gamepass, Username, atau Via Login.</small></div></div>
           <div id="robuxMethodList" class="robux-method-list"><div class="robux-loading">Memuat metode...</div></div>
         </aside>
         <div class="robux-main-panel">
@@ -49,20 +49,18 @@
             <input id="robuxMethodId" type="hidden"><input id="robuxPackageId" type="hidden">
             <div class="robux-form-grid">
               <label>Username Roblox<input id="robuxUsername" required maxlength="40" placeholder="Contoh: keii_neverlose2"></label>
+              <label id="robuxPasswordWrap" hidden>Password Roblox<input id="robuxPassword" type="password" maxlength="100" autocomplete="off" placeholder="Masukkan password Roblox"></label>
+              <fieldset id="robuxBackupWrap" class="robux-backup-fieldset" hidden>
+                <legend>3 Backup Code</legend>
+                <div class="robux-backup-grid">
+                  <input id="robuxBackupCode1" maxlength="100" placeholder="Backup Code 1">
+                  <input id="robuxBackupCode2" maxlength="100" placeholder="Backup Code 2">
+                  <input id="robuxBackupCode3" maxlength="100" placeholder="Backup Code 3">
+                </div>
+              </fieldset>
               <label>Nomor WhatsApp<input id="robuxWhatsapp" required inputmode="tel" maxlength="20" placeholder="08xxxxxxxxxx"></label>
             </div>
             <div class="robux-summary"><span>Pesanan dipilih</span><strong id="robuxSummaryText">-</strong></div>
-            <aside id="robuxUsernameNotice" class="robux-username-notice" hidden aria-live="polite">
-              <div class="robux-notice-head">
-                <span class="robux-notice-icon">!</span>
-                <div><strong>Catatan Robux Via Username</strong><small>Pastikan akun Roblox sudah memenuhi ketentuan sebelum melanjutkan.</small></div>
-              </div>
-              <ul>
-                <li>Untuk <b>Roblox Kids &amp; Roblox Select</b>, pastikan akun sudah ada <b>email pemulihan orang tua</b> untuk meng-klaim Robux.</li>
-                <li>Pembelian di atas <b>5.000 Robux</b> akan diproses lebih dari 1 hari.</li>
-                <li>Pembelian di atas <b>500 Robux per hari</b> harus <b>Age Checked 18+</b> dan mengaktifkan <b>2FA</b>.</li>
-              </ul>
-            </aside>
             <div class="wallet-checkout-box"><span>Metode pembayaran</span><label><input type="radio" name="robuxPayment" value="balance" checked><b>Saldo KivoPay</b><small>Bayar langsung dari saldo akun</small></label><label><input type="radio" name="robuxPayment" value="qris"><b>QRIS</b><small>Bayar dengan kode QR</small></label></div>
             <button id="robuxContinueBtn" type="submit">Lanjut ke Pembayaran</button>
           </form>
@@ -81,8 +79,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="config.js"></script>
-  <script src="auth.js?v=52"></script>
-  <script src="robux.js?v=52"></script>
+  <script src="auth.js?v=18"></script>
+  <script src="robux.js?v=18.0.0"></script>
   <script src="script.js?v=16.5.1"></script>
   <script src="ui-system.js?v=17.1.0"></script>
 <script src="bottom-nav.js?v=2"></script>  <script src="order-live.js?v=33"></script>

@@ -1,9 +1,15 @@
 {
   "functions": {
-    "api/*.js": {
+    "api/index.js": {
       "maxDuration": 30
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/:route*",
+      "destination": "/api/index?route=:route*"
+    }
+  ],
   "crons": [
     {
       "path": "/api/reconcile-payments",

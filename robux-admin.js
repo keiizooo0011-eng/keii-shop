@@ -18,7 +18,7 @@
     methods=m||[];packages=p||[]; render();
   }
   function render(){
-    const labelMap={gamepass:'Gamepass',username:'Via Username',login:'Dinonaktifkan'};
+    const labelMap={gamepass:'Gamepass',username:'Via Username',login:'Via Login'};
     const filteredMethods=methods.filter(m=>methodKind(m)===activeFilter);
     const filteredIds=new Set(filteredMethods.map(m=>String(m.id)));
     const filteredPackages=packages.filter(p=>filteredIds.has(String(p.method_id)));
@@ -36,7 +36,16 @@
     document.querySelectorAll('[data-rp-delete]').forEach(b=>b.onclick=()=>del('robux_packages',b.dataset.rpDelete));
   }
   async function toggle(table,id){const row=(table==='robux_methods'?methods:packages).find(x=>String(x.id)===String(id));const{error}=await sb.from(table).update({is_active:!row.is_active,updated_at:new Date().toISOString()}).eq('id',id);if(error)alert(error.message);else load()}
-  async function del(table,id){if(!confirm('Hapus data ini?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(error)alert(error.message);else load()}
+  async function del(table,id){
+    if(!confirm('Hapus data ini?'))return;
+    const{error}=await sb.from(table).delete().eq('id',id);
+    if(!error){await load();return;}
+    const isFk=/foreign key|violates foreign key constraint/i.test(String(error.message||''));
+    if(isFk){
+      const{error:closeError}=await sb.from(table).update({is_active:false,updated_at:new Date().toISOString()}).eq('id',id);
+      if(closeError) alert(closeError.message); else {alert('Data ini sudah dipakai oleh riwayat pesanan, jadi tidak bisa dihapus permanen. Metode/paket sudah ditutup agar tidak tampil di katalog.');await load();}
+    } else alert(error.message);
+  }
   function editMethod(id){const m=methods.find(x=>String(x.id)===String(id));$('#robuxAdminMethodId').value=m.id;$('#robuxAdminMethodName').value=m.name;$('#robuxAdminMethodSlug').value=m.slug;$('#robuxAdminMethodDescription').value=m.description;$('#robuxAdminMethodFormType').value=m.form_type;$('#robuxAdminMethodSort').value=m.sort_order;$('#robuxAdminMethodActive').checked=m.is_active;$('#cancelRobuxMethodEdit').hidden=false}
   function editPackage(id){const p=packages.find(x=>String(x.id)===String(id));$('#robuxAdminPackageId').value=p.id;$('#robuxAdminPackageMethod').value=p.method_id;$('#robuxAdminAmount').value=p.robux_amount;$('#robuxAdminPrice').value=p.price;$('#robuxAdminLabel').value=p.label;$('#robuxAdminEta').value=p.eta||'';$('#robuxAdminPackageSort').value=p.sort_order;$('#robuxAdminPackageActive').checked=p.is_active;$('#cancelRobuxPackageEdit').hidden=false}
   $('#robuxMethodForm')?.addEventListener('submit',async e=>{e.preventDefault();const id=$('#robuxAdminMethodId').value,payload={name:$('#robuxAdminMethodName').value.trim(),slug:($('#robuxAdminMethodSlug').value.trim()||({gamepass:'gamepass',username:'via-username',login:'via-login'}[$('#robuxAdminMethodFormType').value])).toLowerCase().replace(/\s+/g,'-'),description:$('#robuxAdminMethodDescription').value.trim(),form_type:$('#robuxAdminMethodFormType').value,sort_order:Number($('#robuxAdminMethodSort').value||0),is_active:$('#robuxAdminMethodActive').checked,updated_at:new Date().toISOString()};const q=id?sb.from('robux_methods').update(payload).eq('id',id):sb.from('robux_methods').insert(payload);const{error}=await q;if(error)msg($('#robuxMethodMessage'),error.message,'error');else{msg($('#robuxMethodMessage'),'Metode tersimpan.','success');e.target.reset();$('#robuxAdminMethodId').value='';$('#cancelRobuxMethodEdit').hidden=true;load()}});
